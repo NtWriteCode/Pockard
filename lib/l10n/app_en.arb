@@ -1,0 +1,759 @@
+{
+  "@@locale": "en",
+  
+  "appName": "Pockard",
+  "save": "Save",
+  "cancel": "Cancel",
+  "delete": "Delete",
+  "close": "Close",
+  "confirm": "Confirm",
+  "edit": "Edit",
+  "add": "Add",
+  "search": "Search",
+  "settings": "Settings",
+  "loading": "Loading...",
+  "error": "Error",
+  "success": "Success",
+  "yes": "Yes",
+  "no": "No",
+  "ok": "OK",
+  "retry": "Retry",
+  "done": "Done",
+  
+  "mainTitle": "My Cards",
+  "searchCards": "Search cards...",
+  "allCards": "All",
+  "sortRecent": "Recently Used",
+  "sortUsage": "Most Used",
+  "sortName": "Name (A-Z)",
+  "sortDateAdded": "Date Added",
+  "emptyCardsTitle": "No cards yet",
+  "emptyCardsMessage": "Tap the + button to add your first loyalty card",
+  "emptySearchTitle": "No cards found",
+  "emptySearchMessage": "Try a different search term",
+  "connectionStatusConnected": "Connected",
+  "connectionStatusDisconnected": "Disconnected",
+  "syncStatusDialogTitle": "Sync Status",
+  "syncStatusLastAttempt": "Last Attempt",
+  "syncStatusLastSuccess": "Last Success",
+  "syncStatusError": "Error",
+  "syncStatusNever": "Never",
+  "syncNow": "Sync Now",
+  "syncing": "Syncing...",
+  "syncNotConfigured": "Sync is not configured.",
+  "syncNotConfiguredHint": "Go to Settings → Sync to set up server sync.",
+  "syncCompletedSuccess": "Sync completed successfully!",
+  "syncFailed": "Sync failed. Check details.",
+  
+  "addNewCard": "Add New Card",
+  "editCard": "Edit Card",
+  "cardNameLabel": "Card Name",
+  "cardNameHint": "e.g. Starbucks, Tesco",
+  "cardNameRequired": "Please enter a card name",
+  "barcodeTypeLabel": "Barcode Type",
+  "barcodeDataLabel": "Barcode Data",
+  "barcodeDataHint": "Enter barcode number manually",
+  "barcodeDataHintNone": "No barcode data needed",
+  "scanBarcode": "Scan Barcode/QR Code",
+  "tagsLabel": "Tags (Optional)",
+  "tagsHint": "Add tags...",
+  "coverImageLabel": "Cover Image (Optional)",
+  "selectCoverImage": "Select Cover Image",
+  "searchLogo": "Search Logo",
+  "generateImage": "Generate Image",
+  "pickFromGallery": "Pick from Gallery",
+  "takePicture": "Take Picture",
+  "useGlobalImage": "Use Global Image",
+  "cardAddedSuccess": "Card added successfully!",
+  "cardUpdatedSuccess": "Card updated successfully!",
+  "errorSavingCard": "Error saving card: {error}",
+  "@errorSavingCard": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "shareGlobally": "Share Globally",
+  "shareCardGloballyTitle": "Share Card Globally?",
+  "shareCardGloballyMessage": "This will upload the card (without usage data) to the global pool for other users.",
+  "cardSharedSuccess": "Card shared globally!",
+  "errorSharingCard": "Error sharing card: {error}",
+  "@errorSharingCard": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteCardTitle": "Delete Card?",
+  "deleteCardMessage": "Are you sure you want to delete \"{cardName}\"? This action cannot be undone.",
+  "@deleteCardMessage": {
+    "placeholders": {
+      "cardName": {
+        "type": "String"
+      }
+    }
+  },
+  "cardDeletedSuccess": "Card deleted successfully",
+  "errorDeletingCard": "Error deleting card: {error}",
+  "@errorDeletingCard": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "usageCount": "{count} uses",
+  "@usageCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "lastUsed": "Last used",
+  "createdOn": "Created",
+  "updatedOn": "Updated",
+  "showBarcode": "Show Barcode",
+  
+  "barcodeTypeNone": "No Barcode",
+  "barcodeTypeQR": "QR Code",
+  "barcodeTypeCode128": "Code 128",
+  "barcodeTypeCode39": "Code 39",
+  "barcodeTypeEAN13": "EAN-13",
+  "barcodeTypeEAN8": "EAN-8",
+  "barcodeTypeUPCA": "UPC-A",
+  "barcodeTypeUPCE": "UPC-E",
+  "barcodeTypeITF": "ITF",
+  "barcodeTypeCodabar": "Codabar",
+  
+  "settingsTitle": "Settings",
+  "displayTabTitle": "Display",
+  "syncTabTitle": "Sync",
+  "tagsTabTitle": "Tags",
+  "globalCardsTabTitle": "Global Cards",
+  "globalImagesTabTitle": "Global Images",
+  
+  "themeLabel": "Theme",
+  "themeLight": "Light",
+  "themeDark": "Dark",
+  "themeAmoled": "Pure Black (AMOLED)",
+  "themeMaterialYou": "Material You",
+  "languageLabel": "Language",
+  "languageEnglish": "English",
+  "languageHungarian": "Magyar",
+  "languageSystem": "System Default",
+  "cardViewLabel": "Card View",
+  "cardViewList": "List",
+  "cardViewGrid": "Grid",
+  
+  "syncSettingsTitle": "Sync Settings",
+  "webdavServerLabel": "Server Address",
+  "webdavServerHint": "https://example.com/remote.php/dav",
+  "usernameLabel": "Username",
+  "usernameHint": "your-username",
+  "passwordLabel": "Password",
+  "passwordHint": "your-password",
+  "testConnection": "Test Connection",
+  "testingConnection": "Testing connection...",
+  "connectionSuccessful": "Connection successful!",
+  "connectionFailed": "Connection failed: {error}",
+  "@connectionFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "disconnect": "Disconnect",
+  "disconnecting": "Disconnecting...",
+  "disconnected": "Disconnected successfully",
+  "exportCards": "Export Cards",
+  "exportingCards": "Exporting {count} cards...",
+  "@exportingCards": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "cardsExportedSuccess": "Exported {count} cards successfully!",
+  "@cardsExportedSuccess": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "errorExportingCards": "Error exporting cards: {error}",
+  "@errorExportingCards": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "importCards": "Import Cards",
+  "importingCards": "Importing cards...",
+  "cardsImportedSuccess": "Imported {imported} cards, Updated {updated}",
+  "@cardsImportedSuccess": {
+    "placeholders": {
+      "imported": {
+        "type": "int"
+      },
+      "updated": {
+        "type": "int"
+      }
+    }
+  },
+  "errorImportingCards": "Error importing cards: {error}",
+  "@errorImportingCards": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "autoSyncLabel": "Auto-sync on changes",
+  "parallelSyncLabel": "Parallel Sync",
+  "parallelSyncDescription": "Upload cards simultaneously (faster, but may overwhelm some servers)",
+  "fillAllFields": "Please fill in all connection fields",
+  "serverAddress": "Server Address",
+  "lastSync": "Last Sync",
+  "globalFolderAvailable": "Global folder available",
+  
+  "tagsSettingsTitle": "Tag Order",
+  "tagsSettingsDescription": "Drag to reorder tags. This affects the order they appear in filters.",
+  "noTagsYet": "No tags yet. Tags will appear here once you add them to your cards.",
+  
+  "globalCardsTitle": "Global Cards",
+  "globalCardsDescription": "Cards shared by other users",
+  "downloadCard": "Download",
+  "downloadingCard": "Downloading card...",
+  "cardDownloadedSuccess": "Card downloaded successfully!",
+  "errorDownloadingCard": "Error downloading card: {error}",
+  "@errorDownloadingCard": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteGlobalCard": "Delete",
+  "deleteGlobalCardTitle": "Delete Global Card?",
+  "deleteGlobalCardMessage": "Are you sure you want to delete this card from the global pool?",
+  "globalCardDeleted": "Global card deleted",
+  "errorDeletingGlobalCard": "Error deleting global card: {error}",
+  "@errorDeletingGlobalCard": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noGlobalCards": "No global cards available yet",
+  "uploadedBy": "Uploaded by {uploader}",
+  "@uploadedBy": {
+    "placeholders": {
+      "uploader": {
+        "type": "String"
+      }
+    }
+  },
+  "refresh": "Refresh",
+  
+  "globalImagesTitle": "Global Images",
+  "globalImagesDescription": "Images shared by other users",
+  "uploadImage": "Upload Image",
+  "downloadImage": "Download",
+  "downloadingImage": "Downloading image...",
+  "imageDownloadedSuccess": "Image downloaded successfully!",
+  "errorDownloadingImage": "Error downloading image: {error}",
+  "@errorDownloadingImage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteGlobalImage": "Delete",
+  "deleteGlobalImageTitle": "Delete Global Image?",
+  "deleteGlobalImageMessage": "Are you sure you want to delete this image from the global pool?",
+  "globalImageDeleted": "Global image deleted",
+  "errorDeletingGlobalImage": "Error deleting global image: {error}",
+  "@errorDeletingGlobalImage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noGlobalImages": "No global images available yet",
+  "selectImageSource": "Select Image Source",
+  "fromGallery": "From Gallery",
+  "fromCamera": "From Camera",
+  "enterImageName": "Enter a name for this image:",
+  "imageName": "Image Name",
+  "imageNameRequired": "Please enter an image name",
+  "uploadingImage": "Uploading image...",
+  "imageUploadedSuccess": "Image uploaded successfully!",
+  "errorUploadingImage": "Error uploading image: {error}",
+  "@errorUploadingImage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "logoSearchTitle": "Search Logo",
+  "logoSearchHint": "Enter brand name...",
+  "searchingLogos": "Searching logos...",
+  "noLogosFound": "No logos found. Try a different search term.",
+  "errorSearchingLogos": "Error searching logos: {error}",
+  "@errorSearchingLogos": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "selectLogo": "Select",
+  "processingLogo": "Processing logo...",
+  "logoSelectedSuccess": "Logo selected successfully!",
+  "errorProcessingLogo": "Error processing logo: {error}",
+  "@errorProcessingLogo": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "imageGeneratorTitle": "Generate Image",
+  "companyNameLabel": "Company Name",
+  "companyNameHint": "Enter company name",
+  "companyNameRequired": "Please enter a company name",
+  "selectBackgroundColor": "Background Color",
+  "selectTextColor": "Text Color",
+  "generateImageButton": "Generate Image",
+  "generatingImage": "Generating image...",
+  "imageGeneratedSuccess": "Image generated successfully!",
+  "errorGeneratingImage": "Error generating image: {error}",
+  "@errorGeneratingImage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "brightnessIncreasedNote": "Brightness increased for better scanning",
+  
+  "fieldRequired": "This field is required",
+  "invalidUrl": "Please enter a valid URL",
+  "invalidEmail": "Please enter a valid email",
+  
+  "justNow": "Just now",
+  "minutesAgo": "{minutes}m ago",
+  "@minutesAgo": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursAgo": "{hours}h ago",
+  "@hoursAgo": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "daysAgo": "{days}d ago",
+  "@daysAgo": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "today": "Today",
+  "yesterday": "Yesterday",
+  
+  "unknownError": "An unknown error occurred",
+  "networkError": "Network error. Please check your connection.",
+  "permissionDenied": "Permission denied",
+  "fileNotFound": "File not found",
+  "operationCancelled": "Operation cancelled",
+  
+  "syncNotConfigured": "Sync is not configured.",
+  "syncNotConfiguredHint": "Go to Settings → Sync to set up server sync.",
+  "syncCompletedSuccess": "Sync completed successfully!",
+  "syncFailed": "Sync failed. Check details.",
+  "globalPool": "Global Pool",
+  "filterAll": "All",
+  "addCard": "Add Card",
+  
+  "addNewCard": "Add New Card",
+  "deleteCard": "Delete Card",
+  "saveCard": "Save Card",
+  "cardName": "Card Name",
+  "cardNameHint": "Enter card name",
+  "cardNameRequired": "Please enter a card name",
+  "barcodeLabel": "Barcode/QR Code",
+  "scanBarcode": "Scan Barcode/QR Code",
+  "noBarcodeNeeded": "No barcode data needed",
+  "barcodeDataHint": "Or enter barcode data manually",
+  "tagsLabel": "Tags (Optional)",
+  "barcodeError": "Error scanning barcode",
+  "cardUpdatedSuccess": "Card updated successfully!",
+  "cardAddedSuccess": "Card added successfully!",
+  "cardSaveError": "Error saving card",
+  "deleteCardConfirm": "Are you sure you want to delete",
+  "actionCannotBeUndone": "This action cannot be undone.",
+  "cardDeletedSuccess": "Card deleted successfully!",
+  "barcodeInformation": "Barcode Information",
+  "unknown": "Unknown",
+  "data": "Data",
+  "type": "Type",
+  "statistics": "Statistics",
+  "timesUsed": "Times used",
+  "uses": "uses",
+  "created": "Created",
+  "lastUpdated": "Last updated",
+  "cardDeletedSuccessfully": "Card deleted successfully",
+  "failedToDeleteCard": "Failed to delete card",
+  "tapToAddCoverImage": "Tap to add cover image",
+  "coverImageLabel": "Cover Image (Optional)",
+  "cardDeleteError": "Failed to delete card",
+  "updateGlobalCard": "Update Global Card",
+  "shareCardGlobally": "Share Card Globally",
+  "cardExistsInGlobalPool": "This card already exists in the global pool.",
+  "updateGlobalCardConfirm": "Are you sure you want to update the global version of",
+  "overwriteGlobalCard": "This will overwrite the existing global card with your current version.",
+  "shareCardGloballyConfirm": "Are you sure you want to share",
+  "shareCardGloballyConfirm2": "globally?",
+  "cardVisibleToAllUsers": "This will make the card visible to all users in the global pool.",
+  "update": "Update",
+  "share": "Share",
+  "globalCardUpdatedSuccess": "Global card updated successfully!",
+  "cardSharedGloballySuccess": "Card shared globally successfully!",
+  "shareCardGloballyError": "Failed to share card globally",
+  "imageSharedGloballySuccess": "Image shared globally successfully!",
+  "shareImageGloballyError": "Failed to share image globally",
+  "shareImageGlobally": "Share Image Globally",
+  "enterImageName": "Enter a name for this image:",
+  "imageNameHint": "Image name",
+  
+  "display": "Display",
+  "tags": "Tags",
+  "sync": "Sync",
+  "theme": "Theme",
+  "themeDescription": "Choose your preferred app theme",
+  "languageDescription": "Choose your preferred language",
+  "layout": "Layout",
+  "layoutDescription": "Choose how cards are displayed",
+  "gridColumns": "Grid Columns",
+  "gridColumnsDescription": "Number of columns in grid view",
+  "oneColumn": "1 column",
+  "fourColumns": "4 columns",
+  "camera": "Camera",
+  "cameraDescription": "Configure camera behavior",
+  "autoOpenCamera": "Auto-open camera",
+  "autoOpenCameraDescription": "Automatically open camera when adding a new card",
+  "statisticsSection": "Statistics",
+  "statisticsSectionDescription": "Manage usage statistics for all cards",
+  "resetStatistics": "Reset All Statistics",
+  "resetStatisticsDescription": "Reset usage counts for all cards to zero",
+  "resetStatisticsConfirmation": "Are you sure you want to reset all card usage statistics? This action cannot be undone.",
+  "reset": "Reset",
+  "statisticsResetSuccess": "All statistics have been reset successfully",
+  
+  "noTagsYet": "No Tags Yet",
+  "noTagsYetDescription": "Tags will appear here once you add them to your cards",
+  "dragToReorderTags": "Drag to Reorder Tags",
+  "dragToReorderTagsDescription": "The order here affects how tags appear on the main screen",
+  "position": "Position",
+  
+  "cards": "Cards",
+  "images": "Images",
+  "globalCardsCount": "Global Cards ({count})",
+  "@globalCardsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "globalImagesCount": "Global Images ({count})",
+  "@globalImagesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "configureWebdavFirst": "Please configure server connection in Sync tab first",
+  "failedToLoadGlobalCards": "Failed to load global cards",
+  "cardImportedSuccess": "Card imported successfully!",
+  "failedToImportCard": "Failed to import card",
+  "globalCardDeletedSuccess": "Global card deleted successfully!",
+  "failedToDeleteGlobalCard": "Failed to delete global card",
+  "globalFolderNotAvailable": "Global Folder Not Available",
+  "globalFolderRequired": "Global features require a \"/pockard_global\" folder on your server.",
+  "createGlobalFolderManually": "Please create this folder manually on your server to enable global card sharing.",
+  "retry": "Retry",
+  
+  "tapToHideControls": "Tap anywhere to hide controls",
+  "tapToShowControls": "Tap anywhere to show controls",
+  "showCoverImage": "Show cover image",
+  "showBarcode": "Show barcode",
+  "unableToGenerateBarcode": "Unable to generate barcode",
+  "invalidBarcodeData": "Invalid data or unsupported format",
+  "noBarcodeDataAvailable": "No barcode data available",
+  "noBarcodeDataMessage": "This card doesn't have any barcode or QR code data.",
+  "type": "Type",
+  "data": "Data",
+  "usageCountLabel": "Usage Count",
+  
+  "fillAllConnectionFields": "Please fill in all connection fields",
+  "connectionSuccessful": "Connection successful!",
+  "connectionFailed": "Connection failed!",
+  "globalFolderDetected": "Global folder detected - Global features enabled",
+  "globalFolderNotFound": "Global folder not found - Global features disabled",
+  "connectionError": "Connection error",
+  "parallelSync": "Parallel Sync",
+  "parallelSyncDescription": "Upload cards simultaneously (faster, but may overwhelm some servers)",
+  "disconnectAndChangeServer": "Disconnect & Change Server",
+  "disconnectFromServer": "Disconnect from Server",
+  "disconnectConfirmation": "Are you sure you want to disconnect? You will need to re-enter your server credentials.",
+  "disconnectedSuccessfully": "Disconnected successfully",
+  "noCardsToSync": "No cards to sync",
+  "syncFailed": "Sync failed",
+  "noCardsToImport": "No cards found to import",
+  "importComplete": "Import complete",
+  "newCards": "new cards",
+  "updated": "updated",
+  "importFailed": "Import failed",
+  
+  "deleteGlobalImage": "Delete Global Image",
+  "deleteGlobalImageConfirm": "Are you sure you want to delete this global image?",
+  "camera": "Camera",
+  "takePhotoAndEdit": "Take photo and edit",
+  "gallery": "Gallery",
+  "choosePhotoAndEdit": "Choose photo and edit",
+  "errorPickingImage": "Error picking image",
+  "uploadToGlobalImages": "Upload to Global Images",
+  "upload": "Upload",
+  "imageUploadedSuccess": "Image uploaded successfully!",
+  "failedToUploadImage": "Failed to upload image",
+  "failedToLoadImage": "Failed to load image",
+  "uploadImage": "Upload Image",
+  "refresh": "Refresh",
+  
+  "processingLogo": "Processing logo...",
+  "logoAddedSuccess": "Logo added successfully!",
+  "failedToProcessLogo": "Failed to process logo",
+  "searchLogo": "Search Logo",
+  "searchingForLogos": "Searching for logos...",
+  "tryAgain": "Try Again",
+  
+  "generateImage": "Generate Image",
+  "save": "Save",
+  "customColor": "Custom Color",
+  "chooseCustomColor": "Choose Custom Color",
+  "done": "Done",
+  "errorGeneratingImage": "Error generating image",
+  
+  "changeImage": "Change Image",
+  "removeImage": "Remove Image",
+  "generateImageOption": "Generate Image",
+  "searchLogoOption": "Search Logo",
+  "globalImages": "Global Images",
+  "editCurrentImage": "Edit Current Image",
+  "errorEditingImage": "Error editing image",
+  
+  "cardDeletedSuccessfully": "Card deleted successfully",
+  "failedToDeleteCard": "Failed to delete card",
+  
+  "serverAddress": "Server Address",
+  "serverAddressHint": "https://dav.example.com or https://192.168.0.200:8080",
+  "username": "Username",
+  "password": "Password",
+  "adjustLogo": "Adjust Logo",
+  "shopNameHint": "Enter shop name (e.g., tesco, lidl)",
+  "enterTextHint": "Enter text for your image\nPress Enter to break lines",
+  "importCard": "Import Card",
+  "importCardDescription": "Add this card to your collection",
+  "deleteFromGlobalPool": "Delete from Global Pool",
+  "deleteFromGlobalPoolDescription": "Remove this card from the global pool",
+  "deleteGlobalCard": "Delete Global Card",
+  "deleteGlobalCardConfirm": "Are you sure you want to delete \"{cardName}\" from the global pool?",
+  "@deleteGlobalCardConfirm": {
+    "placeholders": {
+      "cardName": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteGlobalImage": "Delete Global Image",
+  "deleteGlobalImageConfirm": "Are you sure you want to delete \"{imageName}\" from the global pool?",
+  "@deleteGlobalImageConfirm": {
+    "placeholders": {
+      "imageName": {
+        "type": "String"
+      }
+    }
+  },
+  "takePhotoAndEdit": "Take photo and edit",
+  "choosePhotoAndEdit": "Choose photo and edit",
+  "uploadToGlobalImages": "Upload to Global Images",
+  "imageName": "Image Name",
+  "imageNameHint2": "Enter a name for this image",
+  "editCoverImage": "Edit Cover Image",
+  "cameraPermissionRequired": "Camera permission is required to scan barcodes",
+  "scanBarcode": "Scan Barcode",
+  "scanFromImage": "Scan from Image",
+  "noBarcodeFoundInImage": "No barcode found in image",
+  "errorScanningImage": "Error scanning image",
+  "failedToLoadGlobalImages2": "Failed to load global images",
+  "failedToDownloadImage": "Failed to download image",
+  
+  "failedToLoadGlobalImages": "Failed to load global images",
+  "globalImageDeletedSuccess": "Global image deleted successfully!",
+  "failedToDeleteGlobalImage": "Failed to delete global image",
+  "imageUploadedSuccess": "Image uploaded successfully!",
+  "failedToUploadImage": "Failed to upload image",
+  "failedToLoadImage": "Failed to load image",
+  
+  "centerCodeInFrame": "Center the code in the frame",
+  "globalFolderNotAvailable": "Global Folder Not Available",
+  "globalFolderRequired": "Global features require a \"/pockard_global\" folder on your server.",
+  "createGlobalFolderManually": "Please create this folder manually on your server to enable global image sharing.",
+  "noGlobalImages": "No Global Images",
+  "noImagesSharedYet": "No images have been shared globally yet",
+  "readyForSync": "Ready for synchronization",
+  "noGlobalCards": "No Global Cards",
+  "noCardsSharedYet": "No cards have been shared globally yet",
+  
+  "connectedCheck": "Connected ✓",
+  "testConnection": "Test Connection",
+  "exporting": "Exporting...",
+  "exportCards": "Export Cards",
+  "importing": "Importing...",
+  "importCards": "Import Cards",
+  
+  "themeLight": "Light",
+  "themeDark": "Dark",
+  "themeAmoled": "Pure Black (AMOLED)",
+  "themeMaterialYou": "Material You",
+  "layoutRows": "Rows",
+  "layoutGrid": "Grid",
+  "themeLightDesc": "Light theme with bright colors",
+  "themeDarkDesc": "Dark theme for low-light environments",
+  "themeAmoledDesc": "Pure black theme for AMOLED displays",
+  "themeMaterialYouDesc": "Material You theme with dynamic colors",
+  "layoutRowsDesc": "Display cards in a vertical list",
+  "layoutGridDesc": "Display cards in a grid layout",
+  
+  "noLogosFound": "No logos found",
+  "tryDifferentSearch": "Try a different search term",
+  "searchForLogos": "Search for logos",
+  "enterShopName": "Enter a shop name to find their logo",
+  "loading": "Loading...",
+  "loadMore": "Load More ({count} remaining)",
+  "@loadMore": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "done": "Done",
+  "tooltipRefresh": "Refresh",
+  "tooltipEditConfig": "Edit Configuration",
+  "syncSuccessWithCleanup": "Successfully synced {cardCount} cards and cleaned up {deletedCount} deleted cards",
+  "@syncSuccessWithCleanup": {
+    "placeholders": {
+      "cardCount": {
+        "type": "int"
+      },
+      "deletedCount": {
+        "type": "int"
+      }
+    }
+  },
+  "syncSuccessExport": "Successfully exported {count} cards",
+  "@syncSuccessExport": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "noCoverImage": "No cover image",
+  "addCoverImageToCard": "Add a cover image to this card",
+  
+  "chooseFromGlobalImages": "Choose from Global Images",
+  "addTagsHint": "Add tags...",
+  "noBarcodeOnly": "No Barcode (Cover Image Only)",
+  "exceptionConfigureWebdav": "Please configure server connection in Sync tab first",
+  "exceptionFailedSearchLogos": "Failed to search logos",
+  "exceptionFailedDownloadLogo": "Failed to download logo",
+  "exceptionFailedProcessLogo": "Failed to process logo",
+  "exceptionFailedFinalizeLogo": "Failed to finalize logo",
+  "exceptionFailedInitWebdav": "Failed to initialize server client",
+  "exceptionUserNotConfigured": "Server user not configured",
+  
+  "text": "Text",
+  "textColor": "Text Color",
+  "white": "White",
+  "black": "Black",
+  
+  "server": "Server",
+  "globalFeatures": "Global Features",
+  "enabled": "Enabled",
+  "disabled": "Disabled",
+  "lastSync": "Last Sync",
+  "createGlobalFolderHint": "Create /pockard_global folder on your server to enable global features",
+  "webdavConnection": "Server Connection",
+  "serverConfiguration": "Server Configuration",
+  "syncActions": "Sync Actions",
+  "connected": "Connected",
+  "notConnected": "Not Connected",
+  "lastSyncLabel": "Last sync: {date}",
+  "@lastSyncLabel": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+
+  "coverImageSuffix": "(Cover)",
+  "@coverImageSuffix": {
+    "description": "Suffix appended to card name when its cover image is shared globally"
+  },
+
+  "status": "Status",
+
+  "noBarcodeLabel": "No Barcode",
+
+  "preview": "Preview",
+  "backgroundColor": "Background Color",
+
+  "pinCard": "Pin card",
+  "unpinCard": "Unpin card",
+  "cardPinned": "Card pinned",
+  "cardUnpinned": "Card unpinned",
+  "pinError": "Error pinning card",
+  "showGridNames": "Show card names",
+  "showGridNamesDescription": "Display card names below images in grid view",
+  "layoutMinimal": "Minimal",
+  "layoutMinimalDesc": "Ultra-compact list showing only names and tiny previews"
+}
+
