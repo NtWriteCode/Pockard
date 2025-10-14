@@ -1,0 +1,126 @@
+name: Build and Release APK
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build & Release
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+      
+      - name: Set up Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'gradle'
+      
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.35.6'
+          channel: 'stable'
+          cache: true
+      
+      - name: Disable Flutter analytics
+        run: flutter config --no-analytics
+      
+      - name: Get dependencies
+        run: flutter pub get
+      
+      - name: Extract version from tag
+        id: version
+        run: |
+          TAG_NAME=${GITHUB_REF#refs/tags/v}
+          echo "version=$TAG_NAME" >> $GITHUB_OUTPUT
+          echo "Extracted version: $TAG_NAME"
+      
+      - name: Update pubspec.yaml version
+        run: |
+          VERSION=${{ steps.version.outputs.version }}
+          # Extract version name and code (e.g., "1.0.1+2" -> version="1.0.1" code="2")
+          if [[ "$VERSION" == *"+"* ]]; then
+            # Tag includes build number (e.g., v1.0.1+2)
+            sed -i "s/^version: .*/version: $VERSION/" pubspec.yaml
+          else
+            # Tag only has version name (e.g., v1.0.1), auto-increment build number
+            CURRENT_BUILD=$(grep "^version:" pubspec.yaml | sed 's/.*+//')
+            NEW_BUILD=$((CURRENT_BUILD + 1))
+            sed -i "s/^version: .*/version: ${VERSION}+${NEW_BUILD}/" pubspec.yaml
+          fi
+          echo "Updated pubspec.yaml version:"
+          grep "^version:" pubspec.yaml
+      
+      - name: Decode keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        run: |
+          echo "$KEYSTORE_BASE64" | base64 --decode > $HOME/upload-keystore.jks
+      
+      - name: Build APK (arm64-v8a)
+        run: |
+          flutter build apk --release --target-platform android-arm64 --split-per-abi --no-tree-shake-icons
+      
+      - name: Sign APK
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          BUILD_TOOLS_VERSION=$(ls $ANDROID_HOME/build-tools | sort -V | tail -n 1)
+          $ANDROID_HOME/build-tools/$BUILD_TOOLS_VERSION/apksigner sign \
+            --ks $HOME/upload-keystore.jks \
+            --ks-key-alias $KEY_ALIAS \
+            --ks-pass pass:$KEYSTORE_PASSWORD \
+            --key-pass pass:$KEY_PASSWORD \
+            build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
+          
+          # Verify the signature
+          $ANDROID_HOME/build-tools/$BUILD_TOOLS_VERSION/apksigner verify build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
+      
+      - name: Rename APK
+        run: |
+          TAG_NAME=${GITHUB_REF#refs/tags/}
+          mv build/app/outputs/flutter-apk/app-arm64-v8a-release.apk build/app/outputs/flutter-apk/pockard-${TAG_NAME}-arm64-v8a.apk
+      
+      - name: Create Release and Upload Assets
+        uses: softprops/action-gh-release@v2
+        with:
+          files: build/app/outputs/flutter-apk/pockard-${{ github.ref_name }}-arm64-v8a.apk
+          body: |
+            ## 🎉 Pockard ${{ github.ref_name }}
+            
+            ### 📦 Download
+            - **ARM64 (arm64-v8a)**: For modern Android devices (2019+)
+            
+            ### 📝 Installation
+            1. Download the APK below
+            2. Enable "Install from Unknown Sources" in Android settings
+            3. Open the APK file to install
+            
+            ### ⚠️ Important
+            - Minimum Android version: 6.0 (API 23)
+            - Recommended: Android 10+ for best experience
+            
+            ---
+            
+            **Full Changelog**: https://github.com/${{ github.repository }}/commits/${{ github.ref_name }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          append_body: true
+
