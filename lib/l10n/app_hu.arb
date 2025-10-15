@@ -596,6 +596,8 @@
   "tapToUploadBarcodeImage": "Koppints ide vonalkód kép feltöltéséhez",
   "barcodeImageUploaded": "Vonalkód kép feltöltve",
   "selectBarcodeImage": "Vonalkód kép kiválasztása",
-  "removeBarcodeImage": "Vonalkód kép eltávolítása"
+  "removeBarcodeImage": "Vonalkód kép eltávolítása",
+  "maxBrightness": "Maximális fényerő",
+  "maxBrightnessDescription": "Automatikusan maximális fényerőre állítás vonalkód megtekintésekor"
 }
 

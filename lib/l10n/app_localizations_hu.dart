@@ -1397,4 +1397,11 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get removeBarcodeImage => 'Vonalkód kép eltávolítása';
+
+  @override
+  String get maxBrightness => 'Maximális fényerő';
+
+  @override
+  String get maxBrightnessDescription =>
+      'Automatikusan maximális fényerőre állítás vonalkód megtekintésekor';
 }

@@ -2665,6 +2665,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Remove barcode image'**
   String get removeBarcodeImage;
+
+  /// No description provided for @maxBrightness.
+  ///
+  /// In en, this message translates to:
+  /// **'Max Brightness'**
+  String get maxBrightness;
+
+  /// No description provided for @maxBrightnessDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatically set screen to maximum brightness when viewing barcodes'**
+  String get maxBrightnessDescription;
 }
 
 class _AppLocalizationsDelegate

@@ -760,6 +760,8 @@
   "tapToUploadBarcodeImage": "Tap to upload a barcode image",
   "barcodeImageUploaded": "Barcode image uploaded",
   "selectBarcodeImage": "Select Barcode Image",
-  "removeBarcodeImage": "Remove barcode image"
+  "removeBarcodeImage": "Remove barcode image",
+  "maxBrightness": "Max Brightness",
+  "maxBrightnessDescription": "Automatically set screen to maximum brightness when viewing barcodes"
 }
 

@@ -12,12 +12,14 @@ class DisplayProvider extends ChangeNotifier {
   static const String _gridColumnsKey = 'grid_columns';
   static const String _autoCameraKey = 'auto_open_camera';
   static const String _showGridNamesKey = 'show_grid_names';
+  static const String _maxBrightnessKey = 'max_brightness_enabled';
 
   AppTheme _currentTheme = AppTheme.light;
   LayoutMode _layoutMode = LayoutMode.rows;
   int _gridColumns = 2;
   bool _autoOpenCamera = true; // Auto-open camera when + button is pressed
   bool _showGridNames = true; // Show card names in grid view
+  bool _maxBrightnessEnabled = true; // Enable max brightness on barcode view
   ThemeData? _cachedMaterialYouTheme; // Cached Material You theme with system colors
 
   AppTheme get currentTheme => _currentTheme;
@@ -25,6 +27,7 @@ class DisplayProvider extends ChangeNotifier {
   int get gridColumns => _gridColumns;
   bool get autoOpenCamera => _autoOpenCamera;
   bool get showGridNames => _showGridNames;
+  bool get maxBrightnessEnabled => _maxBrightnessEnabled;
 
   /// Get the current theme data
   ThemeData get themeData {
@@ -258,6 +261,9 @@ class DisplayProvider extends ChangeNotifier {
     // Load show grid names setting
     _showGridNames = prefs.getBool(_showGridNamesKey) ?? true;
     
+    // Load max brightness setting
+    _maxBrightnessEnabled = prefs.getBool(_maxBrightnessKey) ?? true;
+    
     // Pre-build Material You theme if it's the selected theme
     if (_currentTheme == AppTheme.materialYou) {
       _cachedMaterialYouTheme = await _buildMaterialYouTheme();
@@ -313,6 +319,13 @@ class DisplayProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> setMaxBrightnessEnabled(bool enabled) async {
+    _maxBrightnessEnabled = enabled;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_maxBrightnessKey, enabled);
+    notifyListeners();
+  }
+
   /// Get theme name key for localization lookup
   /// Returns the key to use with AppLocalizations
   String getThemeNameKey(AppTheme theme) {
@@ -349,6 +362,7 @@ class DisplayProvider extends ChangeNotifier {
       'grid_columns': _gridColumns,
       'auto_open_camera': _autoOpenCamera,
       'show_grid_names': _showGridNames,
+      'max_brightness_enabled': _maxBrightnessEnabled,
     };
   }
   
@@ -360,6 +374,7 @@ class DisplayProvider extends ChangeNotifier {
       _gridColumns = settings['grid_columns'] ?? 2;
       _autoOpenCamera = settings['auto_open_camera'] ?? true;
       _showGridNames = settings['show_grid_names'] ?? true;
+      _maxBrightnessEnabled = settings['max_brightness_enabled'] ?? true;
       
       // Pre-build Material You theme if selected
       if (_currentTheme == AppTheme.materialYou) {
@@ -373,6 +388,7 @@ class DisplayProvider extends ChangeNotifier {
       await prefs.setInt(_gridColumnsKey, _gridColumns);
       await prefs.setBool(_autoCameraKey, _autoOpenCamera);
       await prefs.setBool(_showGridNamesKey, _showGridNames);
+      await prefs.setBool(_maxBrightnessKey, _maxBrightnessEnabled);
       
       notifyListeners();
     } catch (e) {

@@ -1388,4 +1388,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get removeBarcodeImage => 'Remove barcode image';
+
+  @override
+  String get maxBrightness => 'Max Brightness';
+
+  @override
+  String get maxBrightnessDescription =>
+      'Automatically set screen to maximum brightness when viewing barcodes';
 }

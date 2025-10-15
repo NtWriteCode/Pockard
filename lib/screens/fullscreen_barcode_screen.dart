@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:barcode_widget/barcode_widget.dart';
+import 'package:provider/provider.dart';
 import 'package:screen_brightness/screen_brightness.dart';
 import '../models/card_model.dart';
 import '../l10n/app_localizations.dart';
+import '../providers/display_provider.dart';
 import '../widgets/cover_image_widget.dart';
 
 class FullscreenBarcodeScreen extends StatefulWidget {
@@ -22,11 +24,17 @@ class _FullscreenBarcodeScreenState extends State<FullscreenBarcodeScreen> {
   double? _originalBrightness;
   bool _showAppBar = true;
   bool _showCoverImage = false;
+  bool _brightnessOverride = false; // Local override for torch icon
 
   @override
   void initState() {
     super.initState();
-    _setMaxBrightness();
+    
+    // Check if max brightness is enabled in settings
+    final displayProvider = Provider.of<DisplayProvider>(context, listen: false);
+    if (displayProvider.maxBrightnessEnabled) {
+      _setMaxBrightness();
+    }
     
     // Hide app bar after 3 seconds
     Future.delayed(const Duration(seconds: 3), () {
@@ -202,6 +210,10 @@ class _FullscreenBarcodeScreenState extends State<FullscreenBarcodeScreen> {
                             fontSize: 12,
                           ),
                         ),
+                        
+                        // Torch icon
+                        const SizedBox(height: 16),
+                        _buildTorchButton(),
                       ],
                     ),
                   ),
@@ -435,5 +447,34 @@ class _FullscreenBarcodeScreenState extends State<FullscreenBarcodeScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       ),
     );
+  }
+
+  Widget _buildTorchButton() {
+    final displayProvider = Provider.of<DisplayProvider>(context);
+    final isBrightnessOn = displayProvider.maxBrightnessEnabled ? !_brightnessOverride : _brightnessOverride;
+    
+    return GestureDetector(
+      onTap: _toggleBrightness,
+      child: Icon(
+        isBrightnessOn ? Icons.flashlight_on : Icons.flashlight_off,
+        color: Colors.grey[500],
+        size: 32,
+      ),
+    );
+  }
+
+  Future<void> _toggleBrightness() async {
+    setState(() {
+      _brightnessOverride = !_brightnessOverride;
+    });
+
+    final displayProvider = Provider.of<DisplayProvider>(context, listen: false);
+    final shouldBeMaxBrightness = displayProvider.maxBrightnessEnabled ? !_brightnessOverride : _brightnessOverride;
+
+    if (shouldBeMaxBrightness) {
+      await _setMaxBrightness();
+    } else {
+      await _restoreOriginalBrightness();
+    }
   }
 }

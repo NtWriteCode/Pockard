@@ -411,27 +411,54 @@ class DisplaySettingsTab extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Card(
-              child: ListTile(
-                leading: Icon(
-                  Icons.camera_alt,
-                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
-                ),
-                title: Text(
-                  l10n.autoOpenCamera,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface,
+              child: Column(
+                children: [
+                  ListTile(
+                    leading: Icon(
+                      Icons.camera_alt,
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                    ),
+                    title: Text(
+                      l10n.autoOpenCamera,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                    ),
+                    subtitle: Text(
+                      l10n.autoOpenCameraDescription,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                      ),
+                    ),
+                    trailing: Switch(
+                      value: displayProvider.autoOpenCamera,
+                      onChanged: (value) => displayProvider.setAutoOpenCamera(value),
+                    ),
                   ),
-                ),
-                subtitle: Text(
-                  l10n.autoOpenCameraDescription,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                  Divider(height: 1, color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2)),
+                  ListTile(
+                    leading: Icon(
+                      Icons.brightness_high,
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                    ),
+                    title: Text(
+                      l10n.maxBrightness,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                    ),
+                    subtitle: Text(
+                      l10n.maxBrightnessDescription,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                      ),
+                    ),
+                    trailing: Switch(
+                      value: displayProvider.maxBrightnessEnabled,
+                      onChanged: (value) => displayProvider.setMaxBrightnessEnabled(value),
+                    ),
                   ),
-                ),
-                trailing: Switch(
-                  value: displayProvider.autoOpenCamera,
-                  onChanged: (value) => displayProvider.setAutoOpenCamera(value),
-                ),
+                ],
               ),
             ),
           ],
