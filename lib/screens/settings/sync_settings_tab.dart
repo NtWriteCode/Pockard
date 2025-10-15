@@ -608,6 +608,9 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
       // Disconnect through connection manager
       await _connectionManager.disconnect();
       
+      // Refresh connection manager to update UI
+      await _connectionManager.refreshSyncStatus();
+      
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(

@@ -45,11 +45,11 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   Widget _buildConnectionStatusIndicator() {
-    // Check if sync is configured
+    // Check if sync is configured AND connected
     final settings = _connectionManager.syncSettings;
-    final isSyncConfigured = settings != null && settings.hasCredentials;
+    final isSyncConfigured = settings != null && settings.hasCredentials && settings.isConnected;
     
-    // Hide indicator if sync is not configured
+    // Hide indicator if sync is not configured or disconnected
     if (!isSyncConfigured) {
       return const SizedBox.shrink();
     }
@@ -68,8 +68,8 @@ class _MainScreenState extends State<MainScreen> {
               Icons.circle,
               size: 8,
               color: syncSuccess 
-                ? const Color(0xFF81C784) // Light green = last sync succeeded
-                : const Color(0xFFEF5350), // Light red = last sync failed
+                  ? const Color(0xFF81C784) // Light green = last sync succeeded
+                  : const Color(0xFFEF5350), // Light red = last sync failed
             ),
           ),
         );
