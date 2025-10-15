@@ -425,7 +425,7 @@
   "failedToDeleteCard": "Sikertelen kártya törlés",
   
   "serverAddress": "Szerver cím",
-  "serverAddressHint": "https://dav.example.com vagy https://192.168.0.200:8080",
+  "serverAddressHint": "pl. https://dav.example.com vagy https://192.168.0.200:8080\nvagy domain porttal kombinálva",
   "username": "Felhasználónév",
   "password": "Jelszó",
   "adjustLogo": "Logó igazítása",

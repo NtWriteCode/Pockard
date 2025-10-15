@@ -421,8 +421,7 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
                   controller: _serverController,
                   decoration: InputDecoration(
                     labelText: l10n.serverAddress,
-                    hintText: l10n.serverAddressHint,
-                    helperText: 'Include protocol (https://) and port if needed',
+                    helperText: l10n.serverAddressHint,
                     border: const OutlineInputBorder(),
                   ),
                 ),

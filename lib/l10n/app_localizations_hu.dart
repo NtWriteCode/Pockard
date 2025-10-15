@@ -1096,7 +1096,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get serverAddressHint =>
-      'https://dav.example.com vagy https://192.168.0.200:8080';
+      'pl. https://dav.example.com vagy https://192.168.0.200:8080\nvagy domain porttal kombinálva';
 
   @override
   String get username => 'Felhasználónév';

@@ -2111,7 +2111,7 @@ abstract class AppLocalizations {
   /// No description provided for @serverAddressHint.
   ///
   /// In en, this message translates to:
-  /// **'https://dav.example.com or https://192.168.0.200:8080'**
+  /// **'e.g. https://dav.example.com or https://192.168.0.200:8080\nor combine domain with port'**
   String get serverAddressHint;
 
   /// No description provided for @username.

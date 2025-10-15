@@ -581,7 +581,7 @@
   "failedToDeleteCard": "Failed to delete card",
   
   "serverAddress": "Server Address",
-  "serverAddressHint": "https://dav.example.com or https://192.168.0.200:8080",
+  "serverAddressHint": "e.g. https://dav.example.com or https://192.168.0.200:8080\nor combine domain with port",
   "username": "Username",
   "password": "Password",
   "adjustLogo": "Adjust Logo",

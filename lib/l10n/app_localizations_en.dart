@@ -1094,7 +1094,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get serverAddressHint =>
-      'https://dav.example.com or https://192.168.0.200:8080';
+      'e.g. https://dav.example.com or https://192.168.0.200:8080\nor combine domain with port';
 
   @override
   String get username => 'Username';
