@@ -384,9 +384,6 @@ class AppLocalizationsHu extends AppLocalizations {
   String get disconnected => 'Kapcsolat sikeresen bontva';
 
   @override
-  String get exportCards => 'Kártyák exportálása';
-
-  @override
   String exportingCards(int count) {
     return '$count kártya exportálása...';
   }
@@ -402,7 +399,7 @@ class AppLocalizationsHu extends AppLocalizations {
   }
 
   @override
-  String get importCards => 'Kártyák importálása';
+  String get importCards => 'Összes importálása';
 
   @override
   String get importingCards => 'Kártyák importálása...';
@@ -1186,6 +1183,9 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get exporting => 'Exportálás...';
+
+  @override
+  String get exportCards => 'Összes exportálása';
 
   @override
   String get importing => 'Importálás...';

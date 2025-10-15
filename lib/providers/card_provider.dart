@@ -4,6 +4,7 @@ import '../models/card_model.dart';
 import '../services/database_service.dart';
 import '../services/image_service.dart';
 import '../services/sync_settings_service.dart';
+import '../services/preferences_sync_service.dart';
 import '../services/connection_manager.dart';
 
 class CardProvider with ChangeNotifier {
@@ -305,6 +306,40 @@ class CardProvider with ChangeNotifier {
   /// Manual sync triggered by user (reuses auto-sync logic)
   Future<void> triggerSync() async {
     await _autoSync();
+  }
+  
+  /// Sync user preferences (display settings and tag order) to server
+  /// This should be called by the UI when preferences change
+  Future<void> syncPreferences({
+    required Map<String, dynamic> displaySettings,
+    required List<String> tagOrder,
+  }) async {
+    try {
+      // Check if sync is configured
+      final settings = await _syncService.loadSettings();
+      if (settings == null || !settings.hasCredentials) {
+        debugPrint('Preferences sync skipped: No WebDAV credentials configured');
+        return;
+      }
+
+      // Initialize WebDAV client
+      final initialized = await _syncService.initializeFromSettings();
+      if (!initialized) {
+        debugPrint('Preferences sync failed: Could not initialize WebDAV client');
+        return;
+      }
+
+      final prefsSync = PreferencesSyncService();
+      await prefsSync.uploadPreferences(
+        displaySettings: displaySettings,
+        tagOrder: tagOrder,
+      );
+      
+      debugPrint('Preferences synced successfully');
+    } catch (e) {
+      debugPrint('Error syncing preferences: $e');
+      // Don't rethrow - preferences sync is non-critical
+    }
   }
 
   /// Auto-sync cards to WebDAV (silently fail if unavailable)

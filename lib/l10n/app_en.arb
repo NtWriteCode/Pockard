@@ -170,7 +170,6 @@
   "disconnect": "Disconnect",
   "disconnecting": "Disconnecting...",
   "disconnected": "Disconnected successfully",
-  "exportCards": "Export Cards",
   "exportingCards": "Exporting {count} cards...",
   "@exportingCards": {
     "placeholders": {
@@ -643,9 +642,9 @@
   "connectedCheck": "Connected ✓",
   "testConnection": "Test Connection",
   "exporting": "Exporting...",
-  "exportCards": "Export Cards",
+  "exportCards": "Export All",
   "importing": "Importing...",
-  "importCards": "Import Cards",
+  "importCards": "Import All",
   
   "themeLight": "Light",
   "themeDark": "Dark",

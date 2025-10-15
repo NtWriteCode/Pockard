@@ -818,12 +818,6 @@ abstract class AppLocalizations {
   /// **'Disconnected successfully'**
   String get disconnected;
 
-  /// No description provided for @exportCards.
-  ///
-  /// In en, this message translates to:
-  /// **'Export Cards'**
-  String get exportCards;
-
   /// No description provided for @exportingCards.
   ///
   /// In en, this message translates to:
@@ -845,7 +839,7 @@ abstract class AppLocalizations {
   /// No description provided for @importCards.
   ///
   /// In en, this message translates to:
-  /// **'Import Cards'**
+  /// **'Import All'**
   String get importCards;
 
   /// No description provided for @importingCards.
@@ -2275,6 +2269,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Exporting...'**
   String get exporting;
+
+  /// No description provided for @exportCards.
+  ///
+  /// In en, this message translates to:
+  /// **'Export All'**
+  String get exportCards;
 
   /// No description provided for @importing.
   ///

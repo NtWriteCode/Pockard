@@ -478,9 +478,9 @@
   "connectedCheck": "Csatlakozva ✓",
   "testConnection": "Kapcsolat tesztelése",
   "exporting": "Exportálás...",
-  "exportCards": "Kártyák exportálása",
+  "exportCards": "Összes exportálása",
   "importing": "Importálás...",
-  "importCards": "Kártyák importálása",
+  "importCards": "Összes importálása",
   
   "themeLight": "Világos",
   "themeDark": "Sötét",

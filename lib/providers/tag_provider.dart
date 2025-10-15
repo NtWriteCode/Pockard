@@ -68,4 +68,26 @@ class TagProvider with ChangeNotifier {
     // This could be enhanced to track actual usage, for now return 0
     return 0;
   }
+  
+  /// Export tag order for syncing
+  List<String> exportTagOrder() {
+    return List<String>.from(_orderedTags);
+  }
+  
+  /// Import tag order from sync
+  Future<void> importTagOrder(List<String> tagOrder) async {
+    try {
+      // Update ordered tags
+      _orderedTags = List<String>.from(tagOrder);
+      
+      // Save to database
+      await _databaseService.saveTagOrder(_orderedTags);
+      
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error importing tag order: $e');
+      // Revert on error
+      await loadTags();
+    }
+  }
 }

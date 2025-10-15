@@ -340,4 +340,43 @@ class DisplayProvider extends ChangeNotifier {
         return 'layoutMinimal';
     }
   }
+  
+  /// Export display settings to a map for syncing
+  Map<String, dynamic> exportSettings() {
+    return {
+      'theme': _currentTheme.index,
+      'layout_mode': _layoutMode.index,
+      'grid_columns': _gridColumns,
+      'auto_open_camera': _autoOpenCamera,
+      'show_grid_names': _showGridNames,
+    };
+  }
+  
+  /// Import display settings from a map (from sync)
+  Future<void> importSettings(Map<String, dynamic> settings) async {
+    try {
+      _currentTheme = AppTheme.values[settings['theme'] ?? 0];
+      _layoutMode = LayoutMode.values[settings['layout_mode'] ?? 0];
+      _gridColumns = settings['grid_columns'] ?? 2;
+      _autoOpenCamera = settings['auto_open_camera'] ?? true;
+      _showGridNames = settings['show_grid_names'] ?? true;
+      
+      // Pre-build Material You theme if selected
+      if (_currentTheme == AppTheme.materialYou) {
+        _cachedMaterialYouTheme = await _buildMaterialYouTheme();
+      }
+      
+      // Save to local storage
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setInt(_themeKey, _currentTheme.index);
+      await prefs.setInt(_layoutKey, _layoutMode.index);
+      await prefs.setInt(_gridColumnsKey, _gridColumns);
+      await prefs.setBool(_autoCameraKey, _autoOpenCamera);
+      await prefs.setBool(_showGridNamesKey, _showGridNames);
+      
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error importing display settings: $e');
+    }
+  }
 }

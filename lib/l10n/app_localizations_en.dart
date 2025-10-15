@@ -384,9 +384,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get disconnected => 'Disconnected successfully';
 
   @override
-  String get exportCards => 'Export Cards';
-
-  @override
   String exportingCards(int count) {
     return 'Exporting $count cards...';
   }
@@ -402,7 +399,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get importCards => 'Import Cards';
+  String get importCards => 'Import All';
 
   @override
   String get importingCards => 'Importing cards...';
@@ -1181,6 +1178,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get exporting => 'Exporting...';
+
+  @override
+  String get exportCards => 'Export All';
 
   @override
   String get importing => 'Importing...';

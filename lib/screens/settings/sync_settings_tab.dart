@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../models/sync_settings_model.dart';
 import '../../services/sync_settings_service.dart';
+import '../../services/preferences_sync_service.dart';
 import '../../services/connection_manager.dart';
 import '../../providers/card_provider.dart';
+import '../../providers/display_provider.dart';
+import '../../providers/tag_provider.dart';
 import '../../l10n/app_localizations.dart';
 
 class SyncSettingsTab extends StatefulWidget {
@@ -679,6 +682,18 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
         });
       }
 
+      // Also sync preferences
+      if (mounted) {
+        final displayProvider = Provider.of<DisplayProvider>(context, listen: false);
+        final tagProvider = Provider.of<TagProvider>(context, listen: false);
+        final cardProvider = Provider.of<CardProvider>(context, listen: false);
+        
+        await cardProvider.syncPreferences(
+          displaySettings: displayProvider.exportSettings(),
+          tagOrder: tagProvider.exportTagOrder(),
+        );
+      }
+
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
         final message = deletedCards.isNotEmpty 
@@ -771,6 +786,29 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
           debugPrint('Adding new card: ${card.name}');
           await cardProvider.addCard(card);
           imported++;
+        }
+      }
+
+      // Also import preferences
+      final prefsSync = PreferencesSyncService();
+      final preferences = await prefsSync.downloadPreferences();
+      
+      if (!mounted) return;
+      
+      if (preferences != null) {
+        final displayProvider = Provider.of<DisplayProvider>(context, listen: false);
+        final tagProvider = Provider.of<TagProvider>(context, listen: false);
+        
+        // Import display settings
+        final displaySettings = preferences['display_settings'] as Map<String, dynamic>?;
+        if (displaySettings != null) {
+          await displayProvider.importSettings(displaySettings);
+        }
+        
+        // Import tag order
+        final tagOrder = (preferences['tag_order'] as List?)?.cast<String>();
+        if (tagOrder != null) {
+          await tagProvider.importTagOrder(tagOrder);
         }
       }
 
