@@ -45,6 +45,15 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   Widget _buildConnectionStatusIndicator() {
+    // Check if sync is configured
+    final settings = _connectionManager.syncSettings;
+    final isSyncConfigured = settings != null && settings.hasCredentials;
+    
+    // Hide indicator if sync is not configured
+    if (!isSyncConfigured) {
+      return const SizedBox.shrink();
+    }
+    
     return StreamBuilder<bool>(
       stream: _connectionManager.syncStatus,
       initialData: _connectionManager.lastSyncSuccess,

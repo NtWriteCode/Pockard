@@ -161,6 +161,9 @@ class AppLocalizationsHu extends AppLocalizations {
   String get barcodeDataHint => 'Vagy add meg a vonalkódot manuálisan';
 
   @override
+  String get barcodePreview => 'Vonalkód előnézet';
+
+  @override
   String get barcodeDataHintNone => 'Nem szükséges vonalkód adat';
 
   @override

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:barcode_widget/barcode_widget.dart';
 import '../constants/app_colors.dart';
+import '../l10n/app_localizations.dart';
 
 /// A widget that displays a preview of the barcode based on the data and type
 class BarcodePreviewWidget extends StatelessWidget {
@@ -15,15 +16,56 @@ class BarcodePreviewWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (barcodeData.isEmpty) {
+    final l10n = AppLocalizations.of(context)!;
+    
+    // Hide preview if "No Barcode" is selected
+    if (barcodeType == 'NONE') {
       return const SizedBox.shrink();
     }
 
+    // If barcode data is empty, show a hint
+    if (barcodeData.isEmpty) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            l10n.barcodePreview,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Container(
+            width: double.infinity,
+            height: 100,
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
+                style: BorderStyle.solid,
+              ),
+            ),
+            child: Center(
+              child: Text(
+                'Scan or enter barcode data to see preview',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Barcode Preview',
+          l10n.barcodePreview,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
             fontWeight: FontWeight.w500,
           ),

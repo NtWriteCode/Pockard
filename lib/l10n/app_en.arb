@@ -53,6 +53,7 @@
   "barcodeTypeLabel": "Barcode Type",
   "barcodeDataLabel": "Barcode Data",
   "barcodeDataHint": "Enter barcode number manually",
+  "barcodePreview": "Barcode Preview",
   "barcodeDataHintNone": "No barcode data needed",
   "scanBarcode": "Scan Barcode/QR Code",
   "tagsLabel": "Tags (Optional)",

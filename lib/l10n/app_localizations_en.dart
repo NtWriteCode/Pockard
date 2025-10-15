@@ -161,6 +161,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get barcodeDataHint => 'Or enter barcode data manually';
 
   @override
+  String get barcodePreview => 'Barcode Preview';
+
+  @override
   String get barcodeDataHintNone => 'No barcode data needed';
 
   @override

@@ -189,7 +189,15 @@ class _CardFormScreenState extends State<CardFormScreen> {
                         label: Text(l10n.scanBarcode),
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 16),
+
+                    // Barcode preview
+                    BarcodePreviewWidget(
+                      barcodeData: _barcodeDataController.text,
+                      barcodeType: _barcodeType,
+                    ),
+                    const SizedBox(height: 16),
+                    
                     TextFormField(
                       controller: _barcodeDataController,
                       enabled: _barcodeType != 'NONE',
@@ -217,13 +225,6 @@ class _CardFormScreenState extends State<CardFormScreen> {
                           }
                         });
                       },
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Barcode preview
-                    BarcodePreviewWidget(
-                      barcodeData: _barcodeDataController.text,
-                      barcodeType: _barcodeType,
                     ),
                     const SizedBox(height: 24),
 

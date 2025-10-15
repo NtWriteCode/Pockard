@@ -398,6 +398,12 @@ abstract class AppLocalizations {
   /// **'Or enter barcode data manually'**
   String get barcodeDataHint;
 
+  /// No description provided for @barcodePreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Barcode Preview'**
+  String get barcodePreview;
+
   /// No description provided for @barcodeDataHintNone.
   ///
   /// In en, this message translates to:

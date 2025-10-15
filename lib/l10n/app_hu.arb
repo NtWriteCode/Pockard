@@ -52,6 +52,7 @@
   "cardNameRequired": "Kérlek add meg a kártya nevét",
   "barcodeTypeLabel": "Vonalkód típusa",
   "barcodeDataLabel": "Vonalkód adatai",
+  "barcodePreview": "Vonalkód előnézet",
   "barcodeDataHint": "Add meg a vonalkód számát manuálisan",
   "barcodeDataHintNone": "Nem szükséges vonalkód adat",
   "scanBarcode": "Vonalkód/QR kód beolvasása",
