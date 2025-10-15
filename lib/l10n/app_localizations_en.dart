@@ -1370,4 +1370,22 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get layoutMinimalDesc =>
       'Ultra-compact list showing only names and tiny previews';
+
+  @override
+  String get imageOnlyLabel => 'Image Only';
+
+  @override
+  String get imageOnlyMode => 'Image only mode - no barcode data needed';
+
+  @override
+  String get tapToUploadBarcodeImage => 'Tap to upload a barcode image';
+
+  @override
+  String get barcodeImageUploaded => 'Barcode image uploaded';
+
+  @override
+  String get selectBarcodeImage => 'Select Barcode Image';
+
+  @override
+  String get removeBarcodeImage => 'Remove barcode image';
 }

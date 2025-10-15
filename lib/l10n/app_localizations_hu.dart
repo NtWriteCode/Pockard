@@ -1378,4 +1378,23 @@ class AppLocalizationsHu extends AppLocalizations {
   @override
   String get layoutMinimalDesc =>
       'Ultra-kompakt lista csak nevekkel és apró előnézetekkel';
+
+  @override
+  String get imageOnlyLabel => 'Csak kép';
+
+  @override
+  String get imageOnlyMode => 'Csak kép mód - nincs szükség vonalkód adatra';
+
+  @override
+  String get tapToUploadBarcodeImage =>
+      'Koppints ide vonalkód kép feltöltéséhez';
+
+  @override
+  String get barcodeImageUploaded => 'Vonalkód kép feltöltve';
+
+  @override
+  String get selectBarcodeImage => 'Vonalkód kép kiválasztása';
+
+  @override
+  String get removeBarcodeImage => 'Vonalkód kép eltávolítása';
 }

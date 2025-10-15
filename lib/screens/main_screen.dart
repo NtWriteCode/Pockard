@@ -523,8 +523,8 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   void _navigateToFullscreenBarcode(BuildContext context, CardModel card) async {
-    // Check if card has "No Barcode" type - show cover image instead
-    if (card.barcodeType == 'NONE') {
+    // Check if card has "Image Only" type - show cover image instead
+    if (card.barcodeType == 'IMAGE_ONLY') {
       await Navigator.push(
         context,
         MaterialPageRoute(

@@ -141,29 +141,31 @@ class _FullscreenBarcodeScreenState extends State<FullscreenBarcodeScreen> {
                         ),
                         const SizedBox(height: 32),
                         
-                        // Barcode/QR Code or Cover Image
+                        // Barcode/QR Code, Text, or Cover Image
                         Flexible(
                           child: _showCoverImage && widget.card.coverImagePath != null
                               ? _buildCoverImageView()
-                              : Container(
-                                  constraints: const BoxConstraints(
-                                    maxWidth: 350,
-                                    maxHeight: 350,
-                                  ),
-                                  child: AspectRatio(
-                                    aspectRatio: 1.0,
-                                    child: BarcodeWidget(
-                                      barcode: _getBarcodeType(widget.card.barcodeType ?? ''),
-                                      data: widget.card.barcodeData ?? '',
-                                      width: double.infinity,
-                                      height: double.infinity,
-                                      drawText: false,
-                                      color: Colors.black,
-                                      backgroundColor: Colors.white,
-                                      errorBuilder: (context, error) => _buildErrorWidget(),
+                              : widget.card.barcodeType == 'TEXT'
+                                  ? _buildTextOnlyView()
+                                  : Container(
+                                      constraints: const BoxConstraints(
+                                        maxWidth: 350,
+                                        maxHeight: 350,
+                                      ),
+                                      child: AspectRatio(
+                                        aspectRatio: 1.0,
+                                        child: BarcodeWidget(
+                                          barcode: _getBarcodeType(widget.card.barcodeType ?? ''),
+                                          data: widget.card.barcodeData ?? '',
+                                          width: double.infinity,
+                                          height: double.infinity,
+                                          drawText: false,
+                                          color: Colors.black,
+                                          backgroundColor: Colors.white,
+                                          errorBuilder: (context, error) => _buildErrorWidget(),
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                ),
                         ),
                         
                         const SizedBox(height: 32),
@@ -385,6 +387,27 @@ class _FullscreenBarcodeScreenState extends State<FullscreenBarcodeScreen> {
       child: CoverImageWidget(
         imagePath: widget.card.coverImagePath!,
         fit: BoxFit.contain,
+      ),
+    );
+  }
+
+  Widget _buildTextOnlyView() {
+    return Container(
+      constraints: const BoxConstraints(
+        maxWidth: 500,
+        maxHeight: 500,
+      ),
+      padding: const EdgeInsets.all(32),
+      child: Center(
+        child: SelectableText(
+          widget.card.barcodeData ?? '',
+          style: const TextStyle(
+            fontSize: 48,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+          textAlign: TextAlign.center,
+        ),
       ),
     );
   }

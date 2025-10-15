@@ -18,8 +18,8 @@ class BarcodePreviewWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     
-    // Hide preview if "No Barcode" is selected
-    if (barcodeType == 'NONE') {
+    // Hide preview if "Image Only" is selected (handled separately)
+    if (barcodeType == 'IMAGE_ONLY') {
       return const SizedBox.shrink();
     }
 
@@ -87,6 +87,23 @@ class BarcodePreviewWidget extends StatelessWidget {
   }
 
   Widget _buildBarcodeWidget(BuildContext context) {
+    // Handle TEXT mode - just show the text
+    if (barcodeType == 'TEXT') {
+      return Center(
+        child: SingleChildScrollView(
+          child: Text(
+            barcodeData,
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: AppColors.black,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
+    }
+
+    // Handle barcode generation
     try {
       return BarcodeWidget(
         barcode: _getBarcodeType(barcodeType),

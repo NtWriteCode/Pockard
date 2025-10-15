@@ -48,7 +48,7 @@ class BarcodeTypeSelector extends StatelessWidget {
                   ),
                 ),
                 child: Text(
-                  type['value'] == 'NONE' ? l10n.noBarcodeLabel : type['label']!,
+                  type['value'] == 'IMAGE_ONLY' ? l10n.imageOnlyLabel : type['label']!,
                   style: TextStyle(
                     color: isSelected
                         ? Theme.of(context).colorScheme.onPrimary

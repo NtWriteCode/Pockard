@@ -590,6 +590,12 @@
   "showGridNames": "Kártyanevek megjelenítése",
   "showGridNamesDescription": "Kártyanevek megjelenítése a képek alatt rácsnézetben",
   "layoutMinimal": "Minimális",
-  "layoutMinimalDesc": "Ultra-kompakt lista csak nevekkel és apró előnézetekkel"
+  "layoutMinimalDesc": "Ultra-kompakt lista csak nevekkel és apró előnézetekkel",
+  "imageOnlyLabel": "Csak kép",
+  "imageOnlyMode": "Csak kép mód - nincs szükség vonalkód adatra",
+  "tapToUploadBarcodeImage": "Koppints ide vonalkód kép feltöltéséhez",
+  "barcodeImageUploaded": "Vonalkód kép feltöltve",
+  "selectBarcodeImage": "Vonalkód kép kiválasztása",
+  "removeBarcodeImage": "Vonalkód kép eltávolítása"
 }
 

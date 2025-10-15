@@ -67,21 +67,25 @@ class _FullscreenCoverImageScreenState extends State<FullscreenCoverImageScreen>
           width: double.infinity,
           height: double.infinity,
           color: Colors.black,
-          child: widget.card.coverImagePath != null
-              ? Center(
-                  child: InteractiveViewer(
-                    minScale: 0.5,
-                    maxScale: 4.0,
-                    child: Image.file(
-                      File(widget.card.coverImagePath!),
-                      fit: BoxFit.contain,
-                      errorBuilder: (context, error, stackTrace) {
-                        return _buildNoImageWidget();
-                      },
+          child: () {
+            // Priority: barcode image > cover image
+            final imagePath = widget.card.barcodeImagePath ?? widget.card.coverImagePath;
+            return imagePath != null
+                ? Center(
+                    child: InteractiveViewer(
+                      minScale: 0.5,
+                      maxScale: 4.0,
+                      child: Image.file(
+                        File(imagePath),
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) {
+                          return _buildNoImageWidget();
+                        },
+                      ),
                     ),
-                  ),
-                )
-              : _buildNoImageWidget(),
+                  )
+                : _buildNoImageWidget();
+          }(),
         ),
       ),
     );

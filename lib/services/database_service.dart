@@ -23,7 +23,7 @@ class DatabaseService {
     
     return await openDatabase(
       path,
-      version: 3,
+      version: 4,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );
@@ -37,6 +37,10 @@ class DatabaseService {
     if (oldVersion < 3) {
       // Add isPinned column to existing cards table
       await db.execute('ALTER TABLE cards ADD COLUMN isPinned INTEGER DEFAULT 0');
+    }
+    if (oldVersion < 4) {
+      // Add barcodeImagePath column to existing cards table
+      await db.execute('ALTER TABLE cards ADD COLUMN barcodeImagePath TEXT');
     }
   }
 
@@ -53,6 +57,7 @@ class DatabaseService {
         usageCount INTEGER DEFAULT 0,
         barcodeData TEXT,
         barcodeType TEXT,
+        barcodeImagePath TEXT,
         isDeleted INTEGER DEFAULT 0,
         isPinned INTEGER DEFAULT 0
       )

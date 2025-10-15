@@ -7,6 +7,7 @@ import '../providers/tag_provider.dart';
 import '../services/barcode_service.dart';
 import '../services/database_service.dart';
 import '../services/global_data_service.dart';
+import '../services/image_service.dart';
 import '../services/sync_settings_service.dart';
 import '../widgets/barcode_type_selector.dart';
 import '../widgets/barcode_preview_widget.dart';
@@ -41,8 +42,10 @@ class _CardFormScreenState extends State<CardFormScreen> {
 
   final BarcodeService _barcodeService = BarcodeService();
   final DatabaseService _databaseService = DatabaseService();
+  final ImageService _imageService = ImageService();
 
   String? _coverImagePath;
+  String? _barcodeImagePath;
   String _barcodeType = 'QR';
   bool _isLoading = false;
   bool _isPinned = false;
@@ -68,6 +71,7 @@ class _CardFormScreenState extends State<CardFormScreen> {
       _barcodeDataController = TextEditingController(text: widget.card!.barcodeData ?? '');
       _tags = List.from(widget.card!.tags);
       _coverImagePath = widget.card!.coverImagePath;
+      _barcodeImagePath = widget.card!.barcodeImagePath;
       _barcodeType = widget.card!.barcodeType ?? 'QR';
       _isPinned = widget.card!.isPinned;
     } else {
@@ -184,34 +188,37 @@ class _CardFormScreenState extends State<CardFormScreen> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton.icon(
-                        onPressed: _barcodeType == 'NONE' ? null : _scanBarcode,
+                        onPressed: (_barcodeType == 'IMAGE_ONLY' || _barcodeType == 'TEXT') ? null : _scanBarcode,
                         icon: const Icon(Icons.qr_code_scanner),
                         label: Text(l10n.scanBarcode),
                       ),
                     ),
                     const SizedBox(height: 16),
 
-                    // Barcode preview
-                    BarcodePreviewWidget(
-                      barcodeData: _barcodeDataController.text,
-                      barcodeType: _barcodeType,
-                    ),
+                    // Barcode preview or image upload for IMAGE_ONLY mode
+                    if (_barcodeType == 'IMAGE_ONLY')
+                      _buildBarcodeImageUploadWidget(l10n)
+                    else
+                      BarcodePreviewWidget(
+                        barcodeData: _barcodeDataController.text,
+                        barcodeType: _barcodeType,
+                      ),
                     const SizedBox(height: 16),
                     
-                    TextFormField(
-                      controller: _barcodeDataController,
-                      enabled: _barcodeType != 'NONE',
-                      decoration: InputDecoration(
-                        hintText: _barcodeType == 'NONE' 
-                            ? l10n.noBarcodeNeeded
-                            : l10n.barcodeDataHint,
-                        border: const OutlineInputBorder(),
-                        suffixText: _barcodeType,
+                    // Only show barcode data field if not in IMAGE_ONLY mode
+                    if (_barcodeType != 'IMAGE_ONLY') ...[
+                      TextFormField(
+                        controller: _barcodeDataController,
+                        decoration: InputDecoration(
+                          hintText: l10n.barcodeDataHint,
+                          border: const OutlineInputBorder(),
+                          suffixText: _barcodeType,
+                        ),
+                        maxLines: 2,
+                        onChanged: (_) => setState(() {}), // Refresh preview
                       ),
-                      maxLines: 2,
-                      onChanged: (_) => setState(() {}), // Refresh preview
-                    ),
-                    const SizedBox(height: 16),
+                      const SizedBox(height: 16),
+                    ],
 
                     // Barcode type selector
                     BarcodeTypeSelector(
@@ -219,8 +226,8 @@ class _CardFormScreenState extends State<CardFormScreen> {
                       onTypeChanged: (type) {
                         setState(() {
                           _barcodeType = type;
-                          // Auto-clear barcode data when "No Barcode" is selected
-                          if (type == 'NONE') {
+                          // Auto-clear barcode data when "Image Only" is selected
+                          if (type == 'IMAGE_ONLY') {
                             _barcodeDataController.text = '';
                           }
                         });
@@ -312,6 +319,152 @@ class _CardFormScreenState extends State<CardFormScreen> {
     }
   }
 
+  Future<void> _pickBarcodeImage() async {
+    try {
+      final imagePath = await _imageService.pickEditAndSaveImage(context: context);
+      
+      if (imagePath != null && mounted) {
+        final l10n = AppLocalizations.of(context)!;
+        setState(() {
+          _barcodeImagePath = imagePath;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n.barcodeImageUploaded),
+            backgroundColor: Theme.of(context).colorScheme.primary,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error uploading image: $e')),
+        );
+      }
+    }
+  }
+
+  void _removeBarcodeImage() {
+    setState(() {
+      _barcodeImagePath = null;
+    });
+  }
+
+  Widget _buildBarcodeImageUploadWidget(AppLocalizations l10n) {
+    // If image exists (either uploaded or cover image), show it
+    final displayImagePath = _barcodeImagePath ?? _coverImagePath;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          l10n.barcodePreview,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        const SizedBox(height: 8),
+        GestureDetector(
+          onTap: _pickBarcodeImage,
+          child: Container(
+            width: double.infinity,
+            height: 150,
+            decoration: BoxDecoration(
+              color: displayImagePath != null
+                  ? Colors.transparent
+                  : Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
+              ),
+            ),
+            child: displayImagePath != null
+                ? Stack(
+                    children: [
+                      // Display the image
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.file(
+                          File(displayImagePath),
+                          width: double.infinity,
+                          height: double.infinity,
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                      // Show a badge if using barcode image vs cover image
+                      if (_barcodeImagePath != null)
+                        Positioned(
+                          top: 8,
+                          right: 8,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.primary,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              l10n.selectBarcodeImage,
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onPrimary,
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      // Remove button
+                      if (_barcodeImagePath != null)
+                        Positioned(
+                          bottom: 8,
+                          right: 8,
+                          child: IconButton(
+                            icon: const Icon(Icons.delete),
+                            onPressed: _removeBarcodeImage,
+                            style: IconButton.styleFrom(
+                              backgroundColor: Theme.of(context).colorScheme.error,
+                              foregroundColor: Theme.of(context).colorScheme.onError,
+                            ),
+                          ),
+                        ),
+                    ],
+                  )
+                : Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.add_photo_alternate,
+                          size: 48,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          l10n.tapToUploadBarcodeImage,
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        if (_coverImagePath != null) ...[
+                          const SizedBox(height: 8),
+                          Text(
+                            '(Cover image will be used)',
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.7),
+                              fontSize: 10,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+          ),
+        ),
+      ],
+    );
+  }
+
   Future<void> _saveCard() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -327,6 +480,7 @@ class _CardFormScreenState extends State<CardFormScreen> {
           name: _nameController.text.trim(),
           barcodeData: _barcodeDataController.text.trim(),
           barcodeType: _barcodeType,
+          barcodeImagePath: _barcodeImagePath,
           tags: _tags,
           coverImagePath: _coverImagePath,
           updateDate: DateTime.now(),
@@ -339,6 +493,7 @@ class _CardFormScreenState extends State<CardFormScreen> {
           name: _nameController.text.trim(),
           barcodeData: _barcodeDataController.text.trim(),
           barcodeType: _barcodeType,
+          barcodeImagePath: _barcodeImagePath,
           tags: _tags,
           coverImagePath: _coverImagePath,
           creationDate: DateTime.now(),

@@ -2,7 +2,8 @@
 /// This file contains all barcode type definitions used across card forms
 class BarcodeTypes {
   static const List<Map<String, String>> supportedTypes = [
-    {'value': 'NONE', 'label': 'No Barcode'},
+    {'value': 'IMAGE_ONLY', 'label': 'Image Only'},
+    {'value': 'TEXT', 'label': 'Text Only'},
     {'value': 'QR', 'label': 'QR Code'},
     {'value': 'CODE128', 'label': 'Code 128'},
     {'value': 'CODE39', 'label': 'Code 39'},

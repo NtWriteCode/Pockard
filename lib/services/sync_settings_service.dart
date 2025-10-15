@@ -209,6 +209,41 @@ class SyncSettingsService {
               card = card.copyWith(coverImagePath: null);
             }
           }
+
+          // Import barcode image if the card indicates it has one
+          if (card.barcodeImagePath == 'HAS_BARCODE_IMAGE') {
+            try {
+              final barcodeImageFileName = '${card.uuid}_barcode.jpg';
+              final barcodeImageRemotePath = '/pockard/images/$barcodeImageFileName';
+              
+              // Check if barcode image exists on server
+              final barcodeImageExists = await _webdavService.fileExists(barcodeImageRemotePath);
+              if (barcodeImageExists) {
+                // Download barcode image to local storage
+                final appDir = await getApplicationDocumentsDirectory();
+                final imagesDir = Directory('${appDir.path}/images');
+                if (!await imagesDir.exists()) {
+                  await imagesDir.create(recursive: true);
+                }
+                
+                final localBarcodeImagePath = '${imagesDir.path}/${card.uuid}_barcode.jpg';
+                final barcodeImageBytes = await _webdavService.downloadFile(barcodeImageRemotePath);
+                
+                // Save barcode image locally
+                await File(localBarcodeImagePath).writeAsBytes(barcodeImageBytes);
+                
+                // Update card with local barcode image path
+                card = card.copyWith(barcodeImagePath: localBarcodeImagePath);
+                debugPrint('Imported barcode image for card ${card.uuid}: $localBarcodeImagePath');
+              } else {
+                debugPrint('No barcode image found for card ${card.uuid}');
+                card = card.copyWith(barcodeImagePath: null);
+              }
+            } catch (e) {
+              debugPrint('Error importing barcode image for card ${card.uuid}: $e');
+              card = card.copyWith(barcodeImagePath: null);
+            }
+          }
           
           cards.add(card);
         } catch (e) {
@@ -249,6 +284,17 @@ class SyncSettingsService {
           debugPrint('Deleted image from server: $imageFileName');
         } else {
           debugPrint('Image not found on server: $imageFileName');
+        }
+
+        // Delete barcode image if it exists on server
+        final barcodeImageFileName = '${card.uuid}_barcode.jpg';
+        final barcodeImageRemotePath = '/pockard/images/$barcodeImageFileName';
+        final barcodeImageExists = await _webdavService.fileExists(barcodeImageRemotePath);
+        if (barcodeImageExists) {
+          await _webdavService.deleteFile(barcodeImageRemotePath);
+          debugPrint('Deleted barcode image from server: $barcodeImageFileName');
+        } else {
+          debugPrint('Barcode image not found on server: $barcodeImageFileName');
         }
       } catch (e) {
         debugPrint('Error handling deleted card ${card.uuid}: $e');
@@ -303,9 +349,10 @@ class SyncSettingsService {
   Future<void> _uploadCard(CardModel card) async {
     try {
       // Create a portable version of the card for export
-      // Replace absolute image path with a flag indicating image exists
+      // Replace absolute image paths with flags indicating images exist
       final exportCard = card.copyWith(
         coverImagePath: card.coverImagePath != null ? 'HAS_IMAGE' : null,
+        barcodeImagePath: card.barcodeImagePath != null ? 'HAS_BARCODE_IMAGE' : null,
       );
       
       // Upload card JSON with portable path
@@ -325,6 +372,13 @@ class SyncSettingsService {
         final imageFileName = '${card.uuid}_cover.jpg';
         final imageRemotePath = '/pockard/images/$imageFileName';
         await _webdavService.uploadFile(card.coverImagePath!, imageRemotePath);
+      }
+
+      // Upload barcode image if it exists
+      if (card.barcodeImagePath != null && await File(card.barcodeImagePath!).exists()) {
+        final barcodeImageFileName = '${card.uuid}_barcode.jpg';
+        final barcodeImageRemotePath = '/pockard/images/$barcodeImageFileName';
+        await _webdavService.uploadFile(card.barcodeImagePath!, barcodeImageRemotePath);
       }
     } catch (e) {
       debugPrint('Error exporting card ${card.uuid}: $e');

@@ -2629,6 +2629,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Ultra-compact list showing only names and tiny previews'**
   String get layoutMinimalDesc;
+
+  /// No description provided for @imageOnlyLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Image Only'**
+  String get imageOnlyLabel;
+
+  /// No description provided for @imageOnlyMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Image only mode - no barcode data needed'**
+  String get imageOnlyMode;
+
+  /// No description provided for @tapToUploadBarcodeImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to upload a barcode image'**
+  String get tapToUploadBarcodeImage;
+
+  /// No description provided for @barcodeImageUploaded.
+  ///
+  /// In en, this message translates to:
+  /// **'Barcode image uploaded'**
+  String get barcodeImageUploaded;
+
+  /// No description provided for @selectBarcodeImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Barcode Image'**
+  String get selectBarcodeImage;
+
+  /// No description provided for @removeBarcodeImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove barcode image'**
+  String get removeBarcodeImage;
 }
 
 class _AppLocalizationsDelegate

@@ -160,9 +160,12 @@ class CardProvider with ChangeNotifier {
     try {
       final card = _cards.firstWhere((c) => c.uuid == uuid);
       
-      // Delete associated image if exists
+      // Delete associated images if they exist
       if (card.coverImagePath != null) {
         await _imageService.deleteImage(card.coverImagePath!);
+      }
+      if (card.barcodeImagePath != null) {
+        await _imageService.deleteImage(card.barcodeImagePath!);
       }
       
       await _databaseService.deleteCard(uuid);
@@ -295,10 +298,17 @@ class CardProvider with ChangeNotifier {
   }
 
   Future<void> cleanupUnusedImages() async {
-    final usedImagePaths = _cards
-        .where((card) => card.coverImagePath != null)
-        .map((card) => card.coverImagePath!)
-        .toList();
+    final usedImagePaths = <String>[];
+    
+    // Collect all used image paths (cover + barcode)
+    for (final card in _cards) {
+      if (card.coverImagePath != null) {
+        usedImagePaths.add(card.coverImagePath!);
+      }
+      if (card.barcodeImagePath != null) {
+        usedImagePaths.add(card.barcodeImagePath!);
+      }
+    }
     
     await _imageService.cleanupUnusedImages(usedImagePaths);
   }

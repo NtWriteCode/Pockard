@@ -754,6 +754,12 @@
   "showGridNames": "Show card names",
   "showGridNamesDescription": "Display card names below images in grid view",
   "layoutMinimal": "Minimal",
-  "layoutMinimalDesc": "Ultra-compact list showing only names and tiny previews"
+  "layoutMinimalDesc": "Ultra-compact list showing only names and tiny previews",
+  "imageOnlyLabel": "Image Only",
+  "imageOnlyMode": "Image only mode - no barcode data needed",
+  "tapToUploadBarcodeImage": "Tap to upload a barcode image",
+  "barcodeImageUploaded": "Barcode image uploaded",
+  "selectBarcodeImage": "Select Barcode Image",
+  "removeBarcodeImage": "Remove barcode image"
 }
 

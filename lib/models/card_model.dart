@@ -10,6 +10,7 @@ class CardModel {
   final int usageCount;
   final String? barcodeData;
   final String? barcodeType;
+  final String? barcodeImagePath;
   final bool isDeleted;
   final bool isPinned;
 
@@ -23,6 +24,7 @@ class CardModel {
     this.usageCount = 0,
     this.barcodeData,
     this.barcodeType,
+    this.barcodeImagePath,
     this.isDeleted = false,
     this.isPinned = false,
   })  : uuid = uuid ?? const Uuid().v4(),
@@ -32,11 +34,12 @@ class CardModel {
   CardModel copyWith({
     String? name,
     List<String>? tags,
-    String? coverImagePath,
+    Object? coverImagePath = const _Undefined(),
     DateTime? updateDate,
     int? usageCount,
-    String? barcodeData,
+    Object? barcodeData = const _Undefined(),
     String? barcodeType,
+    Object? barcodeImagePath = const _Undefined(),
     bool? isDeleted,
     bool? isPinned,
   }) {
@@ -44,12 +47,13 @@ class CardModel {
       uuid: uuid,
       name: name ?? this.name,
       tags: tags ?? this.tags,
-      coverImagePath: coverImagePath ?? this.coverImagePath,
+      coverImagePath: coverImagePath is _Undefined ? this.coverImagePath : coverImagePath as String?,
       creationDate: creationDate,
       updateDate: updateDate ?? DateTime.now(),
       usageCount: usageCount ?? this.usageCount,
-      barcodeData: barcodeData ?? this.barcodeData,
+      barcodeData: barcodeData is _Undefined ? this.barcodeData : barcodeData as String?,
       barcodeType: barcodeType ?? this.barcodeType,
+      barcodeImagePath: barcodeImagePath is _Undefined ? this.barcodeImagePath : barcodeImagePath as String?,
       isDeleted: isDeleted ?? this.isDeleted,
       isPinned: isPinned ?? this.isPinned,
     );
@@ -66,6 +70,7 @@ class CardModel {
       'usageCount': usageCount,
       'barcodeData': barcodeData,
       'barcodeType': barcodeType,
+      'barcodeImagePath': barcodeImagePath,
       'isDeleted': isDeleted ? 1 : 0, // Convert boolean to int for SQLite
       'isPinned': isPinned ? 1 : 0, // Convert boolean to int for SQLite
     };
@@ -82,6 +87,7 @@ class CardModel {
       usageCount: map['usageCount'] ?? 0,
       barcodeData: map['barcodeData'],
       barcodeType: map['barcodeType'],
+      barcodeImagePath: map['barcodeImagePath'],
       isDeleted: (map['isDeleted'] ?? 0) == 1, // Convert int to boolean for SQLite
       isPinned: (map['isPinned'] ?? 0) == 1, // Convert int to boolean for SQLite
     );
@@ -93,7 +99,7 @@ class CardModel {
 
   @override
   String toString() {
-    return 'CardModel{uuid: $uuid, name: $name, tags: $tags, coverImagePath: $coverImagePath, creationDate: $creationDate, updateDate: $updateDate, usageCount: $usageCount, barcodeData: $barcodeData, barcodeType: $barcodeType, isDeleted: $isDeleted, isPinned: $isPinned}';
+    return 'CardModel{uuid: $uuid, name: $name, tags: $tags, coverImagePath: $coverImagePath, creationDate: $creationDate, updateDate: $updateDate, usageCount: $usageCount, barcodeData: $barcodeData, barcodeType: $barcodeType, barcodeImagePath: $barcodeImagePath, isDeleted: $isDeleted, isPinned: $isPinned}';
   }
 
   @override
@@ -104,5 +110,10 @@ class CardModel {
 
   @override
   int get hashCode => uuid.hashCode;
+}
+
+// Helper class to distinguish between "not provided" and "explicitly null"
+class _Undefined {
+  const _Undefined();
 }
 
