@@ -27,9 +27,9 @@ class CardModel {
     this.barcodeImagePath,
     this.isDeleted = false,
     this.isPinned = false,
-  })  : uuid = uuid ?? const Uuid().v4(),
-        creationDate = creationDate ?? DateTime.now(),
-        updateDate = updateDate ?? DateTime.now();
+  }) : uuid = uuid ?? const Uuid().v4(),
+       creationDate = creationDate ?? DateTime.now(),
+       updateDate = updateDate ?? DateTime.now();
 
   CardModel copyWith({
     String? name,
@@ -116,4 +116,3 @@ class CardModel {
 class _Undefined {
   const _Undefined();
 }
-

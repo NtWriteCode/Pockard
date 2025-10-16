@@ -10,20 +10,13 @@ class CardMinimalTile extends StatelessWidget {
   final VoidCallback onTap;
   final VoidCallback? onLongPress;
 
-  const CardMinimalTile({
-    super.key,
-    required this.card,
-    required this.onTap,
-    this.onLongPress,
-  });
+  const CardMinimalTile({super.key, required this.card, required this.onTap, this.onLongPress});
 
   @override
   Widget build(BuildContext context) {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       child: InkWell(
         onTap: onTap,
         onLongPress: onLongPress,
@@ -35,16 +28,10 @@ class CardMinimalTile extends StatelessWidget {
               // Tiny preview image (same height as text)
               ClipRRect(
                 borderRadius: BorderRadius.circular(4),
-                child: SizedBox(
-                  width: 32,
-                  height: 32,
-                  child: card.coverImagePath != null
-                      ? _buildImage(card.coverImagePath!)
-                      : _buildPlaceholder(context),
-                ),
+                child: SizedBox(width: 32, height: 32, child: card.coverImagePath != null ? _buildImage(card.coverImagePath!) : _buildPlaceholder(context)),
               ),
               const SizedBox(width: 12),
-              
+
               // Card name with pin indicator
               Expanded(
                 child: Row(
@@ -52,18 +39,12 @@ class CardMinimalTile extends StatelessWidget {
                     if (card.isPinned)
                       Padding(
                         padding: const EdgeInsets.only(right: 6),
-                        child: Icon(
-                          Icons.push_pin,
-                          size: 14,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
+                        child: Icon(Icons.push_pin, size: 14, color: Theme.of(context).colorScheme.primary),
                       ),
                     Expanded(
                       child: Text(
                         card.name,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.w500,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -71,13 +52,9 @@ class CardMinimalTile extends StatelessWidget {
                   ],
                 ),
               ),
-              
+
               // Chevron indicator
-              Icon(
-                Icons.chevron_right,
-                size: 20,
-                color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
-              ),
+              Icon(Icons.chevron_right, size: 20, color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.5)),
             ],
           ),
         ),
@@ -91,21 +68,13 @@ class CardMinimalTile extends StatelessWidget {
       return Container(color: Colors.grey[300]);
     }
 
-    return CoverImageWidget(
-      imagePath: imagePath,
-      fit: BoxFit.cover,
-    );
+    return CoverImageWidget(imagePath: imagePath, fit: BoxFit.cover);
   }
 
   Widget _buildPlaceholder(BuildContext context) {
     return Container(
       color: Theme.of(context).colorScheme.surfaceContainerHighest,
-      child: Icon(
-        Icons.credit_card,
-        size: 16,
-        color: Theme.of(context).colorScheme.onSurfaceVariant,
-      ),
+      child: Icon(Icons.credit_card, size: 16, color: Theme.of(context).colorScheme.onSurfaceVariant),
     );
   }
 }
-

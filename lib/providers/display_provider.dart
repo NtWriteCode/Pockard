@@ -4,6 +4,7 @@ import 'package:dynamic_color/dynamic_color.dart';
 import '../constants/app_colors.dart';
 
 enum AppTheme { light, dark, amoled, materialYou }
+
 enum LayoutMode { rows, grid, minimal }
 
 class DisplayProvider extends ChangeNotifier {
@@ -46,11 +47,8 @@ class DisplayProvider extends ChangeNotifier {
 
   /// Light theme
   ThemeData get _lightTheme {
-    final colorScheme = ColorScheme.fromSeed(
-      seedColor: AppColors.primarySeed,
-      brightness: Brightness.light,
-    );
-    
+    final colorScheme = ColorScheme.fromSeed(seedColor: AppColors.primarySeed, brightness: Brightness.light);
+
     return ThemeData(
       colorScheme: colorScheme,
       useMaterial3: true,
@@ -62,24 +60,15 @@ class DisplayProvider extends ChangeNotifier {
         backgroundColor: colorScheme.primary,
         foregroundColor: colorScheme.onPrimary,
       ),
-      cardTheme: CardThemeData(
-        elevation: 2,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-      ),
+      cardTheme: CardThemeData(elevation: 2, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       ),
     );
@@ -87,11 +76,8 @@ class DisplayProvider extends ChangeNotifier {
 
   /// Dark theme
   ThemeData get _darkTheme {
-    final colorScheme = ColorScheme.fromSeed(
-      seedColor: AppColors.primarySeed,
-      brightness: Brightness.dark,
-    );
-    
+    final colorScheme = ColorScheme.fromSeed(seedColor: AppColors.primarySeed, brightness: Brightness.dark);
+
     return ThemeData(
       colorScheme: colorScheme,
       useMaterial3: true,
@@ -103,24 +89,15 @@ class DisplayProvider extends ChangeNotifier {
         backgroundColor: colorScheme.surfaceContainerHighest,
         foregroundColor: colorScheme.onSurface,
       ),
-      cardTheme: CardThemeData(
-        elevation: 3,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-      ),
+      cardTheme: CardThemeData(elevation: 3, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       ),
     );
@@ -128,15 +105,12 @@ class DisplayProvider extends ChangeNotifier {
 
   /// Pure black (AMOLED) theme
   ThemeData get _amoledTheme {
-    final colorScheme = ColorScheme.fromSeed(
-      seedColor: AppColors.primarySeed,
-      brightness: Brightness.dark,
-    ).copyWith(
+    final colorScheme = ColorScheme.fromSeed(seedColor: AppColors.primarySeed, brightness: Brightness.dark).copyWith(
       // Override specific colors for AMOLED (pure black)
       surface: AppColors.black,
       onSurface: AppColors.white,
     );
-    
+
     return ThemeData(
       colorScheme: colorScheme,
       scaffoldBackgroundColor: AppColors.black,
@@ -152,22 +126,16 @@ class DisplayProvider extends ChangeNotifier {
       cardTheme: CardThemeData(
         elevation: 4, // Higher elevation for better depth
         color: AppColors.amoledCard,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       ),
     );
@@ -180,10 +148,10 @@ class DisplayProvider extends ChangeNotifier {
     try {
       // Detect system brightness (light/dark mode)
       final brightness = WidgetsBinding.instance.platformDispatcher.platformBrightness;
-      
+
       // Try to get system color palette from wallpaper
       final corePalette = await DynamicColorPlugin.getCorePalette();
-      
+
       ColorScheme colorScheme;
       if (corePalette != null) {
         // Use system colors extracted from wallpaper! 🎨
@@ -196,7 +164,7 @@ class DisplayProvider extends ChangeNotifier {
           brightness: brightness,
         );
       }
-      
+
       return ThemeData(
         colorScheme: colorScheme,
         useMaterial3: true,
@@ -215,22 +183,16 @@ class DisplayProvider extends ChangeNotifier {
           // Use secondaryContainer for balanced, visible contrast
           color: colorScheme.secondaryContainer,
           surfaceTintColor: Colors.transparent, // Disable Material 3 tint overlay
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
           ),
         ),
         inputDecorationTheme: InputDecorationTheme(
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         ),
       );
@@ -243,44 +205,44 @@ class DisplayProvider extends ChangeNotifier {
   /// Load settings from SharedPreferences
   Future<void> loadSettings() async {
     final prefs = await SharedPreferences.getInstance();
-    
+
     // Load theme
     final themeIndex = prefs.getInt(_themeKey) ?? 0;
     _currentTheme = AppTheme.values[themeIndex];
-    
+
     // Load layout mode
     final layoutIndex = prefs.getInt(_layoutKey) ?? 0;
     _layoutMode = LayoutMode.values[layoutIndex];
-    
+
     // Load grid columns
     _gridColumns = prefs.getInt(_gridColumnsKey) ?? 2;
-    
+
     // Load auto camera setting
     _autoOpenCamera = prefs.getBool(_autoCameraKey) ?? true;
-    
+
     // Load show grid names setting
     _showGridNames = prefs.getBool(_showGridNamesKey) ?? true;
-    
+
     // Load max brightness setting
     _maxBrightnessEnabled = prefs.getBool(_maxBrightnessKey) ?? true;
-    
+
     // Pre-build Material You theme if it's the selected theme
     if (_currentTheme == AppTheme.materialYou) {
       _cachedMaterialYouTheme = await _buildMaterialYouTheme();
     }
-    
+
     notifyListeners();
   }
 
   /// Set theme
   Future<void> setTheme(AppTheme theme) async {
     _currentTheme = theme;
-    
+
     // Pre-build Material You theme if selected
     if (theme == AppTheme.materialYou) {
       _cachedMaterialYouTheme = await _buildMaterialYouTheme();
     }
-    
+
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt(_themeKey, theme.index);
     notifyListeners();
@@ -353,7 +315,7 @@ class DisplayProvider extends ChangeNotifier {
         return 'layoutMinimal';
     }
   }
-  
+
   /// Export display settings to a map for syncing
   Map<String, dynamic> exportSettings() {
     return {
@@ -365,7 +327,7 @@ class DisplayProvider extends ChangeNotifier {
       'max_brightness_enabled': _maxBrightnessEnabled,
     };
   }
-  
+
   /// Import display settings from a map (from sync)
   Future<void> importSettings(Map<String, dynamic> settings) async {
     try {
@@ -375,12 +337,12 @@ class DisplayProvider extends ChangeNotifier {
       _autoOpenCamera = settings['auto_open_camera'] ?? true;
       _showGridNames = settings['show_grid_names'] ?? true;
       _maxBrightnessEnabled = settings['max_brightness_enabled'] ?? true;
-      
+
       // Pre-build Material You theme if selected
       if (_currentTheme == AppTheme.materialYou) {
         _cachedMaterialYouTheme = await _buildMaterialYouTheme();
       }
-      
+
       // Save to local storage
       final prefs = await SharedPreferences.getInstance();
       await prefs.setInt(_themeKey, _currentTheme.index);
@@ -389,7 +351,7 @@ class DisplayProvider extends ChangeNotifier {
       await prefs.setBool(_autoCameraKey, _autoOpenCamera);
       await prefs.setBool(_showGridNamesKey, _showGridNames);
       await prefs.setBool(_maxBrightnessKey, _maxBrightnessEnabled);
-      
+
       notifyListeners();
     } catch (e) {
       debugPrint('Error importing display settings: $e');

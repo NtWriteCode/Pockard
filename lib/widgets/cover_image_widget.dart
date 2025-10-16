@@ -13,14 +13,7 @@ class CoverImageWidget extends StatelessWidget {
   final Widget Function(BuildContext)? placeholderBuilder;
   final Widget Function(BuildContext)? errorBuilder;
 
-  const CoverImageWidget({
-    super.key,
-    required this.imagePath,
-    this.fit = BoxFit.contain,
-    this.borderRadius,
-    this.placeholderBuilder,
-    this.errorBuilder,
-  });
+  const CoverImageWidget({super.key, required this.imagePath, this.fit = BoxFit.contain, this.borderRadius, this.placeholderBuilder, this.errorBuilder});
 
   @override
   Widget build(BuildContext context) {
@@ -44,22 +37,15 @@ class CoverImageWidget extends StatelessWidget {
         }
 
         return Container(
-          decoration: BoxDecoration(
-            color: backgroundColor,
-            borderRadius: borderRadius != null ? BorderRadius.circular(borderRadius!) : null,
-          ),
+          decoration: BoxDecoration(color: backgroundColor, borderRadius: borderRadius != null ? BorderRadius.circular(borderRadius!) : null),
           child: Padding(
             padding: const EdgeInsets.all(12.0),
             child: SvgPicture.file(
               File(imagePath),
               fit: fit,
               alignment: Alignment.center,
-              placeholderBuilder: placeholderBuilder != null 
-                ? (context) => placeholderBuilder!(context)
-                : null,
-              errorBuilder: errorBuilder != null
-                ? (context, error, stackTrace) => errorBuilder!(context)
-                : null,
+              placeholderBuilder: placeholderBuilder != null ? (context) => placeholderBuilder!(context) : null,
+              errorBuilder: errorBuilder != null ? (context, error, stackTrace) => errorBuilder!(context) : null,
             ),
           ),
         );
@@ -68,14 +54,6 @@ class CoverImageWidget extends StatelessWidget {
   }
 
   Widget _buildRasterImage(BuildContext context) {
-    return Image.file(
-      File(imagePath),
-      fit: fit,
-      alignment: Alignment.center,
-      errorBuilder: errorBuilder != null
-        ? (context, error, stackTrace) => errorBuilder!(context)
-        : null,
-    );
+    return Image.file(File(imagePath), fit: fit, alignment: Alignment.center, errorBuilder: errorBuilder != null ? (context, error, stackTrace) => errorBuilder!(context) : null);
   }
 }
-

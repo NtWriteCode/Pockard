@@ -5,22 +5,10 @@ class GlobalImageModel {
   final DateTime uploadDate;
   final String uploaderPseudoUser;
 
-  GlobalImageModel({
-    required this.uuid,
-    required this.name,
-    required this.imagePath,
-    required this.uploadDate,
-    required this.uploaderPseudoUser,
-  });
+  GlobalImageModel({required this.uuid, required this.name, required this.imagePath, required this.uploadDate, required this.uploaderPseudoUser});
 
   Map<String, dynamic> toMap() {
-    return {
-      'uuid': uuid,
-      'name': name,
-      'imagePath': imagePath,
-      'uploadDate': uploadDate.millisecondsSinceEpoch,
-      'uploaderPseudoUser': uploaderPseudoUser,
-    };
+    return {'uuid': uuid, 'name': name, 'imagePath': imagePath, 'uploadDate': uploadDate.millisecondsSinceEpoch, 'uploaderPseudoUser': uploaderPseudoUser};
   }
 
   factory GlobalImageModel.fromMap(Map<String, dynamic> map) {
@@ -35,8 +23,7 @@ class GlobalImageModel {
 
   Map<String, dynamic> toJson() => toMap();
 
-  factory GlobalImageModel.fromJson(Map<String, dynamic> json) =>
-      GlobalImageModel.fromMap(json);
+  factory GlobalImageModel.fromJson(Map<String, dynamic> json) => GlobalImageModel.fromMap(json);
 
   @override
   bool operator ==(Object other) {
@@ -47,4 +34,3 @@ class GlobalImageModel {
   @override
   int get hashCode => uuid.hashCode;
 }
-

@@ -7,10 +7,7 @@ import '../l10n/app_localizations.dart';
 class FullscreenCoverImageScreen extends StatefulWidget {
   final CardModel card;
 
-  const FullscreenCoverImageScreen({
-    super.key,
-    required this.card,
-  });
+  const FullscreenCoverImageScreen({super.key, required this.card});
 
   @override
   State<FullscreenCoverImageScreen> createState() => _FullscreenCoverImageScreenState();
@@ -22,7 +19,7 @@ class _FullscreenCoverImageScreenState extends State<FullscreenCoverImageScreen>
   @override
   void initState() {
     super.initState();
-    
+
     // Hide app bar after 3 seconds
     Future.delayed(const Duration(seconds: 3), () {
       if (mounted) {
@@ -96,36 +93,16 @@ class _FullscreenCoverImageScreenState extends State<FullscreenCoverImageScreen>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.image_not_supported,
-            size: 80,
-            color: Colors.grey[600],
-          ),
+          Icon(Icons.image_not_supported, size: 80, color: Colors.grey[600]),
           const SizedBox(height: 16),
           Text(
             AppLocalizations.of(context)!.noCoverImage,
-            style: TextStyle(
-              color: Colors.grey[400],
-              fontSize: 18,
-              fontWeight: FontWeight.w500,
-            ),
+            style: TextStyle(color: Colors.grey[400], fontSize: 18, fontWeight: FontWeight.w500),
           ),
           const SizedBox(height: 8),
-          Text(
-            AppLocalizations.of(context)!.addCoverImageToCard,
-            style: TextStyle(
-              color: Colors.grey[600],
-              fontSize: 14,
-            ),
-          ),
+          Text(AppLocalizations.of(context)!.addCoverImageToCard, style: TextStyle(color: Colors.grey[600], fontSize: 14)),
           const SizedBox(height: 24),
-          Text(
-            'Tap anywhere to ${_showAppBar ? 'hide' : 'show'} controls',
-            style: TextStyle(
-              color: Colors.grey[700],
-              fontSize: 12,
-            ),
-          ),
+          Text('Tap anywhere to ${_showAppBar ? 'hide' : 'show'} controls', style: TextStyle(color: Colors.grey[700], fontSize: 12)),
         ],
       ),
     );
@@ -148,12 +125,7 @@ class _FullscreenCoverImageScreenState extends State<FullscreenCoverImageScreen>
             _buildInfoRow('Tags', widget.card.tags.join(', ')),
           ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(AppLocalizations.of(context)!.close),
-          ),
-        ],
+        actions: [TextButton(onPressed: () => Navigator.pop(context), child: Text(AppLocalizations.of(context)!.close))],
       ),
     );
   }
@@ -164,21 +136,12 @@ class _FullscreenCoverImageScreenState extends State<FullscreenCoverImageScreen>
       children: [
         SizedBox(
           width: 100,
-          child: Text(
-            '$label:',
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
+          child: Text('$label:', style: const TextStyle(fontWeight: FontWeight.bold)),
         ),
         Expanded(
-          child: Text(
-            value.isEmpty ? 'N/A' : value,
-            style: TextStyle(
-              color: value.isEmpty ? Colors.grey : null,
-            ),
-          ),
+          child: Text(value.isEmpty ? 'N/A' : value, style: TextStyle(color: value.isEmpty ? Colors.grey : null)),
         ),
       ],
     );
   }
 }
-

@@ -11,21 +11,13 @@ class CardGridTile extends StatelessWidget {
   final VoidCallback? onLongPress;
   final bool showName;
 
-  const CardGridTile({
-    super.key,
-    required this.card,
-    required this.onTap,
-    this.onLongPress,
-    this.showName = true,
-  });
+  const CardGridTile({super.key, required this.card, required this.onTap, this.onLongPress, this.showName = true});
 
   @override
   Widget build(BuildContext context) {
     return Card(
       // Don't override elevation - let theme handle it
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
         onTap: onTap,
         onLongPress: onLongPress,
@@ -39,14 +31,12 @@ class CardGridTile extends StatelessWidget {
                 aspectRatio: 1.0, // Enforce square 1:1 ratio
                 child: ClipRRect(
                   // If name is hidden, round all corners; otherwise only round top
-                  borderRadius: showName 
-                      ? const BorderRadius.vertical(top: Radius.circular(12))
-                      : BorderRadius.circular(12),
+                  borderRadius: showName ? const BorderRadius.vertical(top: Radius.circular(12)) : BorderRadius.circular(12),
                   child: _buildImageSection(context),
                 ),
               ),
             ),
-            
+
             // Card name section (conditionally shown)
             if (showName)
               Padding(
@@ -58,19 +48,12 @@ class CardGridTile extends StatelessWidget {
                       if (card.isPinned)
                         Padding(
                           padding: const EdgeInsets.only(right: 4),
-                          child: Icon(
-                            Icons.push_pin,
-                            size: 12,
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
+                          child: Icon(Icons.push_pin, size: 12, color: Theme.of(context).colorScheme.primary),
                         ),
                       Flexible(
                         child: Text(
                           card.name,
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 11,
-                          ),
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600, fontSize: 11),
                           textAlign: TextAlign.center,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
@@ -94,12 +77,12 @@ class CardGridTile extends StatelessWidget {
         return _buildImageWidget(context, card.coverImagePath!);
       }
     }
-    
+
     // Show barcode/QR code if no cover image
     if (card.barcodeData?.isNotEmpty == true) {
       return _buildBarcodeSection(context);
     }
-    
+
     // Fallback to default placeholder
     return _buildDefaultPlaceholder(context);
   }
@@ -128,11 +111,7 @@ class CardGridTile extends StatelessWidget {
   Widget _buildDefaultPlaceholder(BuildContext context) {
     return Container(
       color: Theme.of(context).colorScheme.surface,
-      child: Icon(
-        Icons.credit_card,
-        size: 32,
-        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
-      ),
+      child: Icon(Icons.credit_card, size: 32, color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5)),
     );
   }
 
@@ -171,11 +150,6 @@ class CardGridTile extends StatelessWidget {
   }
 
   Widget _buildImageWidget(BuildContext context, String imagePath) {
-    return CoverImageWidget(
-      imagePath: imagePath,
-      fit: BoxFit.cover,
-      borderRadius: 12,
-      errorBuilder: (context) => _buildBarcodeSection(context),
-    );
+    return CoverImageWidget(imagePath: imagePath, fit: BoxFit.cover, borderRadius: 12, errorBuilder: (context) => _buildBarcodeSection(context));
   }
 }

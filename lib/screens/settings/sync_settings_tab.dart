@@ -99,13 +99,9 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
   }
 
   Future<void> _testConnection() async {
-    if (_serverController.text.trim().isEmpty ||
-        _usernameController.text.trim().isEmpty ||
-        _passwordController.text.trim().isEmpty) {
+    if (_serverController.text.trim().isEmpty || _usernameController.text.trim().isEmpty || _passwordController.text.trim().isEmpty) {
       final l10n = AppLocalizations.of(context)!;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(l10n.fillAllConnectionFields)));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.fillAllConnectionFields)));
       return;
     }
 
@@ -119,12 +115,8 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
         username: _usernameController.text.trim(),
         password: _passwordController.text.trim(),
         useParallelSync: _useParallelSync,
-        pockardFolderPath: _pockardFolderController.text.trim().isNotEmpty
-            ? _pockardFolderController.text.trim()
-            : '/pockard',
-        globalFolderPath: _globalFolderController.text.trim().isNotEmpty
-            ? _globalFolderController.text.trim()
-            : '/pockard_global',
+        pockardFolderPath: _pockardFolderController.text.trim().isNotEmpty ? _pockardFolderController.text.trim() : '/pockard',
+        globalFolderPath: _globalFolderController.text.trim().isNotEmpty ? _globalFolderController.text.trim() : '/pockard_global',
       );
 
       final success = await _syncService.testConnection(settings);
@@ -134,8 +126,7 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
 
       setState(() {
         _isConnected = success;
-        _globalFolderAvailable =
-            updatedSettings?.globalFolderAvailable ?? false;
+        _globalFolderAvailable = updatedSettings?.globalFolderAvailable ?? false;
       });
 
       // Update connection manager with new settings and status
@@ -145,32 +136,15 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
 
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
-        final messageText = success
-            ? l10n.connectionSuccessful
-            : l10n.connectionFailed(l10n.unknownError);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(messageText),
-            backgroundColor: success ? Colors.green : Colors.red,
-          ),
-        );
+        final messageText = success ? l10n.connectionSuccessful : l10n.connectionFailed(l10n.unknownError);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(messageText), backgroundColor: success ? Colors.green : Colors.red));
 
         // Show global folder status
         if (success) {
           if (_globalFolderAvailable) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(l10n.globalFolderDetected),
-                backgroundColor: Colors.blue,
-              ),
-            );
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.globalFolderDetected), backgroundColor: Colors.blue));
           } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(l10n.globalFolderNotAvailable),
-                backgroundColor: Colors.orange,
-              ),
-            );
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.globalFolderNotAvailable), backgroundColor: Colors.orange));
           }
         }
       }
@@ -180,12 +154,7 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
       });
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.connectionFailed(e.toString())),
-            backgroundColor: Colors.red,
-          ),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.connectionFailed(e.toString())), backgroundColor: Colors.red));
       }
     } finally {
       setState(() {
@@ -228,15 +197,9 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
                     children: [
                       Text(
                         AppLocalizations.of(context)!.serverConfiguration,
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.green,
-                        ),
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: Colors.green),
                       ),
-                      Text(
-                        AppLocalizations.of(context)!.readyForSync,
-                        style: const TextStyle(color: Colors.grey),
-                      ),
+                      Text(AppLocalizations.of(context)!.readyForSync, style: const TextStyle(color: Colors.grey)),
                     ],
                   ),
                 ),
@@ -248,25 +211,11 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
                 final l10n = AppLocalizations.of(context)!;
                 return Column(
                   children: [
-                    _buildInfoRow(
-                      l10n.server,
-                      _serverController.text,
-                      Icons.dns,
-                    ),
+                    _buildInfoRow(l10n.server, _serverController.text, Icons.dns),
                     const SizedBox(height: 8),
-                    _buildInfoRow(
-                      l10n.username,
-                      _usernameController.text,
-                      Icons.person,
-                    ),
+                    _buildInfoRow(l10n.username, _usernameController.text, Icons.person),
                     const SizedBox(height: 8),
-                    _buildInfoRow(
-                      l10n.globalFeatures,
-                      _globalFolderAvailable ? l10n.enabled : l10n.disabled,
-                      _globalFolderAvailable
-                          ? Icons.check_circle
-                          : Icons.warning,
-                    ),
+                    _buildInfoRow(l10n.globalFeatures, _globalFolderAvailable ? l10n.enabled : l10n.disabled, _globalFolderAvailable ? Icons.check_circle : Icons.warning),
                   ],
                 );
               },
@@ -276,11 +225,7 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
               Builder(
                 builder: (context) {
                   final l10n = AppLocalizations.of(context)!;
-                  return _buildInfoRow(
-                    l10n.lastSync,
-                    _formatLastSync(_lastSyncDate!, context),
-                    Icons.sync,
-                  );
+                  return _buildInfoRow(l10n.lastSync, _formatLastSync(_lastSyncDate!, context), Icons.sync);
                 },
               ),
             ],
@@ -301,13 +246,7 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
                       child: Builder(
                         builder: (context) {
                           final l10n = AppLocalizations.of(context)!;
-                          return Text(
-                            l10n.createGlobalFolderHint,
-                            style: TextStyle(
-                              color: Colors.orange.shade800,
-                              fontSize: 12,
-                            ),
-                          );
+                          return Text(l10n.createGlobalFolderHint, style: TextStyle(color: Colors.orange.shade800, fontSize: 12));
                         },
                       ),
                     ),
@@ -331,16 +270,11 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
                     // Save immediately
                     final currentSettings = await _syncService.loadSettings();
                     if (currentSettings != null) {
-                      final updatedSettings = currentSettings.copyWith(
-                        useParallelSync: value,
-                      );
+                      final updatedSettings = currentSettings.copyWith(useParallelSync: value);
                       await _syncService.saveSettings(updatedSettings);
                     }
                   },
-                  secondary: Icon(
-                    _useParallelSync ? Icons.fast_forward : Icons.play_arrow,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
+                  secondary: Icon(_useParallelSync ? Icons.fast_forward : Icons.play_arrow, color: Theme.of(context).colorScheme.primary),
                 );
               },
             ),
@@ -353,27 +287,16 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
   Widget _buildInfoRow(String label, String value, IconData icon) {
     return Row(
       children: [
-        Icon(
-          icon,
-          size: 20,
-          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
-        ),
+        Icon(icon, size: 20, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7)),
         const SizedBox(width: 8),
         Text(
           '$label: ',
-          style: TextStyle(
-            fontWeight: FontWeight.w500,
-            color: Theme.of(context).colorScheme.onSurface,
-          ),
+          style: TextStyle(fontWeight: FontWeight.w500, color: Theme.of(context).colorScheme.onSurface),
         ),
         Expanded(
           child: Text(
             value,
-            style: TextStyle(
-              color: Theme.of(
-                context,
-              ).colorScheme.onSurface.withValues(alpha: 0.8),
-            ),
+            style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.8)),
             overflow: TextOverflow.ellipsis,
           ),
         ),
@@ -387,11 +310,7 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
         padding: const EdgeInsets.all(16.0),
         child: Row(
           children: [
-            Icon(
-              _isConnected ? Icons.cloud_done : Icons.cloud_off,
-              color: _isConnected ? Colors.green : Colors.red,
-              size: 32,
-            ),
+            Icon(_isConnected ? Icons.cloud_done : Icons.cloud_off, color: _isConnected ? Colors.green : Colors.red, size: 32),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
@@ -402,11 +321,7 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
                       final l10n = AppLocalizations.of(context)!;
                       return Text(
                         _isConnected ? l10n.connected : l10n.notConnected,
-                        style: Theme.of(context).textTheme.titleMedium
-                            ?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: _isConnected ? Colors.green : Colors.red,
-                            ),
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, color: _isConnected ? Colors.green : Colors.red),
                       );
                     },
                   ),
@@ -414,12 +329,7 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
                     Builder(
                       builder: (context) {
                         final l10n = AppLocalizations.of(context)!;
-                        return Text(
-                          l10n.lastSyncLabel(
-                            _formatLastSync(_lastSyncDate!, context),
-                          ),
-                          style: Theme.of(context).textTheme.bodySmall,
-                        );
+                        return Text(l10n.lastSyncLabel(_formatLastSync(_lastSyncDate!, context)), style: Theme.of(context).textTheme.bodySmall);
                       },
                     ),
                 ],
@@ -435,12 +345,7 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
-          AppLocalizations.of(context)!.webdavConnection,
-          style: Theme.of(
-            context,
-          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-        ),
+        Text(AppLocalizations.of(context)!.webdavConnection, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
         const SizedBox(height: 16),
 
         Builder(
@@ -450,29 +355,19 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
               children: [
                 TextField(
                   controller: _serverController,
-                  decoration: InputDecoration(
-                    labelText: l10n.serverAddress,
-                    helperText: l10n.serverAddressHint,
-                    border: const OutlineInputBorder(),
-                  ),
+                  decoration: InputDecoration(labelText: l10n.serverAddress, helperText: l10n.serverAddressHint, border: const OutlineInputBorder()),
                 ),
                 const SizedBox(height: 16),
 
                 TextField(
                   controller: _usernameController,
-                  decoration: InputDecoration(
-                    labelText: l10n.username,
-                    border: const OutlineInputBorder(),
-                  ),
+                  decoration: InputDecoration(labelText: l10n.username, border: const OutlineInputBorder()),
                 ),
                 const SizedBox(height: 16),
 
                 TextField(
                   controller: _passwordController,
-                  decoration: InputDecoration(
-                    labelText: l10n.password,
-                    border: const OutlineInputBorder(),
-                  ),
+                  decoration: InputDecoration(labelText: l10n.password, border: const OutlineInputBorder()),
                   obscureText: true,
                 ),
                 const SizedBox(height: 16),
@@ -498,16 +393,8 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
               padding: const EdgeInsets.symmetric(vertical: 12),
             ),
             child: _isLoading
-                ? const SizedBox(
-                    height: 20,
-                    width: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : Text(
-                    _isConnected
-                        ? AppLocalizations.of(context)!.connectedCheck
-                        : AppLocalizations.of(context)!.testConnection,
-                  ),
+                ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                : Text(_isConnected ? AppLocalizations.of(context)!.connectedCheck : AppLocalizations.of(context)!.testConnection),
           ),
         ),
       ],
@@ -518,12 +405,7 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
-          AppLocalizations.of(context)!.syncActions,
-          style: Theme.of(
-            context,
-          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-        ),
+        Text(AppLocalizations.of(context)!.syncActions, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
         const SizedBox(height: 16),
 
         Row(
@@ -532,25 +414,12 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
               child: ElevatedButton.icon(
                 onPressed: _canSync() && !_isLoading ? _exportCards : null,
                 icon: _isLoading && _loadingOperation == 'export'
-                    ? const SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            Colors.white,
-                          ),
-                        ),
-                      )
+                    ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation<Color>(Colors.white)))
                     : const Icon(Icons.cloud_upload),
                 label: Builder(
                   builder: (context) {
                     final l10n = AppLocalizations.of(context)!;
-                    return Text(
-                      _isLoading && _loadingOperation == 'export'
-                          ? l10n.exporting
-                          : l10n.exportCards,
-                    );
+                    return Text(_isLoading && _loadingOperation == 'export' ? l10n.exporting : l10n.exportCards);
                   },
                 ),
                 style: ElevatedButton.styleFrom(
@@ -565,25 +434,12 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
               child: ElevatedButton.icon(
                 onPressed: _canSync() && !_isLoading ? _importCards : null,
                 icon: _isLoading && _loadingOperation == 'import'
-                    ? const SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            Colors.white,
-                          ),
-                        ),
-                      )
+                    ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation<Color>(Colors.white)))
                     : const Icon(Icons.cloud_download),
                 label: Builder(
                   builder: (context) {
                     final l10n = AppLocalizations.of(context)!;
-                    return Text(
-                      _isLoading && _loadingOperation == 'import'
-                          ? l10n.importing
-                          : l10n.importCards,
-                    );
+                    return Text(_isLoading && _loadingOperation == 'import' ? l10n.importing : l10n.importCards);
                   },
                 ),
                 style: ElevatedButton.styleFrom(
@@ -606,15 +462,9 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
               width: double.infinity,
               child: TextButton.icon(
                 onPressed: _isLoading ? null : _disconnect,
-                icon: Icon(
-                  Icons.logout,
-                  color: Theme.of(context).colorScheme.error,
-                ),
+                icon: Icon(Icons.logout, color: Theme.of(context).colorScheme.error),
                 label: Text(l10n.disconnectAndChangeServer),
-                style: TextButton.styleFrom(
-                  foregroundColor: Theme.of(context).colorScheme.error,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                ),
+                style: TextButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.error, padding: const EdgeInsets.symmetric(vertical: 12)),
               ),
             );
           },
@@ -632,16 +482,10 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
           title: Text(dialogL10n.disconnectFromServer),
           content: Text(dialogL10n.disconnectConfirmation),
           actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              child: Text(dialogL10n.cancel),
-            ),
+            TextButton(onPressed: () => Navigator.of(context).pop(false), child: Text(dialogL10n.cancel)),
             ElevatedButton(
               onPressed: () => Navigator.of(context).pop(true),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).colorScheme.error,
-                foregroundColor: Theme.of(context).colorScheme.onError,
-              ),
+              style: ElevatedButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.error, foregroundColor: Theme.of(context).colorScheme.onError),
               child: Text(dialogL10n.disconnectFromServer),
             ),
           ],
@@ -663,12 +507,7 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
 
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.disconnectedSuccessfully),
-            backgroundColor: Colors.orange,
-          ),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.disconnectedSuccessfully), backgroundColor: Colors.orange));
       }
     }
   }
@@ -692,12 +531,7 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
       if (cards.isEmpty && deletedCards.isEmpty) {
         if (mounted) {
           final l10n = AppLocalizations.of(context)!;
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(l10n.noCardsToSync),
-              backgroundColor: Colors.orange,
-            ),
-          );
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.noCardsToSync), backgroundColor: Colors.orange));
         }
         return;
       }
@@ -721,12 +555,7 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
       final now = DateTime.now();
       final currentSettings = await _syncService.loadSettings();
       if (currentSettings != null) {
-        final updatedSettings = currentSettings.copyWith(
-          lastSyncDate: now,
-          lastSyncAttempt: now,
-          lastSyncSuccess: true,
-          lastSyncError: null,
-        );
+        final updatedSettings = currentSettings.copyWith(lastSyncDate: now, lastSyncAttempt: now, lastSyncSuccess: true, lastSyncError: null);
         await _syncService.saveSettings(updatedSettings);
         await _connectionManager.refreshSyncStatus();
         setState(() {
@@ -736,51 +565,31 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
 
       // Also sync preferences
       if (mounted) {
-        final displayProvider = Provider.of<DisplayProvider>(
-          context,
-          listen: false,
-        );
+        final displayProvider = Provider.of<DisplayProvider>(context, listen: false);
         final tagProvider = Provider.of<TagProvider>(context, listen: false);
         final cardProvider = Provider.of<CardProvider>(context, listen: false);
 
-        await cardProvider.syncPreferences(
-          displaySettings: displayProvider.exportSettings(),
-          tagOrder: tagProvider.exportTagOrder(),
-        );
+        await cardProvider.syncPreferences(displaySettings: displayProvider.exportSettings(), tagOrder: tagProvider.exportTagOrder());
       }
 
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
-        final message = deletedCards.isNotEmpty
-            ? l10n.syncSuccessWithCleanup(cards.length, deletedCards.length)
-            : l10n.syncSuccessExport(cards.length);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(message), backgroundColor: Colors.green),
-        );
+        final message = deletedCards.isNotEmpty ? l10n.syncSuccessWithCleanup(cards.length, deletedCards.length) : l10n.syncSuccessExport(cards.length);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message), backgroundColor: Colors.green));
       }
     } catch (e) {
       // Update sync status (failure)
       final now = DateTime.now();
       final currentSettings = await _syncService.loadSettings();
       if (currentSettings != null) {
-        final updatedSettings = currentSettings.copyWith(
-          lastSyncAttempt: now,
-          lastSyncSuccess: false,
-          lastSyncError: e.toString(),
-        );
+        final updatedSettings = currentSettings.copyWith(lastSyncAttempt: now, lastSyncSuccess: false, lastSyncError: e.toString());
         await _syncService.saveSettings(updatedSettings);
         await _connectionManager.refreshSyncStatus();
       }
 
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('${l10n.syncFailed}: $e'),
-            backgroundColor: Colors.red,
-            duration: const Duration(seconds: 5),
-          ),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${l10n.syncFailed}: $e'), backgroundColor: Colors.red, duration: const Duration(seconds: 5)));
       }
     } finally {
       if (mounted) {
@@ -807,12 +616,7 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
       if (importedCards.isEmpty) {
         if (mounted) {
           final l10n = AppLocalizations.of(context)!;
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(l10n.noCardsToImport),
-              backgroundColor: Colors.orange,
-            ),
-          );
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.noCardsToImport), backgroundColor: Colors.orange));
         }
         return;
       }
@@ -828,12 +632,8 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
       int updated = 0;
 
       for (final card in importedCards) {
-        final existingCard = cardProvider.allCards
-            .where((c) => c.uuid == card.uuid)
-            .firstOrNull;
-        debugPrint(
-          'Checking card ${card.uuid}: existing=${existingCard != null}',
-        );
+        final existingCard = cardProvider.allCards.where((c) => c.uuid == card.uuid).firstOrNull;
+        debugPrint('Checking card ${card.uuid}: existing=${existingCard != null}');
         if (existingCard != null) {
           debugPrint('Updating existing card: ${card.name}');
           await cardProvider.updateCard(card);
@@ -852,15 +652,11 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
       if (!mounted) return;
 
       if (preferences != null) {
-        final displayProvider = Provider.of<DisplayProvider>(
-          context,
-          listen: false,
-        );
+        final displayProvider = Provider.of<DisplayProvider>(context, listen: false);
         final tagProvider = Provider.of<TagProvider>(context, listen: false);
 
         // Import display settings
-        final displaySettings =
-            preferences['display_settings'] as Map<String, dynamic>?;
+        final displaySettings = preferences['display_settings'] as Map<String, dynamic>?;
         if (displaySettings != null) {
           await displayProvider.importSettings(displaySettings);
         }
@@ -874,25 +670,14 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
 
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              '${l10n.importComplete}: $imported ${l10n.newCards}, $updated ${l10n.updated}',
-            ),
-            backgroundColor: Colors.green,
-          ),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('${l10n.importComplete}: $imported ${l10n.newCards}, $updated ${l10n.updated}'), backgroundColor: Colors.green));
       }
     } catch (e) {
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('${l10n.importFailed}: $e'),
-            backgroundColor: Colors.red,
-            duration: const Duration(seconds: 5),
-          ),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${l10n.importFailed}: $e'), backgroundColor: Colors.red, duration: const Duration(seconds: 5)));
       }
     } finally {
       if (mounted) {
@@ -918,18 +703,9 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
             padding: const EdgeInsets.symmetric(vertical: 8.0),
             child: Row(
               children: [
-                Text(
-                  AppLocalizations.of(context)!.advancedSettings,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                ),
+                Text(AppLocalizations.of(context)!.advancedSettings, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.primary)),
                 const Spacer(),
-                Icon(
-                  _showAdvancedSettings ? Icons.expand_less : Icons.expand_more,
-                  color: Theme.of(context).colorScheme.primary,
-                  size: 20,
-                ),
+                Icon(_showAdvancedSettings ? Icons.expand_less : Icons.expand_more, color: Theme.of(context).colorScheme.primary, size: 20),
               ],
             ),
           ),
@@ -938,11 +714,7 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
           const SizedBox(height: 16),
           Text(
             AppLocalizations.of(context)!.advancedSettingsDescription,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Theme.of(
-                context,
-              ).colorScheme.onSurface.withValues(alpha: 0.7),
-            ),
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7)),
           ),
           const SizedBox(height: 16),
           Builder(

@@ -6,25 +6,20 @@ import '../../l10n/app_localizations.dart';
 
 class SettingsScreen extends StatefulWidget {
   final int initialTabIndex;
-  
+
   const SettingsScreen({super.key, this.initialTabIndex = 0});
 
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
 }
 
-class _SettingsScreenState extends State<SettingsScreen>
-    with SingleTickerProviderStateMixin {
+class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(
-      length: 3,
-      vsync: this,
-      initialIndex: widget.initialTabIndex,
-    );
+    _tabController = TabController(length: 3, vsync: this, initialIndex: widget.initialTabIndex);
   }
 
   @override
@@ -36,7 +31,7 @@ class _SettingsScreenState extends State<SettingsScreen>
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    
+
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.settings),
@@ -48,29 +43,13 @@ class _SettingsScreenState extends State<SettingsScreen>
           unselectedLabelColor: Colors.white70,
           indicatorColor: Colors.white,
           tabs: [
-            Tab(
-              icon: const Icon(Icons.display_settings),
-              text: l10n.display,
-            ),
-            Tab(
-              icon: const Icon(Icons.local_offer),
-              text: l10n.tags,
-            ),
-            Tab(
-              icon: const Icon(Icons.sync),
-              text: l10n.sync,
-            ),
+            Tab(icon: const Icon(Icons.display_settings), text: l10n.display),
+            Tab(icon: const Icon(Icons.local_offer), text: l10n.tags),
+            Tab(icon: const Icon(Icons.sync), text: l10n.sync),
           ],
         ),
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: const [
-          DisplaySettingsTab(),
-          TagsSettingsTab(),
-          SyncSettingsTab(),
-        ],
-      ),
+      body: TabBarView(controller: _tabController, children: const [DisplaySettingsTab(), TagsSettingsTab(), SyncSettingsTab()]),
     );
   }
 }

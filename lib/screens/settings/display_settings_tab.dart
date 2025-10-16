@@ -31,7 +31,7 @@ class DisplaySettingsTab extends StatelessWidget {
 
   Widget _buildThemeSection(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    
+
     return Consumer<DisplayProvider>(
       builder: (context, displayProvider, child) {
         return Column(
@@ -39,18 +39,10 @@ class DisplaySettingsTab extends StatelessWidget {
           children: [
             Text(
               l10n.theme,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: Theme.of(context).colorScheme.onSurface,
-              ),
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface),
             ),
             const SizedBox(height: 8),
-            Text(
-              l10n.themeDescription,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
-              ),
-            ),
+            Text(l10n.themeDescription, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7))),
             const SizedBox(height: 16),
             Card(
               child: Column(
@@ -60,28 +52,14 @@ class DisplaySettingsTab extends StatelessWidget {
                     return ListTile(
                       leading: Icon(
                         _getThemeIcon(theme),
-                        color: isSelected 
-                          ? Theme.of(context).colorScheme.primary 
-                          : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                        color: isSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                       ),
-                      title: Text(
-                        _getLocalizedThemeName(context, theme),
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
-                      ),
+                      title: Text(_getLocalizedThemeName(context, theme), style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Theme.of(context).colorScheme.onSurface)),
                       subtitle: Text(
                         _getLocalizedThemeDescription(context, theme),
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7)),
                       ),
-                      trailing: isSelected
-                          ? Icon(
-                              Icons.check_circle,
-                              color: Theme.of(context).colorScheme.primary,
-                            )
-                          : null,
+                      trailing: isSelected ? Icon(Icons.check_circle, color: Theme.of(context).colorScheme.primary) : null,
                       onTap: () => displayProvider.setTheme(theme),
                     );
                   }),
@@ -96,7 +74,7 @@ class DisplaySettingsTab extends StatelessWidget {
 
   Widget _buildLanguageSection(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    
+
     return Consumer<LanguageProvider>(
       builder: (context, languageProvider, child) {
         return Column(
@@ -104,18 +82,10 @@ class DisplaySettingsTab extends StatelessWidget {
           children: [
             Text(
               l10n.languageLabel,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: Theme.of(context).colorScheme.onSurface,
-              ),
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface),
             ),
             const SizedBox(height: 8),
-            Text(
-              l10n.languageDescription,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
-              ),
-            ),
+            Text(l10n.languageDescription, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7))),
             const SizedBox(height: 16),
             Card(
               child: RadioGroup<String>(
@@ -131,20 +101,11 @@ class DisplaySettingsTab extends StatelessWidget {
                 },
                 child: Column(
                   children: [
-                    RadioListTile<String>(
-                      title: Text(l10n.languageSystem),
-                      value: 'system',
-                    ),
+                    RadioListTile<String>(title: Text(l10n.languageSystem), value: 'system'),
                     const Divider(height: 1),
-                    RadioListTile<String>(
-                      title: Text(l10n.languageEnglish),
-                      value: 'en',
-                    ),
+                    RadioListTile<String>(title: Text(l10n.languageEnglish), value: 'en'),
                     const Divider(height: 1),
-                    RadioListTile<String>(
-                      title: Text(l10n.languageHungarian),
-                      value: 'hu',
-                    ),
+                    RadioListTile<String>(title: Text(l10n.languageHungarian), value: 'hu'),
                   ],
                 ),
               ),
@@ -157,7 +118,7 @@ class DisplaySettingsTab extends StatelessWidget {
 
   Widget _buildLayoutSection(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    
+
     return Consumer<DisplayProvider>(
       builder: (context, displayProvider, child) {
         return Column(
@@ -165,18 +126,10 @@ class DisplaySettingsTab extends StatelessWidget {
           children: [
             Text(
               l10n.layout,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: Theme.of(context).colorScheme.onSurface,
-              ),
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface),
             ),
             const SizedBox(height: 8),
-            Text(
-              l10n.layoutDescription,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
-              ),
-            ),
+            Text(l10n.layoutDescription, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7))),
             const SizedBox(height: 16),
             Card(
               child: Column(
@@ -187,32 +140,18 @@ class DisplaySettingsTab extends StatelessWidget {
                     return ListTile(
                       leading: Icon(
                         _getLayoutIcon(mode),
-                        color: isSelected 
-                          ? Theme.of(context).colorScheme.primary 
-                          : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                        color: isSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                       ),
-                      title: Text(
-                        _getLocalizedLayoutName(context, mode),
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
-                      ),
+                      title: Text(_getLocalizedLayoutName(context, mode), style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Theme.of(context).colorScheme.onSurface)),
                       subtitle: Text(
                         _getLocalizedLayoutDescription(context, mode),
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7)),
                       ),
-                      trailing: isSelected
-                          ? Icon(
-                              Icons.check_circle,
-                              color: Theme.of(context).colorScheme.primary,
-                            )
-                          : null,
+                      trailing: isSelected ? Icon(Icons.check_circle, color: Theme.of(context).colorScheme.primary) : null,
                       onTap: () => displayProvider.setLayoutMode(mode),
                     );
                   }),
-                  
+
                   // Grid columns setting (only show when grid mode is selected)
                   if (displayProvider.layoutMode == LayoutMode.grid) ...[
                     const Divider(),
@@ -223,17 +162,12 @@ class DisplaySettingsTab extends StatelessWidget {
                         children: [
                           Text(
                             l10n.gridColumns,
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.w600,
-                              color: Theme.of(context).colorScheme.onSurface,
-                            ),
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.onSurface),
                           ),
                           const SizedBox(height: 8),
                           Text(
                             l10n.gridColumnsDescription,
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
-                            ),
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7)),
                           ),
                           const SizedBox(height: 16),
                           Row(
@@ -255,10 +189,7 @@ class DisplaySettingsTab extends StatelessWidget {
                                 alignment: Alignment.center,
                                 child: Text(
                                   displayProvider.gridColumns.toString(),
-                                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: Theme.of(context).primaryColor,
-                                  ),
+                                  style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).primaryColor),
                                 ),
                               ),
                             ],
@@ -267,18 +198,8 @@ class DisplaySettingsTab extends StatelessWidget {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
-                                l10n.oneColumn,
-                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-                                ),
-                              ),
-                              Text(
-                                l10n.fourColumns,
-                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-                                ),
-                              ),
+                              Text(l10n.oneColumn, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6))),
+                              Text(l10n.fourColumns, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6))),
                             ],
                           ),
                         ],
@@ -286,17 +207,10 @@ class DisplaySettingsTab extends StatelessWidget {
                     ),
                     const Divider(),
                     SwitchListTile(
-                      title: Text(
-                        l10n.showGridNames,
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
-                      ),
+                      title: Text(l10n.showGridNames, style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Theme.of(context).colorScheme.onSurface)),
                       subtitle: Text(
                         l10n.showGridNamesDescription,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7)),
                       ),
                       value: displayProvider.showGridNames,
                       onChanged: (value) => displayProvider.setShowGridNames(value),
@@ -389,7 +303,7 @@ class DisplaySettingsTab extends StatelessWidget {
 
   Widget _buildCameraSection(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    
+
     return Consumer<DisplayProvider>(
       builder: (context, displayProvider, child) {
         return Column(
@@ -397,66 +311,32 @@ class DisplaySettingsTab extends StatelessWidget {
           children: [
             Text(
               l10n.camera,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: Theme.of(context).colorScheme.onSurface,
-              ),
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface),
             ),
             const SizedBox(height: 8),
-            Text(
-              l10n.cameraDescription,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
-              ),
-            ),
+            Text(l10n.cameraDescription, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7))),
             const SizedBox(height: 16),
             Card(
               child: Column(
                 children: [
                   ListTile(
-                    leading: Icon(
-                      Icons.camera_alt,
-                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
-                    ),
-                    title: Text(
-                      l10n.autoOpenCamera,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                    ),
+                    leading: Icon(Icons.camera_alt, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7)),
+                    title: Text(l10n.autoOpenCamera, style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Theme.of(context).colorScheme.onSurface)),
                     subtitle: Text(
                       l10n.autoOpenCameraDescription,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7)),
                     ),
-                    trailing: Switch(
-                      value: displayProvider.autoOpenCamera,
-                      onChanged: (value) => displayProvider.setAutoOpenCamera(value),
-                    ),
+                    trailing: Switch(value: displayProvider.autoOpenCamera, onChanged: (value) => displayProvider.setAutoOpenCamera(value)),
                   ),
                   Divider(height: 1, color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2)),
                   ListTile(
-                    leading: Icon(
-                      Icons.brightness_high,
-                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
-                    ),
-                    title: Text(
-                      l10n.maxBrightness,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                    ),
+                    leading: Icon(Icons.brightness_high, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7)),
+                    title: Text(l10n.maxBrightness, style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Theme.of(context).colorScheme.onSurface)),
                     subtitle: Text(
                       l10n.maxBrightnessDescription,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7)),
                     ),
-                    trailing: Switch(
-                      value: displayProvider.maxBrightnessEnabled,
-                      onChanged: (value) => displayProvider.setMaxBrightnessEnabled(value),
-                    ),
+                    trailing: Switch(value: displayProvider.maxBrightnessEnabled, onChanged: (value) => displayProvider.setMaxBrightnessEnabled(value)),
                   ),
                 ],
               ),
@@ -469,42 +349,24 @@ class DisplaySettingsTab extends StatelessWidget {
 
   Widget _buildStatisticsSection(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           l10n.statisticsSection,
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: Theme.of(context).colorScheme.onSurface,
-          ),
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface),
         ),
         const SizedBox(height: 8),
-        Text(
-          l10n.statisticsSectionDescription,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
-          ),
-        ),
+        Text(l10n.statisticsSectionDescription, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7))),
         const SizedBox(height: 16),
         Card(
           child: ListTile(
-            leading: Icon(
-              Icons.delete_sweep,
-              color: Theme.of(context).colorScheme.error,
-            ),
-            title: Text(
-              l10n.resetStatistics,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onSurface,
-              ),
-            ),
+            leading: Icon(Icons.delete_sweep, color: Theme.of(context).colorScheme.error),
+            title: Text(l10n.resetStatistics, style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Theme.of(context).colorScheme.onSurface)),
             subtitle: Text(
               l10n.resetStatisticsDescription,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7)),
             ),
             onTap: () => _showResetStatisticsDialog(context),
           ),
@@ -515,35 +377,27 @@ class DisplaySettingsTab extends StatelessWidget {
 
   void _showResetStatisticsDialog(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: Text(l10n.resetStatistics),
         content: Text(l10n.resetStatisticsConfirmation),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text(l10n.cancel),
-          ),
+          TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(l10n.cancel)),
           ElevatedButton(
             onPressed: () async {
               Navigator.of(context).pop();
-              
+
               // Reset all card statistics
               final cardProvider = Provider.of<CardProvider>(context, listen: false);
               await cardProvider.resetAllStatistics();
-              
+
               if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(l10n.statisticsResetSuccess)),
-                );
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.statisticsResetSuccess)));
               }
             },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.error,
-              foregroundColor: Theme.of(context).colorScheme.onError,
-            ),
+            style: ElevatedButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.error, foregroundColor: Theme.of(context).colorScheme.onError),
             child: Text(l10n.reset),
           ),
         ],

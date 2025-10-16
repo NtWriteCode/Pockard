@@ -46,6 +46,7 @@
   "configureWebdavFirst": "Please configure server connection in Sync tab first",
   "connected": "Connected",
   "connectedCheck": "Connected ✓",
+  "connectionStatus": "Connection Status",
   "connectionFailed": "Connection failed: {error}",
   "connectionSuccessful": "Connection successful!",
   "coverImageLabel": "Cover Image (Optional)",

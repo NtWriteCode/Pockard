@@ -47,8 +47,7 @@ class SyncSettingsModel {
       password: password ?? this.password,
       isConnected: isConnected ?? this.isConnected,
       lastSyncDate: lastSyncDate ?? this.lastSyncDate,
-      globalFolderAvailable:
-          globalFolderAvailable ?? this.globalFolderAvailable,
+      globalFolderAvailable: globalFolderAvailable ?? this.globalFolderAvailable,
       lastSyncAttempt: lastSyncAttempt ?? this.lastSyncAttempt,
       lastSyncSuccess: lastSyncSuccess ?? this.lastSyncSuccess,
       lastSyncError: lastSyncError ?? this.lastSyncError,
@@ -81,13 +80,9 @@ class SyncSettingsModel {
       username: map['username'],
       password: map['password'],
       isConnected: map['isConnected'] ?? false,
-      lastSyncDate: map['lastSyncDate'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(map['lastSyncDate'])
-          : null,
+      lastSyncDate: map['lastSyncDate'] != null ? DateTime.fromMillisecondsSinceEpoch(map['lastSyncDate']) : null,
       globalFolderAvailable: map['globalFolderAvailable'] ?? false,
-      lastSyncAttempt: map['lastSyncAttempt'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(map['lastSyncAttempt'])
-          : null,
+      lastSyncAttempt: map['lastSyncAttempt'] != null ? DateTime.fromMillisecondsSinceEpoch(map['lastSyncAttempt']) : null,
       lastSyncSuccess: map['lastSyncSuccess'] ?? true,
       lastSyncError: map['lastSyncError'],
       useParallelSync: map['useParallelSync'] ?? true, // Default to parallel

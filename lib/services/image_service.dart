@@ -16,10 +16,7 @@ class ImageService {
   final ImagePicker _picker = ImagePicker();
   static const int maxFileSize = 5 * 1024 * 1024; // 5MB in bytes
 
-  Future<String?> pickEditAndSaveImage({
-    required BuildContext context,
-    ImageSource source = ImageSource.gallery,
-  }) async {
+  Future<String?> pickEditAndSaveImage({required BuildContext context, ImageSource source = ImageSource.gallery}) async {
     try {
       // Get localization strings before async operations
       final l10n = AppLocalizations.of(context)!;
@@ -73,10 +70,7 @@ class ImageService {
     }
   }
 
-  Future<String?> editExistingImage(
-    String existingImagePath,
-    BuildContext context,
-  ) async {
+  Future<String?> editExistingImage(String existingImagePath, BuildContext context) async {
     try {
       // Open cropping interface for existing image
       final CroppedFile? croppedFile = await ImageCropper().cropImage(
@@ -135,9 +129,7 @@ class ImageService {
     try {
       // Get app documents directory
       final Directory appDocDir = await getApplicationDocumentsDirectory();
-      final Directory imagesDir = Directory(
-        path.join(appDocDir.path, 'images'),
-      );
+      final Directory imagesDir = Directory(path.join(appDocDir.path, 'images'));
       if (!await imagesDir.exists()) {
         await imagesDir.create(recursive: true);
       }
@@ -216,22 +208,13 @@ class ImageService {
 
   bool _isImageFile(String filePath) {
     final String extension = path.extension(filePath).toLowerCase();
-    return [
-      '.jpg',
-      '.jpeg',
-      '.png',
-      '.gif',
-      '.bmp',
-      '.webp',
-    ].contains(extension);
+    return ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp'].contains(extension);
   }
 
   Future<void> cleanupUnusedImages(List<String> usedImagePaths) async {
     try {
       final Directory appDocDir = await getApplicationDocumentsDirectory();
-      final Directory imagesDir = Directory(
-        path.join(appDocDir.path, 'images'),
-      );
+      final Directory imagesDir = Directory(path.join(appDocDir.path, 'images'));
 
       if (!await imagesDir.exists()) return;
 

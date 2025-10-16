@@ -40,9 +40,7 @@ class _TagsSettingsTabState extends State<TagsSettingsTab> {
                   const SizedBox(height: 16),
                   Text(
                     l10n.noTagsYet,
-                    style: Theme.of(
-                      context,
-                    ).textTheme.bodyLarge?.copyWith(color: Colors.grey[600]),
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.grey[600]),
                     textAlign: TextAlign.center,
                   ),
                 ],
@@ -58,20 +56,11 @@ class _TagsSettingsTabState extends State<TagsSettingsTab> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    l10n.dragToReorderTags,
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  Text(l10n.dragToReorderTags, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
                   const SizedBox(height: 8),
                   Text(
                     l10n.dragToReorderTagsDescription,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.onSurface.withValues(alpha: 0.6),
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6)),
                   ),
                 ],
               ),
@@ -93,40 +82,15 @@ class _TagsSettingsTabState extends State<TagsSettingsTab> {
                         width: 32,
                         height: 32,
                         decoration: BoxDecoration(
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.primary.withValues(alpha: 0.15),
+                          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(16),
-                          border: Border.all(
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.primary.withValues(alpha: 0.4),
-                          ),
+                          border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.4)),
                         ),
-                        child: Icon(
-                          Icons.label,
-                          size: 16,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
+                        child: Icon(Icons.label, size: 16, color: Theme.of(context).colorScheme.primary),
                       ),
-                      title: Text(
-                        tag,
-                        style: const TextStyle(fontWeight: FontWeight.w500),
-                      ),
-                      subtitle: Text(
-                        '${l10n.position} ${index + 1}',
-                        style: TextStyle(
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.onSurface.withValues(alpha: 0.6),
-                        ),
-                      ),
-                      trailing: Icon(
-                        Icons.drag_handle,
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.onSurface.withValues(alpha: 0.5),
-                      ),
+                      title: Text(tag, style: const TextStyle(fontWeight: FontWeight.w500)),
+                      subtitle: Text('${l10n.position} ${index + 1}', style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6))),
+                      trailing: Icon(Icons.drag_handle, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5)),
                     ),
                   );
                 },

@@ -9,7 +9,7 @@ import '../services/connection_manager.dart';
 
 class CardProvider with ChangeNotifier {
   static const String _sortByKey = 'card_sort_by';
-  
+
   final DatabaseService _databaseService = DatabaseService();
   final ImageService _imageService = ImageService();
   final SyncSettingsService _syncService = SyncSettingsService();
@@ -26,17 +26,12 @@ class CardProvider with ChangeNotifier {
 
     // Apply tag filter
     if (_selectedTag.isNotEmpty) {
-      filteredCards = filteredCards
-          .where((card) => card.tags.contains(_selectedTag))
-          .toList();
+      filteredCards = filteredCards.where((card) => card.tags.contains(_selectedTag)).toList();
     }
 
     // Apply search filter
     if (_searchQuery.isNotEmpty) {
-      filteredCards = filteredCards
-          .where((card) =>
-              card.name.toLowerCase().contains(_searchQuery.toLowerCase()))
-          .toList();
+      filteredCards = filteredCards.where((card) => card.name.toLowerCase().contains(_searchQuery.toLowerCase())).toList();
     }
 
     // Apply sorting
@@ -87,7 +82,7 @@ class CardProvider with ChangeNotifier {
   String get selectedTag => _selectedTag;
   String get searchQuery => _searchQuery;
   String get sortBy => _sortBy;
-  
+
   List<CardModel> get allCards => _cards;
   List<CardModel> get deletedCards => _cards.where((card) => card.isDeleted).toList();
 
@@ -101,7 +96,7 @@ class CardProvider with ChangeNotifier {
       debugPrint('Error loading cards: $e');
     }
   }
-  
+
   Future<void> _loadSortPreference() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -125,10 +120,10 @@ class CardProvider with ChangeNotifier {
       _cards.add(card);
       await _loadTags();
       notifyListeners();
-      
+
       // Auto-sync to WebDAV (silently fail if unavailable)
       _autoSync();
-      
+
       return true;
     } catch (e) {
       debugPrint('Error adding card: $e');
@@ -145,10 +140,10 @@ class CardProvider with ChangeNotifier {
       }
       await _loadTags();
       notifyListeners();
-      
+
       // Auto-sync to WebDAV (silently fail if unavailable)
       _autoSync();
-      
+
       return true;
     } catch (e) {
       debugPrint('Error updating card: $e');
@@ -159,7 +154,7 @@ class CardProvider with ChangeNotifier {
   Future<bool> permanentlyDeleteCard(String uuid) async {
     try {
       final card = _cards.firstWhere((c) => c.uuid == uuid);
-      
+
       // Delete associated images if they exist
       if (card.coverImagePath != null) {
         await _imageService.deleteImage(card.coverImagePath!);
@@ -167,7 +162,7 @@ class CardProvider with ChangeNotifier {
       if (card.barcodeImagePath != null) {
         await _imageService.deleteImage(card.barcodeImagePath!);
       }
-      
+
       await _databaseService.deleteCard(uuid);
       _cards.removeWhere((c) => c.uuid == uuid);
       await _loadTags();
@@ -183,22 +178,22 @@ class CardProvider with ChangeNotifier {
     try {
       final cardIndex = _cards.indexWhere((c) => c.uuid == uuid);
       if (cardIndex == -1) return false;
-      
+
       final card = _cards[cardIndex];
-      
+
       // Soft delete: mark as deleted instead of removing
       final deletedCard = card.copyWith(isDeleted: true);
       _cards[cardIndex] = deletedCard;
-      
+
       // Update in database
       await _databaseService.updateCard(deletedCard);
-      
+
       await _loadTags();
       notifyListeners();
-      
+
       // Auto-sync to WebDAV (silently fail if unavailable)
       _autoSync();
-      
+
       return true;
     } catch (e) {
       debugPrint('Error deleting card: $e');
@@ -211,10 +206,7 @@ class CardProvider with ChangeNotifier {
       await _databaseService.incrementCardUsage(uuid);
       final index = _cards.indexWhere((c) => c.uuid == uuid);
       if (index != -1) {
-        _cards[index] = _cards[index].copyWith(
-          usageCount: _cards[index].usageCount + 1,
-          updateDate: DateTime.now(),
-        );
+        _cards[index] = _cards[index].copyWith(usageCount: _cards[index].usageCount + 1, updateDate: DateTime.now());
         notifyListeners();
       }
     } catch (e) {
@@ -230,7 +222,7 @@ class CardProvider with ChangeNotifier {
         _cards[i] = _cards[i].copyWith(usageCount: 0);
       }
       notifyListeners();
-      
+
       // Auto-sync to WebDAV (silently fail if unavailable)
       _autoSync();
     } catch (e) {
@@ -247,7 +239,7 @@ class CardProvider with ChangeNotifier {
         await _databaseService.toggleCardPin(uuid, newPinState);
         _cards[index] = _cards[index].copyWith(isPinned: newPinState);
         notifyListeners();
-        
+
         // Auto-sync to WebDAV (silently fail if unavailable)
         _autoSync();
       }
@@ -275,7 +267,7 @@ class CardProvider with ChangeNotifier {
   Future<void> setSortBy(String sortBy) async {
     _sortBy = sortBy;
     notifyListeners();
-    
+
     // Save the preference
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -299,7 +291,7 @@ class CardProvider with ChangeNotifier {
 
   Future<void> cleanupUnusedImages() async {
     final usedImagePaths = <String>[];
-    
+
     // Collect all used image paths (cover + barcode)
     for (final card in _cards) {
       if (card.coverImagePath != null) {
@@ -309,7 +301,7 @@ class CardProvider with ChangeNotifier {
         usedImagePaths.add(card.barcodeImagePath!);
       }
     }
-    
+
     await _imageService.cleanupUnusedImages(usedImagePaths);
   }
 
@@ -317,13 +309,10 @@ class CardProvider with ChangeNotifier {
   Future<void> triggerSync() async {
     await _autoSync();
   }
-  
+
   /// Sync user preferences (display settings and tag order) to server
   /// This should be called by the UI when preferences change
-  Future<void> syncPreferences({
-    required Map<String, dynamic> displaySettings,
-    required List<String> tagOrder,
-  }) async {
+  Future<void> syncPreferences({required Map<String, dynamic> displaySettings, required List<String> tagOrder}) async {
     try {
       // Check if sync is configured
       final settings = await _syncService.loadSettings();
@@ -340,11 +329,8 @@ class CardProvider with ChangeNotifier {
       }
 
       final prefsSync = PreferencesSyncService();
-      await prefsSync.uploadPreferences(
-        displaySettings: displaySettings,
-        tagOrder: tagOrder,
-      );
-      
+      await prefsSync.uploadPreferences(displaySettings: displaySettings, tagOrder: tagOrder);
+
       debugPrint('Preferences synced successfully');
     } catch (e) {
       debugPrint('Error syncing preferences: $e');
@@ -355,7 +341,7 @@ class CardProvider with ChangeNotifier {
   /// Auto-sync cards to WebDAV (silently fail if unavailable)
   Future<void> _autoSync() async {
     final attemptTime = DateTime.now();
-    
+
     try {
       // Check if sync is configured
       final settings = await _syncService.loadSettings();
@@ -370,15 +356,11 @@ class CardProvider with ChangeNotifier {
       if (!initialized) {
         final error = 'Failed to initialize WebDAV client'; // Internal error, not shown to user
         debugPrint('Auto-sync failed: $error');
-        
+
         // Record failed attempt
-        final updatedSettings = settings.copyWith(
-          lastSyncAttempt: attemptTime,
-          lastSyncSuccess: false,
-          lastSyncError: error,
-        );
+        final updatedSettings = settings.copyWith(lastSyncAttempt: attemptTime, lastSyncSuccess: false, lastSyncError: error);
         await _syncService.saveSettings(updatedSettings);
-        
+
         // Refresh connection manager to update UI
         await _connectionManager.refreshSyncStatus();
         return;
@@ -391,7 +373,7 @@ class CardProvider with ChangeNotifier {
       // Handle deleted cards first
       if (deleted.isNotEmpty) {
         await _syncService.handleDeletedCards(deleted);
-        
+
         // Permanently delete cards locally after successful server deletion
         for (final card in deleted) {
           await permanentlyDeleteCard(card.uuid);
@@ -404,14 +386,9 @@ class CardProvider with ChangeNotifier {
       }
 
       // Record successful sync
-      final updatedSettings = settings.copyWith(
-        lastSyncDate: attemptTime,
-        lastSyncAttempt: attemptTime,
-        lastSyncSuccess: true,
-        lastSyncError: null,
-      );
+      final updatedSettings = settings.copyWith(lastSyncDate: attemptTime, lastSyncAttempt: attemptTime, lastSyncSuccess: true, lastSyncError: null);
       await _syncService.saveSettings(updatedSettings);
-      
+
       // Refresh connection manager to update UI
       await _connectionManager.refreshSyncStatus();
 
@@ -419,17 +396,13 @@ class CardProvider with ChangeNotifier {
     } catch (e) {
       // Record failed sync with error details
       debugPrint('Auto-sync failed: $e');
-      
+
       try {
         final settings = await _syncService.loadSettings();
         if (settings != null) {
-          final updatedSettings = settings.copyWith(
-            lastSyncAttempt: attemptTime,
-            lastSyncSuccess: false,
-            lastSyncError: e.toString(),
-          );
+          final updatedSettings = settings.copyWith(lastSyncAttempt: attemptTime, lastSyncSuccess: false, lastSyncError: e.toString());
           await _syncService.saveSettings(updatedSettings);
-          
+
           // Refresh connection manager to update UI
           await _connectionManager.refreshSyncStatus();
         }
@@ -439,4 +412,3 @@ class CardProvider with ChangeNotifier {
     }
   }
 }
-

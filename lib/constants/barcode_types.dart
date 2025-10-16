@@ -39,10 +39,7 @@ class BarcodeTypes {
 
   /// Get barcode type label from value
   static String getLabel(String value) {
-    final type = supportedTypes.firstWhere(
-      (type) => type['value'] == value,
-      orElse: () => {'value': value, 'label': value},
-    );
+    final type = supportedTypes.firstWhere((type) => type['value'] == value, orElse: () => {'value': value, 'label': value});
     return type['label']!;
   }
 }

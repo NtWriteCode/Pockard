@@ -11,20 +11,13 @@ class CardTile extends StatelessWidget {
   final VoidCallback onTap;
   final VoidCallback? onLongPress;
 
-  const CardTile({
-    super.key,
-    required this.card,
-    required this.onTap,
-    this.onLongPress,
-  });
+  const CardTile({super.key, required this.card, required this.onTap, this.onLongPress});
 
   @override
   Widget build(BuildContext context) {
     return Card(
       // Don't override elevation - let theme handle it
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
         onTap: onTap,
         onLongPress: onLongPress,
@@ -36,16 +29,10 @@ class CardTile extends StatelessWidget {
               // Cover image or placeholder
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
-                child: SizedBox(
-                  width: 60,
-                  height: 60,
-                  child: card.coverImagePath != null
-                      ? _buildImageWidget(context, card.coverImagePath!)
-                      : _buildPlaceholder(context),
-                ),
+                child: SizedBox(width: 60, height: 60, child: card.coverImagePath != null ? _buildImageWidget(context, card.coverImagePath!) : _buildPlaceholder(context)),
               ),
               const SizedBox(width: 16),
-              
+
               // Card details
               Expanded(
                 child: Column(
@@ -56,9 +43,7 @@ class CardTile extends StatelessWidget {
                         Expanded(
                           child: Text(
                             card.name,
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -66,16 +51,12 @@ class CardTile extends StatelessWidget {
                         if (card.isPinned)
                           Padding(
                             padding: const EdgeInsets.only(left: 4),
-                            child: Icon(
-                              Icons.push_pin,
-                              size: 16,
-                              color: Theme.of(context).colorScheme.primary,
-                            ),
+                            child: Icon(Icons.push_pin, size: 16, color: Theme.of(context).colorScheme.primary),
                           ),
                       ],
                     ),
                     const SizedBox(height: 4),
-                    
+
                     // Tags
                     if (card.tags.isNotEmpty)
                       Wrap(
@@ -83,70 +64,40 @@ class CardTile extends StatelessWidget {
                         runSpacing: 4,
                         children: card.tags.take(3).map((tag) {
                           return Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 2,
-                            ),
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                             decoration: BoxDecoration(
                               color: Theme.of(context).colorScheme.primaryContainer,
                               borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: Theme.of(context).colorScheme.outline,
-                              ),
+                              border: Border.all(color: Theme.of(context).colorScheme.outline),
                             ),
-                            child: Text(
-                              tag,
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                    color: Theme.of(context).colorScheme.onPrimaryContainer,
-                                    fontSize: 10,
-                                  ),
-                            ),
+                            child: Text(tag, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onPrimaryContainer, fontSize: 10)),
                           );
                         }).toList(),
                       ),
-                    
+
                     const SizedBox(height: 8),
-                    
+
                     // Usage and date info
                     Row(
                       children: [
-                        Icon(
-                          Icons.visibility,
-                          size: 14,
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
+                        Icon(Icons.visibility, size: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
                         const SizedBox(width: 4),
                         Text(
                           '${card.usageCount} ${AppLocalizations.of(context)!.uses}',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: Theme.of(context).colorScheme.onSurfaceVariant,
-                              ),
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                         ),
                         const SizedBox(width: 16),
-                        Icon(
-                          Icons.access_time,
-                          size: 14,
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
+                        Icon(Icons.access_time, size: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
                         const SizedBox(width: 4),
-                        Text(
-                          _formatDate(card.updateDate, context),
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: Theme.of(context).colorScheme.onSurfaceVariant,
-                              ),
-                        ),
+                        Text(_formatDate(card.updateDate, context), style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
                       ],
                     ),
                   ],
                 ),
               ),
-              
+
               // Arrow icon
-              Icon(
-                Icons.arrow_forward_ios,
-                size: 16,
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
+              Icon(Icons.arrow_forward_ios, size: 16, color: Theme.of(context).colorScheme.onSurfaceVariant),
             ],
           ),
         ),
@@ -172,18 +123,14 @@ class CardTile extends StatelessWidget {
         ),
       );
     }
-    
+
     return _buildDefaultPlaceholder(context);
   }
 
   Widget _buildDefaultPlaceholder(BuildContext context) {
     return Container(
       color: Theme.of(context).colorScheme.surfaceContainerHighest,
-      child: Icon(
-        Icons.credit_card,
-        size: 30,
-        color: Theme.of(context).colorScheme.onSurface,
-      ),
+      child: Icon(Icons.credit_card, size: 30, color: Theme.of(context).colorScheme.onSurface),
     );
   }
 
@@ -244,11 +191,6 @@ class CardTile extends StatelessWidget {
   }
 
   Widget _buildImageWidget(BuildContext context, String imagePath) {
-    return CoverImageWidget(
-      imagePath: imagePath,
-      fit: BoxFit.cover,
-      borderRadius: 8,
-      errorBuilder: (context) => _buildPlaceholder(context),
-    );
+    return CoverImageWidget(imagePath: imagePath, fit: BoxFit.cover, borderRadius: 8, errorBuilder: (context) => _buildPlaceholder(context));
   }
 }

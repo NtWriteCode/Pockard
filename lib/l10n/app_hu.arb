@@ -45,6 +45,7 @@
   "configureWebdavFirst": "Kérlek először állítsd be a szerver kapcsolatot a Szinkronizálás fülön",
   "connected": "Csatlakozva",
   "connectedCheck": "Csatlakozva ✓",
+  "connectionStatus": "Kapcsolat állapota",
   "connectionFailed": "Kapcsolódási hiba: {error}",
   "connectionSuccessful": "Sikeres kapcsolódás!",
   "coverImageLabel": "Borítókép (opcionális)",

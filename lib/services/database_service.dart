@@ -20,13 +20,8 @@ class DatabaseService {
   Future<Database> _initDatabase() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, 'pockard.db');
-    
-    return await openDatabase(
-      path,
-      version: 4,
-      onCreate: _onCreate,
-      onUpgrade: _onUpgrade,
-    );
+
+    return await openDatabase(path, version: 4, onCreate: _onCreate, onUpgrade: _onUpgrade);
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
@@ -95,11 +90,7 @@ class DatabaseService {
 
   Future<CardModel?> getCard(String uuid) async {
     final db = await database;
-    final List<Map<String, dynamic>> maps = await db.query(
-      'cards',
-      where: 'uuid = ?',
-      whereArgs: [uuid],
-    );
+    final List<Map<String, dynamic>> maps = await db.query('cards', where: 'uuid = ?', whereArgs: [uuid]);
     if (maps.isNotEmpty) {
       return CardModel.fromMap(maps.first);
     }
@@ -108,71 +99,46 @@ class DatabaseService {
 
   Future<int> updateCard(CardModel card) async {
     final db = await database;
-    return await db.update(
-      'cards',
-      card.toMap(),
-      where: 'uuid = ?',
-      whereArgs: [card.uuid],
-    );
+    return await db.update('cards', card.toMap(), where: 'uuid = ?', whereArgs: [card.uuid]);
   }
 
   Future<int> deleteCard(String uuid) async {
     final db = await database;
-    return await db.delete(
-      'cards',
-      where: 'uuid = ?',
-      whereArgs: [uuid],
-    );
+    return await db.delete('cards', where: 'uuid = ?', whereArgs: [uuid]);
   }
 
   Future<int> incrementCardUsage(String uuid) async {
     final db = await database;
-    return await db.rawUpdate(
-      'UPDATE cards SET usageCount = usageCount + 1, updateDate = ? WHERE uuid = ?',
-      [DateTime.now().millisecondsSinceEpoch, uuid],
-    );
+    return await db.rawUpdate('UPDATE cards SET usageCount = usageCount + 1, updateDate = ? WHERE uuid = ?', [DateTime.now().millisecondsSinceEpoch, uuid]);
   }
 
   Future<int> resetAllStatistics() async {
     final db = await database;
-    return await db.rawUpdate(
-      'UPDATE cards SET usageCount = 0',
-    );
+    return await db.rawUpdate('UPDATE cards SET usageCount = 0');
   }
 
   Future<int> toggleCardPin(String uuid, bool isPinned) async {
     final db = await database;
-    return await db.rawUpdate(
-      'UPDATE cards SET isPinned = ?, updateDate = ? WHERE uuid = ?',
-      [isPinned ? 1 : 0, DateTime.now().millisecondsSinceEpoch, uuid],
-    );
+    return await db.rawUpdate('UPDATE cards SET isPinned = ?, updateDate = ? WHERE uuid = ?', [isPinned ? 1 : 0, DateTime.now().millisecondsSinceEpoch, uuid]);
   }
 
   // Search and filter operations
   Future<List<CardModel>> searchCards(String query) async {
     final db = await database;
-    final List<Map<String, dynamic>> maps = await db.query(
-      'cards',
-      where: 'name LIKE ?',
-      whereArgs: ['%$query%'],
-    );
+    final List<Map<String, dynamic>> maps = await db.query('cards', where: 'name LIKE ?', whereArgs: ['%$query%']);
     return List.generate(maps.length, (i) => CardModel.fromMap(maps[i]));
   }
 
   Future<List<CardModel>> getCardsByTag(String tag) async {
     final db = await database;
-    final List<Map<String, dynamic>> maps = await db.query(
-      'cards',
-      where: 'tags LIKE ?',
-      whereArgs: ['%$tag%'],
-    );
+    final List<Map<String, dynamic>> maps = await db.query('cards', where: 'tags LIKE ?', whereArgs: ['%$tag%']);
     return List.generate(maps.length, (i) => CardModel.fromMap(maps[i]));
   }
 
   Future<List<CardModel>> getCardsSorted(String sortBy) async {
     final db = await database;
     String orderBy;
-    
+
     switch (sortBy) {
       case 'usage':
         orderBy = 'usageCount DESC';
@@ -189,11 +155,8 @@ class DatabaseService {
       default:
         orderBy = 'updateDate DESC';
     }
-    
-    final List<Map<String, dynamic>> maps = await db.query(
-      'cards',
-      orderBy: orderBy,
-    );
+
+    final List<Map<String, dynamic>> maps = await db.query('cards', orderBy: orderBy);
     return List.generate(maps.length, (i) => CardModel.fromMap(maps[i]));
   }
 
@@ -203,58 +166,44 @@ class DatabaseService {
     final List<Map<String, dynamic>> maps = await db.rawQuery('''
       SELECT DISTINCT tags FROM cards WHERE tags IS NOT NULL AND tags != ""
     ''');
-    
+
     Set<String> allTags = {};
     for (var map in maps) {
       String tagsString = map['tags'] ?? '';
       List<String> tags = tagsString.split(',').where((tag) => tag.trim().isNotEmpty).toList();
       allTags.addAll(tags.map((tag) => tag.trim()));
     }
-    
+
     return allTags.toList()..sort();
   }
 
   Future<void> saveTagOrder(List<String> tags) async {
     final db = await database;
-    
+
     // Clear existing order
     await db.delete('tag_order');
-    
+
     // Insert new order
     for (int i = 0; i < tags.length; i++) {
-      await db.insert('tag_order', {
-        'tag': tags[i],
-        'order_index': i,
-      });
+      await db.insert('tag_order', {'tag': tags[i], 'order_index': i});
     }
   }
 
   Future<List<String>> getTagOrder() async {
     final db = await database;
-    final List<Map<String, dynamic>> maps = await db.query(
-      'tag_order',
-      orderBy: 'order_index ASC',
-    );
+    final List<Map<String, dynamic>> maps = await db.query('tag_order', orderBy: 'order_index ASC');
     return maps.map((map) => map['tag'] as String).toList();
   }
 
   // Settings management
   Future<void> saveSetting(String key, String value) async {
     final db = await database;
-    await db.insert(
-      'app_settings',
-      {'key': key, 'value': value},
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+    await db.insert('app_settings', {'key': key, 'value': value}, conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   Future<String?> getSetting(String key) async {
     final db = await database;
-    final List<Map<String, dynamic>> maps = await db.query(
-      'app_settings',
-      where: 'key = ?',
-      whereArgs: [key],
-    );
+    final List<Map<String, dynamic>> maps = await db.query('app_settings', where: 'key = ?', whereArgs: [key]);
     if (maps.isNotEmpty) {
       return maps.first['value'] as String?;
     }
@@ -266,4 +215,3 @@ class DatabaseService {
     await db.close();
   }
 }
-

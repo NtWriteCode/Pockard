@@ -53,9 +53,7 @@ class _GlobalCardsTabState extends State<GlobalCardsTab> {
     } catch (e) {
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('${l10n.error}: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${l10n.error}: $e')));
       }
     } finally {
       if (mounted) {
@@ -81,9 +79,7 @@ class _GlobalCardsTabState extends State<GlobalCardsTab> {
     } catch (e) {
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.errorDownloadingCard(e.toString()))),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.errorDownloadingCard(e.toString()))));
       }
     } finally {
       if (mounted) {
@@ -107,22 +103,12 @@ class _GlobalCardsTabState extends State<GlobalCardsTab> {
 
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.cardImportedSuccess),
-            backgroundColor: Theme.of(context).colorScheme.primary,
-          ),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.cardImportedSuccess), backgroundColor: Theme.of(context).colorScheme.primary));
       }
     } catch (e) {
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.errorImportingCards(e.toString())),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.errorImportingCards(e.toString())), backgroundColor: Theme.of(context).colorScheme.error));
       }
     }
   }
@@ -136,22 +122,12 @@ class _GlobalCardsTabState extends State<GlobalCardsTab> {
 
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.cardDeletedSuccess),
-            backgroundColor: Theme.of(context).colorScheme.primary,
-          ),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.cardDeletedSuccess), backgroundColor: Theme.of(context).colorScheme.primary));
       }
     } catch (e) {
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.errorDeletingGlobalCard(e.toString())),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.errorDeletingGlobalCard(e.toString())), backgroundColor: Theme.of(context).colorScheme.error));
       }
     }
   }
@@ -176,10 +152,7 @@ class _GlobalCardsTabState extends State<GlobalCardsTab> {
               const SizedBox(height: 16),
               Text(
                 l10n.globalFolderNotAvailable,
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 16),
@@ -192,29 +165,18 @@ class _GlobalCardsTabState extends State<GlobalCardsTab> {
                 ),
                 child: Column(
                   children: [
-                    Text(
-                      l10n.globalFolderRequired,
-                      style: const TextStyle(fontSize: 16),
-                      textAlign: TextAlign.center,
-                    ),
+                    Text(l10n.globalFolderRequired, style: const TextStyle(fontSize: 16), textAlign: TextAlign.center),
                     const SizedBox(height: 12),
                     Text(
                       l10n.createGlobalFolderManually,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey.shade700,
-                      ),
+                      style: TextStyle(fontSize: 14, color: Colors.grey.shade700),
                       textAlign: TextAlign.center,
                     ),
                   ],
                 ),
               ),
               const SizedBox(height: 24),
-              ElevatedButton.icon(
-                onPressed: _checkGlobalFolderAndLoad,
-                icon: const Icon(Icons.refresh),
-                label: Text(l10n.retry),
-              ),
+              ElevatedButton.icon(onPressed: _checkGlobalFolderAndLoad, icon: const Icon(Icons.refresh), label: Text(l10n.retry)),
             ],
           ),
         ),
@@ -233,18 +195,9 @@ class _GlobalCardsTabState extends State<GlobalCardsTab> {
                 final l10n = AppLocalizations.of(context)!;
                 return Column(
                   children: [
-                    Text(
-                      l10n.noGlobalCards,
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                    Text(l10n.noGlobalCards, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 8),
-                    Text(
-                      l10n.noCardsSharedYet,
-                      style: const TextStyle(color: Colors.grey),
-                    ),
+                    Text(l10n.noCardsSharedYet, style: const TextStyle(color: Colors.grey)),
                   ],
                 );
               },
@@ -253,10 +206,7 @@ class _GlobalCardsTabState extends State<GlobalCardsTab> {
             Builder(
               builder: (context) {
                 final l10n = AppLocalizations.of(context)!;
-                return ElevatedButton(
-                  onPressed: _loadGlobalCards,
-                  child: Text(l10n.refresh),
-                );
+                return ElevatedButton(onPressed: _loadGlobalCards, child: Text(l10n.refresh));
               },
             ),
           ],
@@ -272,18 +222,11 @@ class _GlobalCardsTabState extends State<GlobalCardsTab> {
             children: [
               Expanded(
                 child: Text(
-                  AppLocalizations.of(
-                    context,
-                  )!.globalCardsCount(_globalCards.length),
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                  AppLocalizations.of(context)!.globalCardsCount(_globalCards.length),
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                 ),
               ),
-              IconButton(
-                onPressed: _loadGlobalCards,
-                icon: const Icon(Icons.refresh),
-              ),
+              IconButton(onPressed: _loadGlobalCards, icon: const Icon(Icons.refresh)),
             ],
           ),
         ),
@@ -293,11 +236,7 @@ class _GlobalCardsTabState extends State<GlobalCardsTab> {
             itemCount: _globalCards.length,
             itemBuilder: (context, index) {
               final card = _globalCards[index];
-              return CardTile(
-                card: card,
-                onTap: () => _showCardActions(card),
-                onLongPress: () => _showCardActions(card),
-              );
+              return CardTile(card: card, onTap: () => _showCardActions(card), onLongPress: () => _showCardActions(card));
             },
           ),
         ),
@@ -314,12 +253,7 @@ class _GlobalCardsTabState extends State<GlobalCardsTab> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                card.name,
-                style: Theme.of(
-                  context,
-                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-              ),
+              Text(card.name, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
               const SizedBox(height: 16),
               Builder(
                 builder: (context) {
@@ -328,10 +262,7 @@ class _GlobalCardsTabState extends State<GlobalCardsTab> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       ListTile(
-                        leading: const Icon(
-                          Icons.download,
-                          color: Colors.green,
-                        ),
+                        leading: const Icon(Icons.download, color: Colors.green),
                         title: Text(dialogL10n.importCard),
                         subtitle: Text(dialogL10n.importCardDescription),
                         onTap: () {
@@ -342,9 +273,7 @@ class _GlobalCardsTabState extends State<GlobalCardsTab> {
                       ListTile(
                         leading: const Icon(Icons.delete, color: Colors.red),
                         title: Text(dialogL10n.deleteFromGlobalPool),
-                        subtitle: Text(
-                          dialogL10n.deleteFromGlobalPoolDescription,
-                        ),
+                        subtitle: Text(dialogL10n.deleteFromGlobalPoolDescription),
                         onTap: () {
                           Navigator.pop(context);
                           _showDeleteConfirmation(card);
@@ -370,18 +299,13 @@ class _GlobalCardsTabState extends State<GlobalCardsTab> {
           title: Text(dialogL10n.deleteGlobalCard),
           content: Text(dialogL10n.deleteGlobalCardConfirm(card.name)),
           actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(),
-              child: Text(dialogL10n.cancel),
-            ),
+            TextButton(onPressed: () => Navigator.of(dialogContext).pop(), child: Text(dialogL10n.cancel)),
             TextButton(
               onPressed: () {
                 Navigator.of(dialogContext).pop();
                 _deleteGlobalCard(card);
               },
-              style: TextButton.styleFrom(
-                foregroundColor: Theme.of(dialogContext).colorScheme.error,
-              ),
+              style: TextButton.styleFrom(foregroundColor: Theme.of(dialogContext).colorScheme.error),
               child: Text(dialogL10n.delete),
             ),
           ],

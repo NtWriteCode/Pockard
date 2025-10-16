@@ -7,11 +7,7 @@ class LogoResult {
   final String imageUrl;
   final String altText;
 
-  LogoResult({
-    required this.name,
-    required this.imageUrl,
-    required this.altText,
-  });
+  LogoResult({required this.name, required this.imageUrl, required this.altText});
 
   @override
   String toString() {
@@ -62,17 +58,11 @@ class LogoSearchService {
   /// Parse logos from HTML response
   static List<LogoResult> _parseLogosFromHtml(String html) {
     final List<LogoResult> logos = [];
-    
-    // Regex to find logo images
-    final RegExp logoRegex = RegExp(
-      r'<img class="logo__img" src="([^"]+)" alt="([^"]+)"[^>]*>',
-      multiLine: true,
-    );
 
-    final RegExp nameRegex = RegExp(
-      r'<span class="logo__name">([^<]+)</span>',
-      multiLine: true,
-    );
+    // Regex to find logo images
+    final RegExp logoRegex = RegExp(r'<img class="logo__img" src="([^"]+)" alt="([^"]+)"[^>]*>', multiLine: true);
+
+    final RegExp nameRegex = RegExp(r'<span class="logo__name">([^<]+)</span>', multiLine: true);
 
     // Find all logo images
     final logoMatches = logoRegex.allMatches(html);
@@ -85,21 +75,17 @@ class LogoSearchService {
     for (final match in logoMatches) {
       final imageUrl = match.group(1);
       final altText = match.group(2);
-      
+
       if (imageUrl != null && altText != null) {
         // Extract name from alt text (remove "logo vector" suffix)
         String name = altText.replaceAll(RegExp(r'logo vector$'), '').trim();
-        
+
         // If we have a name from the span, use that instead
         if (index < names.length && names[index].isNotEmpty) {
           name = names[index];
         }
 
-        logos.add(LogoResult(
-          name: name,
-          imageUrl: imageUrl,
-          altText: altText,
-        ));
+        logos.add(LogoResult(name: name, imageUrl: imageUrl, altText: altText));
         index++;
       }
     }
@@ -112,23 +98,18 @@ class LogoSearchService {
   static Future<String?> downloadLogo(String imageUrl, String fileName) async {
     try {
       debugPrint('Downloading logo: $imageUrl');
-      
-      final response = await http.get(
-        Uri.parse(imageUrl),
-        headers: {
-          'User-Agent': _userAgent,
-        },
-      );
+
+      final response = await http.get(Uri.parse(imageUrl), headers: {'User-Agent': _userAgent});
 
       if (response.statusCode == 200) {
         // Get the app's documents directory
         final Directory appDir = await Directory.systemTemp.createTemp('logo_downloads');
         final String filePath = '${appDir.path}/$fileName';
-        
+
         // Write the image data to file
         final File file = File(filePath);
         await file.writeAsBytes(response.bodyBytes);
-        
+
         debugPrint('Logo downloaded to: $filePath');
         return filePath;
       } else {

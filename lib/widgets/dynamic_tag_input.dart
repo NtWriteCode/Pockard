@@ -6,13 +6,7 @@ class DynamicTagInput extends StatefulWidget {
   final String? hintText;
   final List<String> availableTags; // Existing tags from all cards
 
-  const DynamicTagInput({
-    super.key,
-    required this.initialTags,
-    required this.onTagsChanged,
-    this.hintText,
-    this.availableTags = const [],
-  });
+  const DynamicTagInput({super.key, required this.initialTags, required this.onTagsChanged, this.hintText, this.availableTags = const []});
 
   @override
   State<DynamicTagInput> createState() => _DynamicTagInputState();
@@ -60,11 +54,7 @@ class _DynamicTagInputState extends State<DynamicTagInput> {
 
     // Filter available tags that match the input (case-insensitive)
     // and exclude already added tags
-    final filtered = widget.availableTags
-        .where((tag) =>
-            tag.toLowerCase().contains(input.toLowerCase()) &&
-            !_tags.contains(tag))
-        .toList();
+    final filtered = widget.availableTags.where((tag) => tag.toLowerCase().contains(input.toLowerCase()) && !_tags.contains(tag)).toList();
 
     setState(() {
       _suggestions = filtered;
@@ -75,22 +65,20 @@ class _DynamicTagInputState extends State<DynamicTagInput> {
   void _handleTextChange(String text) {
     // Update suggestions based on current input
     _updateSuggestions(text);
-    
+
     // Check for dividing characters: comma, semicolon, space, enter
     final dividers = [',', ';', ' ', '\n'];
-    
+
     for (String divider in dividers) {
       if (text.contains(divider)) {
         final parts = text.split(divider);
         if (parts.isNotEmpty && parts.first.trim().isNotEmpty) {
           _addTag(parts.first.trim());
-          
+
           // Set remaining text (if any) back to controller
           final remainingText = parts.length > 1 ? parts.sublist(1).join(divider).trim() : '';
           _controller.text = remainingText;
-          _controller.selection = TextSelection.fromPosition(
-            TextPosition(offset: remainingText.length),
-          );
+          _controller.selection = TextSelection.fromPosition(TextPosition(offset: remainingText.length));
           _updateSuggestions(remainingText);
         } else {
           _controller.clear();
@@ -154,29 +142,19 @@ class _DynamicTagInputState extends State<DynamicTagInput> {
                         decoration: BoxDecoration(
                           color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
-                          ),
+                          border: Border.all(color: Theme.of(context).primaryColor.withValues(alpha: 0.3)),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
                               tag,
-                              style: TextStyle(
-                                color: Theme.of(context).primaryColor,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
-                              ),
+                              style: TextStyle(color: Theme.of(context).primaryColor, fontSize: 12, fontWeight: FontWeight.w500),
                             ),
                             const SizedBox(width: 4),
                             GestureDetector(
                               onTap: () => _removeTag(tag),
-                              child: Icon(
-                                Icons.close,
-                                size: 14,
-                                color: Theme.of(context).primaryColor.withValues(alpha: 0.7),
-                              ),
+                              child: Icon(Icons.close, size: 14, color: Theme.of(context).primaryColor.withValues(alpha: 0.7)),
                             ),
                           ],
                         ),
@@ -185,7 +163,7 @@ class _DynamicTagInputState extends State<DynamicTagInput> {
                   ),
                   const SizedBox(height: 8),
                 ],
-                
+
                 // Text input for new tags
                 TextField(
                   controller: _controller,
@@ -195,10 +173,7 @@ class _DynamicTagInputState extends State<DynamicTagInput> {
                     border: InputBorder.none,
                     isDense: true,
                     contentPadding: EdgeInsets.zero,
-                    hintStyle: TextStyle(
-                      color: Colors.grey[500],
-                      fontSize: 14,
-                    ),
+                    hintStyle: TextStyle(color: Colors.grey[500], fontSize: 14),
                   ),
                   style: const TextStyle(fontSize: 14),
                   onChanged: _handleTextChange,
@@ -213,10 +188,9 @@ class _DynamicTagInputState extends State<DynamicTagInput> {
               ],
             ),
           ),
-          
+
           // Suggestions dropdown
-          if (_showSuggestions && _suggestions.isNotEmpty)
-            _buildSuggestionsDropdown(),
+          if (_showSuggestions && _suggestions.isNotEmpty) _buildSuggestionsDropdown(),
         ],
       ),
     );
@@ -230,13 +204,7 @@ class _DynamicTagInputState extends State<DynamicTagInput> {
         color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(4),
         border: Border.all(color: Colors.grey[300]!),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 8, offset: const Offset(0, 2))],
       ),
       child: ListView.builder(
         shrinkWrap: true,
@@ -250,20 +218,10 @@ class _DynamicTagInputState extends State<DynamicTagInput> {
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               child: Row(
                 children: [
-                  Icon(
-                    Icons.label_outline,
-                    size: 16,
-                    color: Theme.of(context).primaryColor,
-                  ),
+                  Icon(Icons.label_outline, size: 16, color: Theme.of(context).primaryColor),
                   const SizedBox(width: 8),
                   Expanded(
-                    child: Text(
-                      suggestion,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                    ),
+                    child: Text(suggestion, style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurface)),
                   ),
                 ],
               ),

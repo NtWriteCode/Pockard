@@ -22,10 +22,7 @@ class CardDetailScreen extends StatelessWidget {
         backgroundColor: Theme.of(context).primaryColor,
         foregroundColor: Colors.white,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.edit),
-            onPressed: () => _navigateToEdit(context),
-          ),
+          IconButton(icon: const Icon(Icons.edit), onPressed: () => _navigateToEdit(context)),
           PopupMenuButton<String>(
             onSelected: (value) {
               if (value == 'delete') {
@@ -79,11 +76,7 @@ class CardDetailScreen extends StatelessWidget {
                     errorBuilder: (context, error, stackTrace) {
                       return Container(
                         color: Colors.grey[200],
-                        child: Icon(
-                          Icons.credit_card,
-                          size: 80,
-                          color: Colors.grey[400],
-                        ),
+                        child: Icon(Icons.credit_card, size: 80, color: Colors.grey[400]),
                       );
                     },
                   ),
@@ -95,11 +88,7 @@ class CardDetailScreen extends StatelessWidget {
                 child: Container(
                   width: double.infinity,
                   color: Colors.grey[200],
-                  child: Icon(
-                    Icons.credit_card,
-                    size: 80,
-                    color: Colors.grey[400],
-                  ),
+                  child: Icon(Icons.credit_card, size: 80, color: Colors.grey[400]),
                 ),
               ),
 
@@ -109,12 +98,7 @@ class CardDetailScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Card name
-                  Text(
-                    card.name,
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  Text(card.name, style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold)),
                   const SizedBox(height: 16),
 
                   // Tags section
@@ -122,11 +106,7 @@ class CardDetailScreen extends StatelessWidget {
                     Builder(
                       builder: (context) {
                         final l10n = AppLocalizations.of(context)!;
-                        return Text(
-                          l10n.tags,
-                          style: Theme.of(context).textTheme.titleMedium
-                              ?.copyWith(fontWeight: FontWeight.w600),
-                        );
+                        return Text(l10n.tags, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600));
                       },
                     ),
                     const SizedBox(height: 8),
@@ -135,27 +115,15 @@ class CardDetailScreen extends StatelessWidget {
                       runSpacing: 8,
                       children: card.tags.map((tag) {
                         return Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
-                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                           decoration: BoxDecoration(
-                            color: Theme.of(
-                              context,
-                            ).primaryColor.withValues(alpha: 0.1),
+                            color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(16),
-                            border: Border.all(
-                              color: Theme.of(
-                                context,
-                              ).primaryColor.withValues(alpha: 0.3),
-                            ),
+                            border: Border.all(color: Theme.of(context).primaryColor.withValues(alpha: 0.3)),
                           ),
                           child: Text(
                             tag,
-                            style: TextStyle(
-                              color: Theme.of(context).primaryColor,
-                              fontWeight: FontWeight.w500,
-                            ),
+                            style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.w500),
                           ),
                         );
                       }).toList(),
@@ -168,11 +136,7 @@ class CardDetailScreen extends StatelessWidget {
                     Builder(
                       builder: (context) {
                         final l10n = AppLocalizations.of(context)!;
-                        return Text(
-                          l10n.barcodeInformation,
-                          style: Theme.of(context).textTheme.titleMedium
-                              ?.copyWith(fontWeight: FontWeight.w600),
-                        );
+                        return Text(l10n.barcodeInformation, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600));
                       },
                     ),
                     const SizedBox(height: 8),
@@ -187,27 +151,13 @@ class CardDetailScreen extends StatelessWidget {
                               children: [
                                 Row(
                                   children: [
-                                    Icon(
-                                      Icons.qr_code,
-                                      color: Colors.grey[600],
-                                    ),
+                                    Icon(Icons.qr_code, color: Colors.grey[600]),
                                     const SizedBox(width: 8),
-                                    Text(
-                                      '${l10n.type}: ${card.barcodeType ?? l10n.unknown}',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium
-                                          ?.copyWith(
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                    ),
+                                    Text('${l10n.type}: ${card.barcodeType ?? l10n.unknown}', style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500)),
                                   ],
                                 ),
                                 const SizedBox(height: 8),
-                                Text(
-                                  '${l10n.data}: ${card.barcodeData}',
-                                  style: Theme.of(context).textTheme.bodyMedium,
-                                ),
+                                Text('${l10n.data}: ${card.barcodeData}', style: Theme.of(context).textTheme.bodyMedium),
                               ],
                             ),
                           ),
@@ -224,41 +174,18 @@ class CardDetailScreen extends StatelessWidget {
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            l10n.statistics,
-                            style: Theme.of(context).textTheme.titleMedium
-                                ?.copyWith(fontWeight: FontWeight.w600),
-                          ),
+                          Text(l10n.statistics, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
                           const SizedBox(height: 8),
                           Card(
                             child: Padding(
                               padding: const EdgeInsets.all(16.0),
                               child: Column(
                                 children: [
-                                  _buildStatRow(
-                                    context,
-                                    Icons.visibility,
-                                    l10n.timesUsed,
-                                    '${card.usageCount}',
-                                  ),
+                                  _buildStatRow(context, Icons.visibility, l10n.timesUsed, '${card.usageCount}'),
                                   const Divider(),
-                                  _buildStatRow(
-                                    context,
-                                    Icons.add_circle_outline,
-                                    l10n.created,
-                                    DateFormat(
-                                      'MMM dd, yyyy',
-                                    ).format(card.creationDate),
-                                  ),
+                                  _buildStatRow(context, Icons.add_circle_outline, l10n.created, DateFormat('MMM dd, yyyy').format(card.creationDate)),
                                   const Divider(),
-                                  _buildStatRow(
-                                    context,
-                                    Icons.update,
-                                    l10n.lastUpdated,
-                                    DateFormat(
-                                      'MMM dd, yyyy',
-                                    ).format(card.updateDate),
-                                  ),
+                                  _buildStatRow(context, Icons.update, l10n.lastUpdated, DateFormat('MMM dd, yyyy').format(card.updateDate)),
                                 ],
                               ),
                             ),
@@ -276,34 +203,19 @@ class CardDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStatRow(
-    BuildContext context,
-    IconData icon,
-    String label,
-    String value,
-  ) {
+  Widget _buildStatRow(BuildContext context, IconData icon, String label, String value) {
     return Row(
       children: [
         Icon(icon, size: 20, color: Colors.grey[600]),
         const SizedBox(width: 12),
-        Expanded(
-          child: Text(label, style: Theme.of(context).textTheme.bodyMedium),
-        ),
-        Text(
-          value,
-          style: Theme.of(
-            context,
-          ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
-        ),
+        Expanded(child: Text(label, style: Theme.of(context).textTheme.bodyMedium)),
+        Text(value, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600)),
       ],
     );
   }
 
   void _navigateToEdit(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => CardFormScreen(card: card)),
-    );
+    Navigator.push(context, MaterialPageRoute(builder: (context) => CardFormScreen(card: card)));
   }
 
   void _showDeleteConfirmation(BuildContext context) {
@@ -315,32 +227,20 @@ class CardDetailScreen extends StatelessWidget {
           title: Text(dialogL10n.deleteCard),
           content: Text(dialogL10n.deleteCardMessage(card.name)),
           actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(),
-              child: Text(dialogL10n.cancel),
-            ),
+            TextButton(onPressed: () => Navigator.of(dialogContext).pop(), child: Text(dialogL10n.cancel)),
             TextButton(
               onPressed: () async {
                 Navigator.of(dialogContext).pop(); // Close dialog
 
-                final success = await Provider.of<CardProvider>(
-                  context,
-                  listen: false,
-                ).deleteCard(card.uuid);
+                final success = await Provider.of<CardProvider>(context, listen: false).deleteCard(card.uuid);
 
                 if (context.mounted) {
                   final l10n = AppLocalizations.of(context)!;
                   if (success) {
                     Navigator.of(context).pop(); // Go back to main screen
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(l10n.cardDeletedSuccess)),
-                    );
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.cardDeletedSuccess)));
                   } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(l10n.cardDeleteError(l10n.unknownError)),
-                      ),
-                    );
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.cardDeleteError(l10n.unknownError))));
                   }
                 }
               },
@@ -365,36 +265,20 @@ class CardDetailScreen extends StatelessWidget {
       if (settings?.username != null) {
         if (!context.mounted) return;
         final l10n = AppLocalizations.of(context)!;
-        await globalService.shareCardGlobally(
-          card,
-          settings!.username!,
-          l10n.coverImageSuffix,
-        );
+        await globalService.shareCardGlobally(card, settings!.username!, l10n.coverImageSuffix);
       } else {
         if (!context.mounted) return;
-        throw Exception(
-          AppLocalizations.of(context)!.exceptionUserNotConfigured,
-        );
+        throw Exception(AppLocalizations.of(context)!.exceptionUserNotConfigured);
       }
 
       if (context.mounted) {
         final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.cardSharedGloballySuccess),
-            backgroundColor: Colors.green,
-          ),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.cardSharedGloballySuccess), backgroundColor: Colors.green));
       }
     } catch (e) {
       if (context.mounted) {
         final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('${l10n.shareCardGloballyError}: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${l10n.shareCardGloballyError}: $e'), backgroundColor: Colors.red));
       }
     }
   }

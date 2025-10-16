@@ -8,11 +8,7 @@ class BarcodePreviewWidget extends StatelessWidget {
   final String barcodeData;
   final String barcodeType;
 
-  const BarcodePreviewWidget({
-    super.key,
-    required this.barcodeData,
-    required this.barcodeType,
-  });
+  const BarcodePreviewWidget({super.key, required this.barcodeData, required this.barcodeType});
 
   @override
   Widget build(BuildContext context) {
@@ -28,33 +24,21 @@ class BarcodePreviewWidget extends StatelessWidget {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            l10n.barcodePreview,
-            style: Theme.of(
-              context,
-            ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
-          ),
+          Text(l10n.barcodePreview, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500)),
           const SizedBox(height: 8),
           Container(
             width: double.infinity,
             height: 100,
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Theme.of(
-                context,
-              ).colorScheme.surfaceContainerHighest.withOpacity(0.3),
+              color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.3),
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(
-                color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
-                style: BorderStyle.solid,
-              ),
+              border: Border.all(color: Theme.of(context).colorScheme.outline.withOpacity(0.3), style: BorderStyle.solid),
             ),
             child: Center(
               child: Text(
                 l10n.barcodePreviewHint,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -66,12 +50,7 @@ class BarcodePreviewWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          l10n.barcodePreview,
-          style: Theme.of(
-            context,
-          ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
-        ),
+        Text(l10n.barcodePreview, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500)),
         const SizedBox(height: 8),
         Container(
           width: double.infinity,
@@ -95,10 +74,7 @@ class BarcodePreviewWidget extends StatelessWidget {
         child: SingleChildScrollView(
           child: Text(
             barcodeData,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: AppColors.black,
-            ),
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: AppColors.black),
             textAlign: TextAlign.center,
           ),
         ),
@@ -122,18 +98,9 @@ class BarcodePreviewWidget extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.error_outline,
-              color: Theme.of(context).colorScheme.error,
-            ),
+            Icon(Icons.error_outline, color: Theme.of(context).colorScheme.error),
             const SizedBox(height: 4),
-            Text(
-              l10n.invalidBarcodeDataPreview,
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.error,
-                fontSize: 12,
-              ),
-            ),
+            Text(l10n.invalidBarcodeDataPreview, style: TextStyle(color: Theme.of(context).colorScheme.error, fontSize: 12)),
           ],
         ),
       );

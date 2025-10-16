@@ -30,8 +30,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get autoOpenCamera => 'Kamera automatikus megnyitása';
 
   @override
-  String get autoOpenCameraDescription =>
-      'Automatikusan megnyitja a kamerát új kártya hozzáadásakor';
+  String get autoOpenCameraDescription => 'Automatikusan megnyitja a kamerát új kártya hozzáadásakor';
 
   @override
   String get backgroundColor => 'Háttérszín';
@@ -48,8 +47,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get barcodeImageUploaded => 'Vonalkód kép feltöltve';
 
   @override
-  String get barcodePreviewHint =>
-      'Olvass be vagy adj meg vonalkód adatot az előnézethez';
+  String get barcodePreviewHint => 'Olvass be vagy adj meg vonalkód adatot az előnézethez';
 
   @override
   String get barcodeInformation => 'Vonalkód információ';
@@ -73,8 +71,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get cameraDescription => 'Kamera viselkedés beállítása';
 
   @override
-  String get cameraPermissionRequired =>
-      'Kamera engedély szükséges a vonalkód beolvasásához';
+  String get cameraPermissionRequired => 'Kamera engedély szükséges a vonalkód beolvasásához';
 
   @override
   String get cancel => 'Mégse';
@@ -91,8 +88,7 @@ class AppLocalizationsHu extends AppLocalizations {
   }
 
   @override
-  String get cardExistsInGlobalPool =>
-      'Ez a kártya már létezik a globális készletben.';
+  String get cardExistsInGlobalPool => 'Ez a kártya már létezik a globális készletben.';
 
   @override
   String get cardImportedSuccess => 'Kártya sikeresen importálva!';
@@ -127,8 +123,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get cardUpdatedSuccess => 'Kártya sikeresen frissítve!';
 
   @override
-  String get cardVisibleToAllUsers =>
-      'Ez láthatóvá teszi a kártyát minden felhasználó számára a globális készletben.';
+  String get cardVisibleToAllUsers => 'Ez láthatóvá teszi a kártyát minden felhasználó számára a globális készletben.';
 
   @override
   String get centerCodeInFrame => 'Helyezd a kódot a keret közepére';
@@ -149,14 +144,16 @@ class AppLocalizationsHu extends AppLocalizations {
   String get close => 'Bezárás';
 
   @override
-  String get configureWebdavFirst =>
-      'Kérlek először állítsd be a szerver kapcsolatot a Szinkronizálás fülön';
+  String get configureWebdavFirst => 'Kérlek először állítsd be a szerver kapcsolatot a Szinkronizálás fülön';
 
   @override
   String get connected => 'Csatlakozva';
 
   @override
   String get connectedCheck => 'Csatlakozva ✓';
+
+  @override
+  String get connectionStatus => 'Kapcsolat állapota';
 
   @override
   String connectionFailed(Object error) {
@@ -176,12 +173,10 @@ class AppLocalizationsHu extends AppLocalizations {
   String get created => 'Létrehozva';
 
   @override
-  String get createGlobalFolderHint =>
-      'Hozd létre a /pockard_global mappát a szerveren a globális funkciók engedélyezéséhez';
+  String get createGlobalFolderHint => 'Hozd létre a /pockard_global mappát a szerveren a globális funkciók engedélyezéséhez';
 
   @override
-  String get createGlobalFolderManually =>
-      'Kérlek hozd létre ezt a mappát manuálisan a szervereden a globális megosztás engedélyezéséhez.';
+  String get createGlobalFolderManually => 'Kérlek hozd létre ezt a mappát manuálisan a szervereden a globális megosztás engedélyezéséhez.';
 
   @override
   String get customColor => 'Egyéni Szín';
@@ -209,8 +204,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get deleteFromGlobalPool => 'Törlés a globális készletből';
 
   @override
-  String get deleteFromGlobalPoolDescription =>
-      'Kártya eltávolítása a globális készletből';
+  String get deleteFromGlobalPoolDescription => 'Kártya eltávolítása a globális készletből';
 
   @override
   String get deleteGlobalCard => 'Globális kártya törlése';
@@ -238,8 +232,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get disconnectAndChangeServer => 'Leválasztás és Szerver Váltása';
 
   @override
-  String get disconnectConfirmation =>
-      'Biztosan le szeretnél választani? Újra meg kell adnod a szerver hitelesítő adatait.';
+  String get disconnectConfirmation => 'Biztosan le szeretnél választani? Újra meg kell adnod a szerver hitelesítő adatait.';
 
   @override
   String get disconnectedSuccessfully => 'Sikeresen leválasztva';
@@ -257,15 +250,13 @@ class AppLocalizationsHu extends AppLocalizations {
   String get dragToReorderTags => 'Húzd a Címkéket az Átrendezéshez';
 
   @override
-  String get dragToReorderTagsDescription =>
-      'Az itt meghatározott sorrend befolyásolja a címkék megjelenését a főképernyőn';
+  String get dragToReorderTagsDescription => 'Az itt meghatározott sorrend befolyásolja a címkék megjelenését a főképernyőn';
 
   @override
   String get editCard => 'Szerkesztés';
 
   @override
-  String get emptyCardsMessage =>
-      'Koppints a + gombra az első hűségkártyád hozzáadásához';
+  String get emptyCardsMessage => 'Koppints a + gombra az első hűségkártyád hozzáadásához';
 
   @override
   String get emptyCardsTitle => 'Még nincsenek kártyák';
@@ -280,8 +271,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get enterShopName => 'Adj meg egy bolt nevet a logó kereséséhez';
 
   @override
-  String get enterTextHint =>
-      'Írd be a szöveget a képedhez\nNyomj Entert az új sorhoz';
+  String get enterTextHint => 'Írd be a szöveget a képedhez\nNyomj Entert az új sorhoz';
 
   @override
   String get error => 'Hiba';
@@ -342,15 +332,13 @@ class AppLocalizationsHu extends AppLocalizations {
   }
 
   @override
-  String get exceptionConfigureWebdav =>
-      'Kérlek, először konfiguráld a szerver kapcsolatot a Szinkronizálás fülön';
+  String get exceptionConfigureWebdav => 'Kérlek, először konfiguráld a szerver kapcsolatot a Szinkronizálás fülön';
 
   @override
   String get exceptionFailedDownloadLogo => 'Nem sikerült letölteni a logót';
 
   @override
-  String get exceptionFailedFinalizeLogo =>
-      'Nem sikerült véglegesíteni a logót';
+  String get exceptionFailedFinalizeLogo => 'Nem sikerült véglegesíteni a logót';
 
   @override
   String get exceptionFailedProcessLogo => 'Nem sikerült feldolgozni a logót';
@@ -359,16 +347,13 @@ class AppLocalizationsHu extends AppLocalizations {
   String get exceptionFailedSearchLogos => 'Nem sikerült logókat keresni';
 
   @override
-  String get exceptionUserNotConfigured =>
-      'Szerver felhasználó nincs beállítva';
+  String get exceptionUserNotConfigured => 'Szerver felhasználó nincs beállítva';
 
   @override
-  String get exceptionWebdavNotInitialized =>
-      'WebDAV kliens nincs inicializálva';
+  String get exceptionWebdavNotInitialized => 'WebDAV kliens nincs inicializálva';
 
   @override
-  String get exceptionGlobalFolderNotAvailable =>
-      'Globális mappa nem elérhető a szerveren';
+  String get exceptionGlobalFolderNotAvailable => 'Globális mappa nem elérhető a szerveren';
 
   @override
   String exceptionLocalFileNotFound(Object path) {
@@ -379,8 +364,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get exceptionImageNotFound => 'Kép nem található';
 
   @override
-  String get exceptionContextNotAvailable =>
-      'Kontextus nem elérhető a vágáshoz';
+  String get exceptionContextNotAvailable => 'Kontextus nem elérhető a vágáshoz';
 
   @override
   String get exceptionLogoSelectionCancelled => 'Logó kiválasztás megszakítva';
@@ -392,8 +376,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get exporting => 'Exportálás...';
 
   @override
-  String get fillAllConnectionFields =>
-      'Kérlek töltsd ki az összes kapcsolati mezőt';
+  String get fillAllConnectionFields => 'Kérlek töltsd ki az összes kapcsolati mezőt';
 
   @override
   String get filterAll => 'Összes';
@@ -422,15 +405,13 @@ class AppLocalizationsHu extends AppLocalizations {
   String get globalFolderAvailable => 'Globális mappa elérhető';
 
   @override
-  String get globalFolderDetected =>
-      'Globális mappa észlelve - Globális funkciók engedélyezve';
+  String get globalFolderDetected => 'Globális mappa észlelve - Globális funkciók engedélyezve';
 
   @override
   String get globalFolderNotAvailable => 'Globális mappa nem elérhető';
 
   @override
-  String get globalFolderRequired =>
-      'A globális funkciók egy \"/pockard_global\" mappát igényelnek a szervereden.';
+  String get globalFolderRequired => 'A globális funkciók egy \"/pockard_global\" mappát igényelnek a szervereden.';
 
   @override
   String get globalImages => 'Globális Képek';
@@ -494,8 +475,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get importing => 'Importálás...';
 
   @override
-  String get invalidBarcodeData =>
-      'Érvénytelen adat vagy nem támogatott formátum';
+  String get invalidBarcodeData => 'Érvénytelen adat vagy nem támogatott formátum';
 
   @override
   String get invalidBarcodeDataPreview => 'Érvénytelen vonalkód adat';
@@ -545,8 +525,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get layoutMinimal => 'Minimális';
 
   @override
-  String get layoutMinimalDesc =>
-      'Ultra-kompakt lista csak nevekkel és apró előnézetekkel';
+  String get layoutMinimalDesc => 'Ultra-kompakt lista csak nevekkel és apró előnézetekkel';
 
   @override
   String get layoutRows => 'Sorok';
@@ -569,8 +548,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get maxBrightness => 'Maximális fényerő';
 
   @override
-  String get maxBrightnessDescription =>
-      'Automatikusan maximális fényerőre állítás vonalkód megtekintésekor';
+  String get maxBrightnessDescription => 'Automatikusan maximális fényerőre állítás vonalkód megtekintésekor';
 
   @override
   String minutesAgo(Object minutes) {
@@ -587,8 +565,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get noBarcodeDataAvailable => 'Nincs elérhető vonalkód adat';
 
   @override
-  String get noBarcodeDataMessage =>
-      'Ez a kártya nem tartalmaz vonalkód vagy QR kód adatot.';
+  String get noBarcodeDataMessage => 'Ez a kártya nem tartalmaz vonalkód vagy QR kód adatot.';
 
   @override
   String get noBarcodeFoundInImage => 'Nem található vonalkód a képen';
@@ -618,12 +595,10 @@ class AppLocalizationsHu extends AppLocalizations {
   String get noImagesSharedYet => 'Még nem került kép a globális készletbe';
 
   @override
-  String get noLogosFound =>
-      'Nem található logó. Próbálj más keresési kifejezést.';
+  String get noLogosFound => 'Nem található logó. Próbálj más keresési kifejezést.';
 
   @override
-  String get noTagsYet =>
-      'Még nincsenek címkék. A címkék itt jelennek meg, miután hozzáadtad őket a kártyáidhoz.';
+  String get noTagsYet => 'Még nincsenek címkék. A címkék itt jelennek meg, miután hozzáadtad őket a kártyáidhoz.';
 
   @override
   String get notConnected => 'Nincs csatlakozva';
@@ -632,15 +607,13 @@ class AppLocalizationsHu extends AppLocalizations {
   String get oneColumn => '1 oszlop';
 
   @override
-  String get overwriteGlobalCard =>
-      'Ez felülírja a meglévő globális kártyát a jelenlegi verziódra.';
+  String get overwriteGlobalCard => 'Ez felülírja a meglévő globális kártyát a jelenlegi verziódra.';
 
   @override
   String get parallelSync => 'Párhuzamos Szinkronizálás';
 
   @override
-  String get parallelSyncDescription =>
-      'Kártyák egyidejű feltöltése (gyorsabb, de túlterhelheti egyes szervereket)';
+  String get parallelSyncDescription => 'Kártyák egyidejű feltöltése (gyorsabb, de túlterhelheti egyes szervereket)';
 
   @override
   String get password => 'Jelszó';
@@ -678,12 +651,10 @@ class AppLocalizationsHu extends AppLocalizations {
   String get resetStatistics => 'Összes statisztika törlése';
 
   @override
-  String get resetStatisticsConfirmation =>
-      'Biztosan törölni szeretnéd az összes kártya használati statisztikáját? Ez a művelet nem visszavonható.';
+  String get resetStatisticsConfirmation => 'Biztosan törölni szeretnéd az összes kártya használati statisztikáját? Ez a művelet nem visszavonható.';
 
   @override
-  String get resetStatisticsDescription =>
-      'Az összes kártya használati számának nullázása';
+  String get resetStatisticsDescription => 'Az összes kártya használati számának nullázása';
 
   @override
   String get retry => 'Újra';
@@ -730,8 +701,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get serverAddress => 'Szerver címe';
 
   @override
-  String get serverAddressHint =>
-      'pl. https://dav.example.com vagy https://192.168.0.200:8080\nvagy domain porttal kombinálva';
+  String get serverAddressHint => 'pl. https://dav.example.com vagy https://192.168.0.200:8080\nvagy domain porttal kombinálva';
 
   @override
   String get serverConfiguration => 'Szerver beállítások';
@@ -776,8 +746,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get showGridNames => 'Kártyanevek megjelenítése';
 
   @override
-  String get showGridNamesDescription =>
-      'Kártyanevek megjelenítése a képek alatt rácsnézetben';
+  String get showGridNamesDescription => 'Kártyanevek megjelenítése a képek alatt rácsnézetben';
 
   @override
   String get sortDateAdded => 'Hozzáadás dátuma';
@@ -801,8 +770,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get statisticsSection => 'Statisztikák';
 
   @override
-  String get statisticsSectionDescription =>
-      'Használati statisztikák kezelése az összes kártyához';
+  String get statisticsSectionDescription => 'Használati statisztikák kezelése az összes kártyához';
 
   @override
   String get status => 'Állapot';
@@ -829,8 +797,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get syncNotConfigured => 'A szinkronizálás nincs beállítva.';
 
   @override
-  String get syncNotConfiguredHint =>
-      'Menj a Beállítások → Szinkronizálás menüpontba a szerver szinkronizálás beállításához.';
+  String get syncNotConfiguredHint => 'Menj a Beállítások → Szinkronizálás menüpontba a szerver szinkronizálás beállításához.';
 
   @override
   String get syncNow => 'Szinkronizálás most';
@@ -879,12 +846,10 @@ class AppLocalizationsHu extends AppLocalizations {
   String get tapToHideControls => 'Koppints bárhová a vezérlők elrejtéséhez';
 
   @override
-  String get tapToShowControls =>
-      'Koppints bárhová a vezérlők megjelenítéséhez';
+  String get tapToShowControls => 'Koppints bárhová a vezérlők megjelenítéséhez';
 
   @override
-  String get tapToUploadBarcodeImage =>
-      'Koppints ide vonalkód kép feltöltéséhez';
+  String get tapToUploadBarcodeImage => 'Koppints ide vonalkód kép feltöltéséhez';
 
   @override
   String get testConnection => 'Kapcsolódás';
@@ -962,8 +927,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get updateGlobalCard => 'Globális Kártya Frissítése';
 
   @override
-  String get updateGlobalCardConfirm =>
-      'Biztosan frissíteni szeretnéd a globális verzióját';
+  String get updateGlobalCardConfirm => 'Biztosan frissíteni szeretnéd a globális verzióját';
 
   @override
   String get upload => 'Feltöltés';
@@ -1004,22 +968,19 @@ class AppLocalizationsHu extends AppLocalizations {
   String get advancedSettings => 'Speciális beállítások';
 
   @override
-  String get advancedSettingsDescription =>
-      'Egyedi mappa útvonalak konfigurálása szinkronizáláshoz';
+  String get advancedSettingsDescription => 'Egyedi mappa útvonalak konfigurálása szinkronizáláshoz';
 
   @override
   String get pockardFolderPath => 'Pockard mappa útvonala';
 
   @override
-  String get pockardFolderPathHint =>
-      'Útvonal ahol a kártyáid szinkronizálva lesznek.\nAlapértelmezett: /pockard';
+  String get pockardFolderPathHint => 'Útvonal ahol a kártyáid szinkronizálva lesznek.\nAlapértelmezett: /pockard';
 
   @override
   String get globalFolderPath => 'Globális mappa útvonala';
 
   @override
-  String get globalFolderPathHint =>
-      'Útvonal a megosztott kártyákhoz.\nAlapértelmezett: /pockard_global';
+  String get globalFolderPathHint => 'Útvonal a megosztott kártyákhoz.\nAlapértelmezett: /pockard_global';
 
   @override
   String get showAdvancedSettings => 'Speciális beállítások megjelenítése';

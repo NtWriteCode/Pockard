@@ -52,12 +52,7 @@ class _ImageGeneratorScreenState extends State<ImageGeneratorScreen> {
         title: Text(l10n.generateImage),
         backgroundColor: Theme.of(context).colorScheme.surface,
         foregroundColor: Theme.of(context).colorScheme.onSurface,
-        actions: [
-          TextButton(
-            onPressed: _customText.isNotEmpty ? _generateAndSaveImage : null,
-            child: Text(l10n.save),
-          ),
-        ],
+        actions: [TextButton(onPressed: _customText.isNotEmpty ? _generateAndSaveImage : null, child: Text(l10n.save))],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -91,10 +86,7 @@ class _ImageGeneratorScreenState extends State<ImageGeneratorScreen> {
       children: [
         Text(
           l10n.preview,
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: Theme.of(context).colorScheme.onSurface,
-          ),
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface),
         ),
         const SizedBox(height: 12),
         Center(
@@ -106,34 +98,19 @@ class _ImageGeneratorScreenState extends State<ImageGeneratorScreen> {
               decoration: BoxDecoration(
                 color: _selectedColor,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: Theme.of(
-                    context,
-                  ).colorScheme.onSurface.withValues(alpha: 0.2),
-                  width: 2,
-                ),
+                border: Border.all(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.2), width: 2),
               ),
               child: _customText.isNotEmpty
                   ? Center(
                       child: Text(
                         _customText,
-                        style: TextStyle(
-                          color: _textColor,
-                          fontSize: _calculateOptimalFontSize(_customText),
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: TextStyle(color: _textColor, fontSize: _calculateOptimalFontSize(_customText), fontWeight: FontWeight.bold),
                         textAlign: TextAlign.center,
                         maxLines: _calculateOptimalLines(_customText),
                         overflow: TextOverflow.visible,
                       ),
                     )
-                  : Center(
-                      child: Icon(
-                        Icons.image,
-                        size: 48,
-                        color: _textColor.withValues(alpha: 0.5),
-                      ),
-                    ),
+                  : Center(child: Icon(Icons.image, size: 48, color: _textColor.withValues(alpha: 0.5))),
             ),
           ),
         ),
@@ -148,10 +125,7 @@ class _ImageGeneratorScreenState extends State<ImageGeneratorScreen> {
       children: [
         Text(
           l10n.backgroundColor,
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: Theme.of(context).colorScheme.onSurface,
-          ),
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface),
         ),
         const SizedBox(height: 12),
 
@@ -170,21 +144,11 @@ class _ImageGeneratorScreenState extends State<ImageGeneratorScreen> {
                   color: color,
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: isSelected
-                        ? Theme.of(context).colorScheme.primary
-                        : Theme.of(
-                            context,
-                          ).colorScheme.onSurface.withValues(alpha: 0.3),
+                    color: isSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3),
                     width: isSelected ? 3 : 1,
                   ),
                 ),
-                child: isSelected
-                    ? Icon(
-                        Icons.check,
-                        color: AppColors.getContrastColor(color),
-                        size: 20,
-                      )
-                    : null,
+                child: isSelected ? Icon(Icons.check, color: AppColors.getContrastColor(color), size: 20) : null,
               ),
             );
           }).toList(),
@@ -202,10 +166,7 @@ class _ImageGeneratorScreenState extends State<ImageGeneratorScreen> {
                 onPressed: _showCustomColorPicker,
                 icon: const Icon(Icons.palette),
                 label: Text(l10n.customColor),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.primary,
-                  foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                ),
+                style: ElevatedButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.primary, foregroundColor: Theme.of(context).colorScheme.onPrimary),
               ),
             );
           },
@@ -220,10 +181,7 @@ class _ImageGeneratorScreenState extends State<ImageGeneratorScreen> {
       children: [
         Text(
           AppLocalizations.of(context)!.text,
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: Theme.of(context).colorScheme.onSurface,
-          ),
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface),
         ),
         const SizedBox(height: 12),
         Builder(
@@ -233,9 +191,7 @@ class _ImageGeneratorScreenState extends State<ImageGeneratorScreen> {
               controller: _textController,
               decoration: InputDecoration(
                 hintText: l10n.enterTextHint,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
                 prefixIcon: const Icon(Icons.text_fields),
               ),
               maxLines: 4,
@@ -254,22 +210,13 @@ class _ImageGeneratorScreenState extends State<ImageGeneratorScreen> {
       children: [
         Text(
           AppLocalizations.of(context)!.textColor,
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: Theme.of(context).colorScheme.onSurface,
-          ),
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface),
         ),
         const SizedBox(height: 12),
         Builder(
           builder: (context) {
             final l10n = AppLocalizations.of(context)!;
-            return Row(
-              children: [
-                _buildTextColorOption(AppColors.white, l10n.white),
-                const SizedBox(width: 16),
-                _buildTextColorOption(AppColors.black, l10n.black),
-              ],
-            );
+            return Row(children: [_buildTextColorOption(AppColors.white, l10n.white), const SizedBox(width: 16), _buildTextColorOption(AppColors.black, l10n.black)]);
           },
         ),
       ],
@@ -283,17 +230,9 @@ class _ImageGeneratorScreenState extends State<ImageGeneratorScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected
-              ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1)
-              : Theme.of(context).colorScheme.surface,
+          color: isSelected ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1) : Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: isSelected
-                ? Theme.of(context).colorScheme.primary
-                : Theme.of(
-                    context,
-                  ).colorScheme.onSurface.withValues(alpha: 0.2),
-          ),
+          border: Border.all(color: isSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.2)),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -304,20 +243,13 @@ class _ImageGeneratorScreenState extends State<ImageGeneratorScreen> {
               decoration: BoxDecoration(
                 color: color,
                 shape: BoxShape.circle,
-                border: Border.all(
-                  color: Theme.of(
-                    context,
-                  ).colorScheme.onSurface.withValues(alpha: 0.3),
-                ),
+                border: Border.all(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3)),
               ),
             ),
             const SizedBox(width: 8),
             Text(
               label,
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.onSurface,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-              ),
+              style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal),
             ),
           ],
         ),
@@ -336,12 +268,7 @@ class _ImageGeneratorScreenState extends State<ImageGeneratorScreen> {
               title: Text(dialogL10n.chooseCustomColor),
               backgroundColor: Theme.of(context).colorScheme.surface,
               foregroundColor: Theme.of(context).colorScheme.onSurface,
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: Text(dialogL10n.done),
-                ),
-              ],
+              actions: [TextButton(onPressed: () => Navigator.pop(context), child: Text(dialogL10n.done))],
             ),
             body: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -439,13 +366,9 @@ class _ImageGeneratorScreenState extends State<ImageGeneratorScreen> {
       );
 
       // Capture the RepaintBoundary as an image
-      final RenderRepaintBoundary boundary =
-          _repaintBoundaryKey.currentContext!.findRenderObject()
-              as RenderRepaintBoundary;
+      final RenderRepaintBoundary boundary = _repaintBoundaryKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
       final ui.Image image = await boundary.toImage(pixelRatio: 3.0);
-      final ByteData? byteData = await image.toByteData(
-        format: ui.ImageByteFormat.png,
-      );
+      final ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
 
       if (byteData != null) {
         // Save to app's documents directory
@@ -455,8 +378,7 @@ class _ImageGeneratorScreenState extends State<ImageGeneratorScreen> {
           await imagesDir.create(recursive: true);
         }
 
-        final fileName =
-            'generated_${DateTime.now().millisecondsSinceEpoch}.png';
+        final fileName = 'generated_${DateTime.now().millisecondsSinceEpoch}.png';
         final filePath = path.join(imagesDir.path, fileName);
         final file = File(filePath);
         await file.writeAsBytes(byteData.buffer.asUint8List());
@@ -476,12 +398,7 @@ class _ImageGeneratorScreenState extends State<ImageGeneratorScreen> {
       // Show error
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.errorGeneratingImage(e.toString())),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.errorGeneratingImage(e.toString())), backgroundColor: Theme.of(context).colorScheme.error));
       }
     }
   }

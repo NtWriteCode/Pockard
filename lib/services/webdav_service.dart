@@ -17,12 +17,7 @@ class WebDavService {
       serverUrl = 'https://$serverUrl';
     }
 
-    _client = newClient(
-      serverUrl,
-      user: username,
-      password: password,
-      debug: false,
-    );
+    _client = newClient(serverUrl, user: username, password: password, debug: false);
   }
 
   /// Test connection to WebDAV server
@@ -62,8 +57,7 @@ class WebDavService {
       debugPrint('Created directory: $path');
     } catch (e) {
       // Ignore if directory already exists
-      if (!e.toString().contains('405') &&
-          !e.toString().contains('already exists')) {
+      if (!e.toString().contains('405') && !e.toString().contains('already exists')) {
         debugPrint('Error creating directory $path: $e');
         rethrow;
       }
@@ -89,9 +83,7 @@ class WebDavService {
   }
 
   /// Check if global folder is available
-  Future<bool> isGlobalFolderAvailable({
-    String globalPath = '/pockard_global',
-  }) async {
+  Future<bool> isGlobalFolderAvailable({String globalPath = '/pockard_global'}) async {
     try {
       if (_client == null) return false;
       return await directoryExists(globalPath);
@@ -161,10 +153,7 @@ class WebDavService {
       }
 
       final list = await _client!.readDir(path);
-      final files = list
-          .where((item) => !item.isDir!)
-          .map((item) => item.name!)
-          .toList();
+      final files = list.where((item) => !item.isDir!).map((item) => item.name!).toList();
 
       debugPrint('Listed ${files.length} files in $path');
       return files;

@@ -6,28 +6,20 @@ import 'webdav_service.dart';
 
 /// Service for syncing user preferences (display settings, tag order, etc.) via WebDAV
 class PreferencesSyncService {
-  static final PreferencesSyncService _instance =
-      PreferencesSyncService._internal();
+  static final PreferencesSyncService _instance = PreferencesSyncService._internal();
   factory PreferencesSyncService() => _instance;
   PreferencesSyncService._internal();
 
   final WebDavService _webdavService = WebDavService();
 
   /// Upload user preferences to WebDAV server
-  Future<void> uploadPreferences({
-    required Map<String, dynamic> displaySettings,
-    required List<String> tagOrder,
-  }) async {
+  Future<void> uploadPreferences({required Map<String, dynamic> displaySettings, required List<String> tagOrder}) async {
     if (!_webdavService.isInitialized) {
       throw Exception('WebDAV client not initialized');
     }
 
     try {
-      final preferences = {
-        'display_settings': displaySettings,
-        'tag_order': tagOrder,
-        'last_updated': DateTime.now().toIso8601String(),
-      };
+      final preferences = {'display_settings': displaySettings, 'tag_order': tagOrder, 'last_updated': DateTime.now().toIso8601String()};
 
       // Create JSON file
       final preferencesJson = json.encode(preferences);

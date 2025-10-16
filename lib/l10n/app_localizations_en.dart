@@ -30,8 +30,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get autoOpenCamera => 'Auto-open camera';
 
   @override
-  String get autoOpenCameraDescription =>
-      'Automatically open camera when adding a new card';
+  String get autoOpenCameraDescription => 'Automatically open camera when adding a new card';
 
   @override
   String get backgroundColor => 'Background Color';
@@ -72,8 +71,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cameraDescription => 'Configure camera behavior';
 
   @override
-  String get cameraPermissionRequired =>
-      'Camera permission is required to scan barcodes';
+  String get cameraPermissionRequired => 'Camera permission is required to scan barcodes';
 
   @override
   String get cancel => 'Cancel';
@@ -90,8 +88,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get cardExistsInGlobalPool =>
-      'This card already exists in the global pool.';
+  String get cardExistsInGlobalPool => 'This card already exists in the global pool.';
 
   @override
   String get cardImportedSuccess => 'Card imported successfully!';
@@ -126,8 +123,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cardUpdatedSuccess => 'Card updated successfully!';
 
   @override
-  String get cardVisibleToAllUsers =>
-      'This will make the card visible to all users in the global pool.';
+  String get cardVisibleToAllUsers => 'This will make the card visible to all users in the global pool.';
 
   @override
   String get centerCodeInFrame => 'Center the code in the frame';
@@ -148,14 +144,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get close => 'Close';
 
   @override
-  String get configureWebdavFirst =>
-      'Please configure server connection in Sync tab first';
+  String get configureWebdavFirst => 'Please configure server connection in Sync tab first';
 
   @override
   String get connected => 'Connected';
 
   @override
   String get connectedCheck => 'Connected ✓';
+
+  @override
+  String get connectionStatus => 'Connection Status';
 
   @override
   String connectionFailed(Object error) {
@@ -175,12 +173,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get created => 'Created';
 
   @override
-  String get createGlobalFolderHint =>
-      'Create /pockard_global folder on your server to enable global features';
+  String get createGlobalFolderHint => 'Create /pockard_global folder on your server to enable global features';
 
   @override
-  String get createGlobalFolderManually =>
-      'Please create this folder manually on your server to enable global sharing.';
+  String get createGlobalFolderManually => 'Please create this folder manually on your server to enable global sharing.';
 
   @override
   String get customColor => 'Custom Color';
@@ -208,8 +204,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deleteFromGlobalPool => 'Delete from Global Pool';
 
   @override
-  String get deleteFromGlobalPoolDescription =>
-      'Remove this card from the global pool';
+  String get deleteFromGlobalPoolDescription => 'Remove this card from the global pool';
 
   @override
   String get deleteGlobalCard => 'Delete Global Card';
@@ -237,8 +232,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get disconnectAndChangeServer => 'Disconnect & Change Server';
 
   @override
-  String get disconnectConfirmation =>
-      'Are you sure you want to disconnect? You will need to re-enter your server credentials.';
+  String get disconnectConfirmation => 'Are you sure you want to disconnect? You will need to re-enter your server credentials.';
 
   @override
   String get disconnectedSuccessfully => 'Disconnected successfully';
@@ -256,15 +250,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dragToReorderTags => 'Drag to Reorder Tags';
 
   @override
-  String get dragToReorderTagsDescription =>
-      'The order here affects how tags appear on the main screen';
+  String get dragToReorderTagsDescription => 'The order here affects how tags appear on the main screen';
 
   @override
   String get editCard => 'Edit Card';
 
   @override
-  String get emptyCardsMessage =>
-      'Tap the + button to add your first loyalty card';
+  String get emptyCardsMessage => 'Tap the + button to add your first loyalty card';
 
   @override
   String get emptyCardsTitle => 'No cards yet';
@@ -279,8 +271,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get enterShopName => 'Enter a shop name to find their logo';
 
   @override
-  String get enterTextHint =>
-      'Enter text for your image\nPress Enter to break lines';
+  String get enterTextHint => 'Enter text for your image\nPress Enter to break lines';
 
   @override
   String get error => 'Error';
@@ -341,8 +332,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get exceptionConfigureWebdav =>
-      'Please configure server connection in Sync tab first';
+  String get exceptionConfigureWebdav => 'Please configure server connection in Sync tab first';
 
   @override
   String get exceptionFailedDownloadLogo => 'Failed to download logo';
@@ -363,8 +353,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exceptionWebdavNotInitialized => 'WebDAV client not initialized';
 
   @override
-  String get exceptionGlobalFolderNotAvailable =>
-      'Global folder not available on server';
+  String get exceptionGlobalFolderNotAvailable => 'Global folder not available on server';
 
   @override
   String exceptionLocalFileNotFound(Object path) {
@@ -375,8 +364,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exceptionImageNotFound => 'Image not found';
 
   @override
-  String get exceptionContextNotAvailable =>
-      'Context not available for cropping';
+  String get exceptionContextNotAvailable => 'Context not available for cropping';
 
   @override
   String get exceptionLogoSelectionCancelled => 'Logo selection cancelled';
@@ -417,15 +405,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get globalFolderAvailable => 'Global folder available';
 
   @override
-  String get globalFolderDetected =>
-      'Global folder detected - Global features enabled';
+  String get globalFolderDetected => 'Global folder detected - Global features enabled';
 
   @override
   String get globalFolderNotAvailable => 'Global Folder Not Available';
 
   @override
-  String get globalFolderRequired =>
-      'Global features require a \"/pockard_global\" folder on your server.';
+  String get globalFolderRequired => 'Global features require a \"/pockard_global\" folder on your server.';
 
   @override
   String get globalImages => 'Global Images';
@@ -465,8 +451,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get images => 'Images';
 
   @override
-  String get imageSharedGloballySuccess =>
-      'Image shared globally successfully!';
+  String get imageSharedGloballySuccess => 'Image shared globally successfully!';
 
   @override
   String get imageUploadedSuccess => 'Image uploaded successfully!';
@@ -540,8 +525,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get layoutMinimal => 'Minimal';
 
   @override
-  String get layoutMinimalDesc =>
-      'Ultra-compact list showing only names and tiny previews';
+  String get layoutMinimalDesc => 'Ultra-compact list showing only names and tiny previews';
 
   @override
   String get layoutRows => 'Rows';
@@ -564,8 +548,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get maxBrightness => 'Max Brightness';
 
   @override
-  String get maxBrightnessDescription =>
-      'Automatically set screen to maximum brightness when viewing barcodes';
+  String get maxBrightnessDescription => 'Automatically set screen to maximum brightness when viewing barcodes';
 
   @override
   String minutesAgo(Object minutes) {
@@ -582,8 +565,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noBarcodeDataAvailable => 'No barcode data available';
 
   @override
-  String get noBarcodeDataMessage =>
-      'This card doesn\'t have any barcode or QR code data.';
+  String get noBarcodeDataMessage => 'This card doesn\'t have any barcode or QR code data.';
 
   @override
   String get noBarcodeFoundInImage => 'No barcode found in image';
@@ -616,8 +598,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noLogosFound => 'No logos found. Try a different search term.';
 
   @override
-  String get noTagsYet =>
-      'No tags yet. Tags will appear here once you add them to your cards.';
+  String get noTagsYet => 'No tags yet. Tags will appear here once you add them to your cards.';
 
   @override
   String get notConnected => 'Not Connected';
@@ -626,15 +607,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get oneColumn => '1 column';
 
   @override
-  String get overwriteGlobalCard =>
-      'This will overwrite the existing global card with your current version.';
+  String get overwriteGlobalCard => 'This will overwrite the existing global card with your current version.';
 
   @override
   String get parallelSync => 'Parallel Sync';
 
   @override
-  String get parallelSyncDescription =>
-      'Upload cards simultaneously (faster, but may overwhelm some servers)';
+  String get parallelSyncDescription => 'Upload cards simultaneously (faster, but may overwhelm some servers)';
 
   @override
   String get password => 'Password';
@@ -672,12 +651,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get resetStatistics => 'Reset All Statistics';
 
   @override
-  String get resetStatisticsConfirmation =>
-      'Are you sure you want to reset all card usage statistics? This action cannot be undone.';
+  String get resetStatisticsConfirmation => 'Are you sure you want to reset all card usage statistics? This action cannot be undone.';
 
   @override
-  String get resetStatisticsDescription =>
-      'Reset usage counts for all cards to zero';
+  String get resetStatisticsDescription => 'Reset usage counts for all cards to zero';
 
   @override
   String get retry => 'Retry';
@@ -724,8 +701,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get serverAddress => 'Server Address';
 
   @override
-  String get serverAddressHint =>
-      'e.g. https://dav.example.com or https://192.168.0.200:8080\nor combine domain with port';
+  String get serverAddressHint => 'e.g. https://dav.example.com or https://192.168.0.200:8080\nor combine domain with port';
 
   @override
   String get serverConfiguration => 'Server Configuration';
@@ -770,8 +746,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get showGridNames => 'Show card names';
 
   @override
-  String get showGridNamesDescription =>
-      'Display card names below images in grid view';
+  String get showGridNamesDescription => 'Display card names below images in grid view';
 
   @override
   String get sortDateAdded => 'Date Added';
@@ -789,15 +764,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get statistics => 'Statistics';
 
   @override
-  String get statisticsResetSuccess =>
-      'All statistics have been reset successfully';
+  String get statisticsResetSuccess => 'All statistics have been reset successfully';
 
   @override
   String get statisticsSection => 'Statistics';
 
   @override
-  String get statisticsSectionDescription =>
-      'Manage usage statistics for all cards';
+  String get statisticsSectionDescription => 'Manage usage statistics for all cards';
 
   @override
   String get status => 'Status';
@@ -824,8 +797,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get syncNotConfigured => 'Sync is not configured.';
 
   @override
-  String get syncNotConfiguredHint =>
-      'Go to Settings → Sync to set up server sync.';
+  String get syncNotConfiguredHint => 'Go to Settings → Sync to set up server sync.';
 
   @override
   String get syncNow => 'Sync Now';
@@ -955,8 +927,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get updateGlobalCard => 'Update Global Card';
 
   @override
-  String get updateGlobalCardConfirm =>
-      'Are you sure you want to update the global version of';
+  String get updateGlobalCardConfirm => 'Are you sure you want to update the global version of';
 
   @override
   String get upload => 'Upload';
@@ -997,22 +968,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get advancedSettings => 'Advanced Settings';
 
   @override
-  String get advancedSettingsDescription =>
-      'Configure custom folder paths for synchronization';
+  String get advancedSettingsDescription => 'Configure custom folder paths for synchronization';
 
   @override
   String get pockardFolderPath => 'Pockard Folder Path';
 
   @override
-  String get pockardFolderPathHint =>
-      'Path where your cards will be synchronized.\nDefault: /pockard';
+  String get pockardFolderPathHint => 'Path where your cards will be synchronized.\nDefault: /pockard';
 
   @override
   String get globalFolderPath => 'Global Folder Path';
 
   @override
-  String get globalFolderPathHint =>
-      'Path for global shared cards.\nDefault: /pockard_global';
+  String get globalFolderPathHint => 'Path for global shared cards.\nDefault: /pockard_global';
 
   @override
   String get showAdvancedSettings => 'Show Advanced Settings';

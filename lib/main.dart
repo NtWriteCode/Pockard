@@ -11,11 +11,11 @@ import 'services/connection_manager.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Initialize background SFTP connection
   final connectionManager = ConnectionManager();
   await connectionManager.initializeConnection();
-  
+
   runApp(const PockardApp());
 }
 
@@ -28,12 +28,8 @@ class PockardApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => CardProvider()),
         ChangeNotifierProvider(create: (_) => TagProvider()),
-        ChangeNotifierProvider(
-          create: (_) => DisplayProvider()..loadSettings(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => LanguageProvider()..loadLanguage(),
-        ),
+        ChangeNotifierProvider(create: (_) => DisplayProvider()..loadSettings()),
+        ChangeNotifierProvider(create: (_) => LanguageProvider()..loadLanguage()),
       ],
       child: Consumer2<DisplayProvider, LanguageProvider>(
         builder: (context, displayProvider, languageProvider, child) {

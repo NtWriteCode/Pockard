@@ -45,32 +45,37 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   Widget _buildConnectionStatusIndicator() {
-    // Check if sync is configured AND connected
+    // Check if sync is configured (has credentials)
     final settings = _connectionManager.syncSettings;
-    final isSyncConfigured = settings != null && settings.hasCredentials && settings.isConnected;
-    
-    // Hide indicator if sync is not configured or disconnected
+    final isSyncConfigured = settings != null && settings.hasCredentials;
+
+    // Hide indicator if sync is not configured
     if (!isSyncConfigured) {
       return const SizedBox.shrink();
     }
-    
+
     return StreamBuilder<bool>(
       stream: _connectionManager.syncStatus,
       initialData: _connectionManager.lastSyncSuccess,
       builder: (context, snapshot) {
         final syncSuccess = snapshot.data ?? true;
+        final isConnected = _connectionManager.isConnected;
+
+        Color dotColor;
+        if (!isConnected) {
+          dotColor = const Color(0xFFFF9800); // Orange = not connected
+        } else if (syncSuccess) {
+          dotColor = const Color(0xFF81C784); // Light green = last sync succeeded
+        } else {
+          dotColor = const Color(0xFFEF5350); // Light red = last sync failed
+        }
+
         return InkWell(
           onTap: () => _showSyncStatusDialog(context),
           borderRadius: BorderRadius.circular(24),
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-            child: Icon(
-              Icons.circle,
-              size: 8,
-              color: syncSuccess 
-                  ? const Color(0xFF81C784) // Light green = last sync succeeded
-                  : const Color(0xFFEF5350), // Light red = last sync failed
-            ),
+            child: Icon(Icons.circle, size: 8, color: dotColor),
           ),
         );
       },
@@ -80,16 +85,13 @@ class _MainScreenState extends State<MainScreen> {
   void _showSyncStatusDialog(BuildContext context) async {
     final settings = _connectionManager.syncSettings;
     final l10n = AppLocalizations.of(context)!;
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: Row(
           children: [
-            Icon(
-              settings?.lastSyncSuccess ?? true ? Icons.check_circle : Icons.error,
-              color: settings?.lastSyncSuccess ?? true ? Colors.green : Colors.red,
-            ),
+            Icon(_connectionManager.lastSyncSuccess ? Icons.check_circle : Icons.error, color: _connectionManager.lastSyncSuccess ? Colors.green : Colors.red),
             const SizedBox(width: 8),
             Text(l10n.syncStatusDialogTitle),
           ],
@@ -104,38 +106,25 @@ class _MainScreenState extends State<MainScreen> {
               Text(l10n.syncNotConfiguredHint),
             ] else ...[
               _buildStatusRow(
-                l10n.syncStatusLastAttempt,
-                settings.lastSyncAttempt != null
-                    ? _formatDateTime(settings.lastSyncAttempt!, context)
-                    : l10n.syncStatusNever,
+                l10n.connectionStatus,
+                _connectionManager.isConnected ? l10n.connected : l10n.notConnected,
+                textColor: _connectionManager.isConnected ? Colors.green : Colors.orange,
               ),
               const SizedBox(height: 8),
-              _buildStatusRow(
-                l10n.syncStatusLastSuccess,
-                settings.lastSyncDate != null
-                    ? _formatDateTime(settings.lastSyncDate!, context)
-                    : l10n.syncStatusNever,
-              ),
+              _buildStatusRow(l10n.syncStatusLastAttempt, settings.lastSyncAttempt != null ? _formatDateTime(settings.lastSyncAttempt!, context) : l10n.syncStatusNever),
+              const SizedBox(height: 8),
+              _buildStatusRow(l10n.syncStatusLastSuccess, settings.lastSyncDate != null ? _formatDateTime(settings.lastSyncDate!, context) : l10n.syncStatusNever),
               const SizedBox(height: 8),
               _buildStatusRow(
                 l10n.status,
-                settings.lastSyncSuccess ? '${l10n.success} ✓' : '${l10n.error} ✗',
-                textColor: settings.lastSyncSuccess ? Colors.green : Colors.red,
+                _connectionManager.lastSyncSuccess ? '${l10n.success} ✓' : '${l10n.error} ✗',
+                textColor: _connectionManager.lastSyncSuccess ? Colors.green : Colors.red,
               ),
-              if (!settings.lastSyncSuccess && settings.lastSyncError != null) ...[
+              if (!_connectionManager.lastSyncSuccess && settings.lastSyncError != null) ...[
                 const SizedBox(height: 12),
-                Text(
-                  l10n.syncStatusError,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
+                Text(l10n.syncStatusError, style: const TextStyle(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 4),
-                Text(
-                  settings.lastSyncError!,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Colors.red,
-                  ),
-                ),
+                Text(settings.lastSyncError!, style: const TextStyle(fontSize: 12, color: Colors.red)),
               ],
             ],
           ],
@@ -143,10 +132,7 @@ class _MainScreenState extends State<MainScreen> {
         actions: [
           Row(
             children: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: Text(l10n.close),
-              ),
+              TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(l10n.close)),
               const Spacer(),
               if (settings != null && settings.hasCredentials)
                 ElevatedButton.icon(
@@ -160,7 +146,7 @@ class _MainScreenState extends State<MainScreen> {
                         duration: const Duration(days: 1), // Keep it up indefinitely
                       ),
                     );
-                    
+
                     try {
                       // Trigger sync
                       final cardProvider = Provider.of<CardProvider>(context, listen: false);
@@ -170,10 +156,7 @@ class _MainScreenState extends State<MainScreen> {
                         final updatedSettings = _connectionManager.syncSettings;
                         final success = updatedSettings?.lastSyncSuccess ?? false;
                         messenger.showSnackBar(
-                          SnackBar(
-                            content: Text(success ? l10n.syncCompletedSuccess : l10n.syncFailed),
-                            backgroundColor: success ? Colors.green : Colors.red,
-                          ),
+                          SnackBar(content: Text(success ? l10n.syncCompletedSuccess : l10n.syncFailed), backgroundColor: success ? Colors.green : Colors.red),
                         );
                       }
                     } finally {
@@ -195,10 +178,7 @@ class _MainScreenState extends State<MainScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          '$label:',
-          style: const TextStyle(fontWeight: FontWeight.w500),
-        ),
+        Text('$label:', style: const TextStyle(fontWeight: FontWeight.w500)),
         Flexible(
           child: Text(
             value,
@@ -214,7 +194,7 @@ class _MainScreenState extends State<MainScreen> {
     final l10n = AppLocalizations.of(context)!;
     final now = DateTime.now();
     final difference = now.difference(dateTime);
-    
+
     if (difference.inMinutes < 1) {
       return l10n.justNow;
     } else if (difference.inMinutes < 60) {
@@ -231,7 +211,7 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    
+
     return Scaffold(
       appBar: AppBar(
         leading: _buildConnectionStatusIndicator(),
@@ -242,14 +222,11 @@ class _MainScreenState extends State<MainScreen> {
                 decoration: InputDecoration(
                   hintText: l10n.searchCards,
                   border: InputBorder.none,
-                  hintStyle: TextStyle(
-                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-                  ),
+                  hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6)),
                 ),
                 style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
                 onChanged: (query) {
-                  Provider.of<CardProvider>(context, listen: false)
-                      .setSearchQuery(query);
+                  Provider.of<CardProvider>(context, listen: false).setSearchQuery(query);
                 },
               )
             : Text(l10n.appName),
@@ -260,8 +237,7 @@ class _MainScreenState extends State<MainScreen> {
               setState(() {
                 if (_isSearchVisible) {
                   _searchController.clear();
-                  Provider.of<CardProvider>(context, listen: false)
-                      .setSearchQuery('');
+                  Provider.of<CardProvider>(context, listen: false).setSearchQuery('');
                 }
                 _isSearchVisible = !_isSearchVisible;
               });
@@ -286,8 +262,7 @@ class _MainScreenState extends State<MainScreen> {
                           Expanded(
                             child: Text(l10n.sortRecent, style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
                           ),
-                          if (currentSort == 'recent')
-                            Icon(Icons.check, size: 20, color: Theme.of(context).colorScheme.primary),
+                          if (currentSort == 'recent') Icon(Icons.check, size: 20, color: Theme.of(context).colorScheme.primary),
                         ],
                       ),
                     ),
@@ -300,8 +275,7 @@ class _MainScreenState extends State<MainScreen> {
                           Expanded(
                             child: Text(l10n.sortUsage, style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
                           ),
-                          if (currentSort == 'usage')
-                            Icon(Icons.check, size: 20, color: Theme.of(context).colorScheme.primary),
+                          if (currentSort == 'usage') Icon(Icons.check, size: 20, color: Theme.of(context).colorScheme.primary),
                         ],
                       ),
                     ),
@@ -314,8 +288,7 @@ class _MainScreenState extends State<MainScreen> {
                           Expanded(
                             child: Text(l10n.sortName, style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
                           ),
-                          if (currentSort == 'name')
-                            Icon(Icons.check, size: 20, color: Theme.of(context).colorScheme.primary),
+                          if (currentSort == 'name') Icon(Icons.check, size: 20, color: Theme.of(context).colorScheme.primary),
                         ],
                       ),
                     ),
@@ -328,8 +301,7 @@ class _MainScreenState extends State<MainScreen> {
                           Expanded(
                             child: Text(l10n.sortDateAdded, style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
                           ),
-                          if (currentSort == 'date_added')
-                            Icon(Icons.check, size: 20, color: Theme.of(context).colorScheme.primary),
+                          if (currentSort == 'date_added') Icon(Icons.check, size: 20, color: Theme.of(context).colorScheme.primary),
                         ],
                       ),
                     ),
@@ -341,20 +313,14 @@ class _MainScreenState extends State<MainScreen> {
           IconButton(
             icon: const Icon(Icons.public),
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const GlobalScreen()),
-              );
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const GlobalScreen()));
             },
             tooltip: l10n.globalPool,
           ),
           IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const SettingsScreen()),
-              );
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const SettingsScreen()));
             },
             tooltip: l10n.settings,
           ),
@@ -363,10 +329,8 @@ class _MainScreenState extends State<MainScreen> {
       body: Consumer3<CardProvider, TagProvider, DisplayProvider>(
         builder: (context, cardProvider, tagProvider, displayProvider, child) {
           // Use ordered tags from TagProvider, fallback to CardProvider tags
-          final displayTags = tagProvider.orderedTags.isNotEmpty 
-              ? tagProvider.orderedTags 
-              : cardProvider.allTags;
-              
+          final displayTags = tagProvider.orderedTags.isNotEmpty ? tagProvider.orderedTags : cardProvider.allTags;
+
           return Column(
             children: [
               // Tags section
@@ -382,47 +346,32 @@ class _MainScreenState extends State<MainScreen> {
                       if (index == 0) {
                         return Padding(
                           padding: const EdgeInsets.only(right: 8.0),
-                          child: TagChip(
-                            tag: l10n.filterAll,
-                            isSelected: cardProvider.selectedTag.isEmpty,
-                            onTap: () => cardProvider.clearTagFilter(),
-                          ),
+                          child: TagChip(tag: l10n.filterAll, isSelected: cardProvider.selectedTag.isEmpty, onTap: () => cardProvider.clearTagFilter()),
                         );
                       }
-                      
+
                       final tag = displayTags[index - 1];
                       return Padding(
                         padding: const EdgeInsets.only(right: 8.0),
-                        child: TagChip(
-                          tag: tag,
-                          isSelected: cardProvider.selectedTag == tag,
-                          onTap: () => cardProvider.setSelectedTag(tag),
-                        ),
+                        child: TagChip(tag: tag, isSelected: cardProvider.selectedTag == tag, onTap: () => cardProvider.setSelectedTag(tag)),
                       );
                     },
                   ),
                 ),
-              
+
               // Cards list/grid
-              Expanded(
-                child: cardProvider.cards.isEmpty
-                    ? _buildEmptyState(context)
-                    : _buildCardsLayout(context, cardProvider, displayProvider),
-              ),
+              Expanded(child: cardProvider.cards.isEmpty ? _buildEmptyState(context) : _buildCardsLayout(context, cardProvider, displayProvider)),
             ],
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _navigateToAddCard(context),
-        child: const Icon(Icons.add),
-      ),
+      floatingActionButton: FloatingActionButton(onPressed: () => _navigateToAddCard(context), child: const Icon(Icons.add)),
     );
   }
 
   Widget _buildCardsLayout(BuildContext context, CardProvider cardProvider, DisplayProvider displayProvider) {
     final filteredCards = cardProvider.cards;
-    
+
     switch (displayProvider.layoutMode) {
       case LayoutMode.rows:
         // Standard row layout with full details
@@ -433,15 +382,11 @@ class _MainScreenState extends State<MainScreen> {
             final card = filteredCards[index];
             return Padding(
               padding: const EdgeInsets.only(bottom: 12.0),
-              child: CardTile(
-                card: card,
-                onTap: () => _navigateToFullscreenBarcode(context, card),
-                onLongPress: () => _navigateToCardDetail(context, card),
-              ),
+              child: CardTile(card: card, onTap: () => _navigateToFullscreenBarcode(context, card), onLongPress: () => _navigateToCardDetail(context, card)),
             );
           },
         );
-      
+
       case LayoutMode.minimal:
         // Ultra-compact minimal layout
         return ListView.builder(
@@ -449,14 +394,10 @@ class _MainScreenState extends State<MainScreen> {
           itemCount: filteredCards.length,
           itemBuilder: (context, index) {
             final card = filteredCards[index];
-            return CardMinimalTile(
-              card: card,
-              onTap: () => _navigateToFullscreenBarcode(context, card),
-              onLongPress: () => _navigateToCardDetail(context, card),
-            );
+            return CardMinimalTile(card: card, onTap: () => _navigateToFullscreenBarcode(context, card), onLongPress: () => _navigateToCardDetail(context, card));
           },
         );
-      
+
       case LayoutMode.grid:
         // Grid layout with image tiles
         return GridView.builder(
@@ -484,38 +425,22 @@ class _MainScreenState extends State<MainScreen> {
 
   Widget _buildEmptyState(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.credit_card,
-            size: 80,
-            color: Colors.grey[400],
-          ),
+          Icon(Icons.credit_card, size: 80, color: Colors.grey[400]),
           const SizedBox(height: 16),
-          Text(
-            l10n.emptyCardsTitle,
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  color: Colors.grey[600],
-                ),
-          ),
+          Text(l10n.emptyCardsTitle, style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: Colors.grey[600])),
           const SizedBox(height: 8),
-          Text(
-            l10n.emptyCardsMessage,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.grey[500],
-                ),
-          ),
+          Text(l10n.emptyCardsMessage, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey[500])),
           const SizedBox(height: 24),
           ElevatedButton.icon(
             onPressed: () => _navigateToAddCard(context),
             icon: const Icon(Icons.add),
             label: Text(l10n.addCard),
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-            ),
+            style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12)),
           ),
         ],
       ),
@@ -525,50 +450,26 @@ class _MainScreenState extends State<MainScreen> {
   void _navigateToFullscreenBarcode(BuildContext context, CardModel card) async {
     // Check if card has "Image Only" type - show cover image instead
     if (card.barcodeType == 'IMAGE_ONLY') {
-      await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => FullscreenCoverImageScreen(card: card),
-        ),
-      );
+      await Navigator.push(context, MaterialPageRoute(builder: (context) => FullscreenCoverImageScreen(card: card)));
     } else {
       // Show barcode screen as usual
-      await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => FullscreenBarcodeScreen(card: card),
-        ),
-      );
+      await Navigator.push(context, MaterialPageRoute(builder: (context) => FullscreenBarcodeScreen(card: card)));
     }
-    
+
     // Increment usage count when viewing card
     if (context.mounted) {
-      Provider.of<CardProvider>(context, listen: false)
-          .incrementCardUsage(card.uuid);
+      Provider.of<CardProvider>(context, listen: false).incrementCardUsage(card.uuid);
     }
   }
 
   void _navigateToCardDetail(BuildContext context, CardModel card) async {
-    await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => CardFormScreen(card: card),
-      ),
-    );
-    
+    await Navigator.push(context, MaterialPageRoute(builder: (context) => CardFormScreen(card: card)));
+
     // Don't increment usage count when editing - only when viewing/using the card
   }
 
   void _navigateToAddCard(BuildContext context) {
     final displayProvider = Provider.of<DisplayProvider>(context, listen: false);
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => CardFormScreen(
-          autoStartCamera: displayProvider.autoOpenCamera,
-        ),
-      ),
-    );
+    Navigator.push(context, MaterialPageRoute(builder: (context) => CardFormScreen(autoStartCamera: displayProvider.autoOpenCamera)));
   }
 }
-

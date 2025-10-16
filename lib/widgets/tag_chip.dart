@@ -5,12 +5,7 @@ class TagChip extends StatelessWidget {
   final bool isSelected;
   final VoidCallback onTap;
 
-  const TagChip({
-    super.key,
-    required this.tag,
-    required this.isSelected,
-    required this.onTap,
-  });
+  const TagChip({super.key, required this.tag, required this.isSelected, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -20,23 +15,14 @@ class TagChip extends StatelessWidget {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
-          color: isSelected
-              ? Theme.of(context).colorScheme.primary
-              : Theme.of(context).colorScheme.primaryContainer,
+          color: isSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.primaryContainer,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: isSelected
-                ? Theme.of(context).colorScheme.primary
-                : Theme.of(context).colorScheme.outline,
-            width: 1,
-          ),
+          border: Border.all(color: isSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.outline, width: 1),
         ),
         child: Text(
           tag,
           style: TextStyle(
-            color: isSelected 
-                ? Theme.of(context).colorScheme.onPrimary 
-                : Theme.of(context).colorScheme.onPrimaryContainer,
+            color: isSelected ? Theme.of(context).colorScheme.onPrimary : Theme.of(context).colorScheme.onPrimaryContainer,
             fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
             fontSize: 13,
           ),
@@ -45,4 +31,3 @@ class TagChip extends StatelessWidget {
     );
   }
 }
-
