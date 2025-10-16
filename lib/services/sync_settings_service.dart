@@ -33,6 +33,10 @@ class SyncSettingsService {
       final lastSyncSuccess = prefs.getBool('last_sync_success') ?? true;
       final lastSyncError = prefs.getString('last_sync_error');
       final useParallelSync = prefs.getBool('use_parallel_sync') ?? true;
+      final pockardFolderPath =
+          prefs.getString('pockard_folder_path') ?? '/pockard';
+      final globalFolderPath =
+          prefs.getString('global_folder_path') ?? '/pockard_global';
 
       if (serverAddress != null && username != null && password != null) {
         final settings = SyncSettingsModel(
@@ -50,6 +54,8 @@ class SyncSettingsService {
           lastSyncSuccess: lastSyncSuccess,
           lastSyncError: lastSyncError,
           useParallelSync: useParallelSync,
+          pockardFolderPath: pockardFolderPath,
+          globalFolderPath: globalFolderPath,
         );
         return settings;
       }
@@ -94,6 +100,8 @@ class SyncSettingsService {
         await prefs.remove('last_sync_error'); // Clear error if null
       }
       await prefs.setBool('use_parallel_sync', settings.useParallelSync);
+      await prefs.setString('pockard_folder_path', settings.pockardFolderPath);
+      await prefs.setString('global_folder_path', settings.globalFolderPath);
     } catch (e) {
       debugPrint('Error saving WebDAV settings: $e');
     }
@@ -112,10 +120,14 @@ class SyncSettingsService {
 
       if (connected) {
         // Create app directories
-        await _webdavService.createAppDirectories();
+        await _webdavService.createAppDirectories(
+          pockardPath: settings.pockardFolderPath,
+        );
 
         // Check if global folder is available
-        final globalAvailable = await _webdavService.isGlobalFolderAvailable();
+        final globalAvailable = await _webdavService.isGlobalFolderAvailable(
+          globalPath: settings.globalFolderPath,
+        );
 
         // Update settings with global folder status
         final updatedSettings = settings.copyWith(
@@ -141,15 +153,17 @@ class SyncSettingsService {
     }
 
     final cards = <CardModel>[];
+    final settings = await loadSettings();
+    final pockardPath = settings?.pockardFolderPath ?? '/pockard';
 
     try {
       // List all JSON files in the cards directory
-      final files = await _webdavService.listFiles('/pockard/cards');
+      final files = await _webdavService.listFiles('$pockardPath/cards');
       final jsonFiles = files.where((file) => file.endsWith('.json')).toList();
 
       for (final file in jsonFiles) {
         try {
-          final remotePath = '/pockard/cards/$file';
+          final remotePath = '$pockardPath/cards/$file';
           final bytes = await _webdavService.downloadFile(remotePath);
 
           final jsonString = utf8.decode(bytes);
@@ -161,7 +175,7 @@ class SyncSettingsService {
           if (card.coverImagePath == 'HAS_IMAGE') {
             try {
               final imageFileName = '${card.uuid}_cover.jpg';
-              final imageRemotePath = '/pockard/images/$imageFileName';
+              final imageRemotePath = '$pockardPath/images/$imageFileName';
 
               // Check if image exists on server
               final imageExists = await _webdavService.fileExists(
@@ -207,7 +221,7 @@ class SyncSettingsService {
             );
             try {
               final imageFileName = '${card.uuid}_cover.jpg';
-              final imageRemotePath = '/pockard/images/$imageFileName';
+              final imageRemotePath = '$pockardPath/images/$imageFileName';
 
               final imageExists = await _webdavService.fileExists(
                 imageRemotePath,
@@ -248,7 +262,7 @@ class SyncSettingsService {
             try {
               final barcodeImageFileName = '${card.uuid}_barcode.jpg';
               final barcodeImageRemotePath =
-                  '/pockard/images/$barcodeImageFileName';
+                  '$pockardPath/images/$barcodeImageFileName';
 
               // Check if barcode image exists on server
               final barcodeImageExists = await _webdavService.fileExists(
@@ -308,10 +322,13 @@ class SyncSettingsService {
       throw Exception('WebDAV client not initialized');
     }
 
+    final settings = await loadSettings();
+    final pockardPath = settings?.pockardFolderPath ?? '/pockard';
+
     for (final card in deletedCards) {
       try {
         // Delete card JSON from server
-        final remotePath = '/pockard/cards/${card.uuid}.json';
+        final remotePath = '$pockardPath/cards/${card.uuid}.json';
         final exists = await _webdavService.fileExists(remotePath);
         if (exists) {
           await _webdavService.deleteFile(remotePath);
@@ -322,7 +339,7 @@ class SyncSettingsService {
 
         // Delete cover image if it exists on server
         final imageFileName = '${card.uuid}_cover.jpg';
-        final imageRemotePath = '/pockard/images/$imageFileName';
+        final imageRemotePath = '$pockardPath/images/$imageFileName';
         final imageExists = await _webdavService.fileExists(imageRemotePath);
         if (imageExists) {
           await _webdavService.deleteFile(imageRemotePath);
@@ -333,7 +350,8 @@ class SyncSettingsService {
 
         // Delete barcode image if it exists on server
         final barcodeImageFileName = '${card.uuid}_barcode.jpg';
-        final barcodeImageRemotePath = '/pockard/images/$barcodeImageFileName';
+        final barcodeImageRemotePath =
+            '$pockardPath/images/$barcodeImageFileName';
         final barcodeImageExists = await _webdavService.fileExists(
           barcodeImageRemotePath,
         );
@@ -359,25 +377,27 @@ class SyncSettingsService {
       throw Exception('WebDAV client not initialized');
     }
 
+    final settings = await loadSettings();
+    final pockardPath = settings?.pockardFolderPath ?? '/pockard';
+
     try {
       // Ensure app directories exist
-      await _webdavService.createAppDirectories();
+      await _webdavService.createAppDirectories(pockardPath: pockardPath);
 
       // Check if parallel sync is enabled
-      final settings = await loadSettings();
       final useParallel = settings?.useParallelSync ?? true;
 
       if (useParallel) {
         // Parallel upload (faster)
         await Future.wait(
-          cards.map((card) => _uploadCard(card)),
+          cards.map((card) => _uploadCard(card, pockardPath)),
           eagerError: false, // Continue even if some uploads fail
         );
         debugPrint('Cards exported successfully (parallel mode)');
       } else {
         // Sequential upload (more conservative)
         for (final card in cards) {
-          await _uploadCard(card);
+          await _uploadCard(card, pockardPath);
         }
         debugPrint('Cards exported successfully (sequential mode)');
       }
@@ -397,7 +417,7 @@ class SyncSettingsService {
   }
 
   /// Upload a single card (JSON + image)
-  Future<void> _uploadCard(CardModel card) async {
+  Future<void> _uploadCard(CardModel card, String pockardPath) async {
     try {
       // Create a portable version of the card for export
       // Replace absolute image paths with flags indicating images exist
@@ -414,7 +434,7 @@ class SyncSettingsService {
       final tempFile = File('${tempDir.path}/temp_card_${card.uuid}.json');
       await tempFile.writeAsString(cardJson);
 
-      final remotePath = '/pockard/cards/${card.uuid}.json';
+      final remotePath = '$pockardPath/cards/${card.uuid}.json';
       await _webdavService.uploadFile(tempFile.path, remotePath);
 
       // Clean up temp file
@@ -424,7 +444,7 @@ class SyncSettingsService {
       if (card.coverImagePath != null &&
           await File(card.coverImagePath!).exists()) {
         final imageFileName = '${card.uuid}_cover.jpg';
-        final imageRemotePath = '/pockard/images/$imageFileName';
+        final imageRemotePath = '$pockardPath/images/$imageFileName';
         await _webdavService.uploadFile(card.coverImagePath!, imageRemotePath);
       }
 
@@ -432,7 +452,8 @@ class SyncSettingsService {
       if (card.barcodeImagePath != null &&
           await File(card.barcodeImagePath!).exists()) {
         final barcodeImageFileName = '${card.uuid}_barcode.jpg';
-        final barcodeImageRemotePath = '/pockard/images/$barcodeImageFileName';
+        final barcodeImageRemotePath =
+            '$pockardPath/images/$barcodeImageFileName';
         await _webdavService.uploadFile(
           card.barcodeImagePath!,
           barcodeImageRemotePath,

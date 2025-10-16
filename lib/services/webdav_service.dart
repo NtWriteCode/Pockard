@@ -71,18 +71,16 @@ class WebDavService {
   }
 
   /// Create directory structure for the app
-  Future<void> createAppDirectories() async {
+  Future<void> createAppDirectories({String pockardPath = '/pockard'}) async {
     if (_client == null) {
-      throw Exception(
-        AppLocalizations.of(context)!.exceptionWebdavNotInitialized,
-      );
+      throw Exception('WebDAV client not initialized');
     }
 
     try {
-      // Create /pockard folder
-      await createDirectory('/pockard');
-      await createDirectory('/pockard/cards');
-      await createDirectory('/pockard/images');
+      // Create pockard folder
+      await createDirectory(pockardPath);
+      await createDirectory('$pockardPath/cards');
+      await createDirectory('$pockardPath/images');
       debugPrint('Created app directories');
     } catch (e) {
       debugPrint('Error creating app directories: $e');
@@ -91,10 +89,12 @@ class WebDavService {
   }
 
   /// Check if global folder is available
-  Future<bool> isGlobalFolderAvailable() async {
+  Future<bool> isGlobalFolderAvailable({
+    String globalPath = '/pockard_global',
+  }) async {
     try {
       if (_client == null) return false;
-      return await directoryExists('/pockard_global');
+      return await directoryExists(globalPath);
     } catch (e) {
       debugPrint('Error checking global folder: $e');
       return false;

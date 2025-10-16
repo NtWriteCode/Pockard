@@ -255,7 +255,7 @@
   "tapToHideControls": "Koppints bárhová a vezérlők elrejtéséhez",
   "tapToShowControls": "Koppints bárhová a vezérlők megjelenítéséhez",
   "tapToUploadBarcodeImage": "Koppints ide vonalkód kép feltöltéséhez",
-  "testConnection": "Kapcsolat tesztelése",
+  "testConnection": "Kapcsolódás",
   "text": "Szöveg",
   "textColor": "Szöveg színe",
   "theme": "Téma",
@@ -296,5 +296,13 @@
   "cards": "Kártyák",
   "images": "Képek",
   "globalCardsCount": "Globális kártyák ({count})",
-  "globalImagesCount": "Globális képek ({count})"
+  "globalImagesCount": "Globális képek ({count})",
+  "advancedSettings": "Speciális beállítások",
+  "advancedSettingsDescription": "Egyedi mappa útvonalak konfigurálása szinkronizáláshoz",
+  "pockardFolderPath": "Pockard mappa útvonala",
+  "pockardFolderPathHint": "Útvonal ahol a kártyáid szinkronizálva lesznek.\nAlapértelmezett: /pockard",
+  "globalFolderPath": "Globális mappa útvonala",
+  "globalFolderPathHint": "Útvonal a megosztott kártyákhoz.\nAlapértelmezett: /pockard_global",
+  "showAdvancedSettings": "Speciális beállítások megjelenítése",
+  "hideAdvancedSettings": "Speciális beállítások elrejtése"
 }

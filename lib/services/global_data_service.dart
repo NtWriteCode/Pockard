@@ -24,7 +24,11 @@ class GlobalDataService {
       if (!_webdavService.isInitialized) {
         await _syncService.initializeFromSettings();
       }
-      return await _webdavService.isGlobalFolderAvailable();
+      final settings = await _syncService.loadSettings();
+      final globalPath = settings?.globalFolderPath ?? '/pockard_global';
+      return await _webdavService.isGlobalFolderAvailable(
+        globalPath: globalPath,
+      );
     } catch (e) {
       debugPrint('Error checking global folder availability: $e');
       return false;
@@ -39,13 +43,15 @@ class GlobalDataService {
 
     // Check if global folder is available
     if (!await isGlobalFolderAvailable()) {
-      throw Exception(
-        'Global folder (/pockard_global) not available on server',
-      );
+      final settings = await _syncService.loadSettings();
+      final globalPath = settings?.globalFolderPath ?? '/pockard_global';
+      throw Exception('Global folder ($globalPath) not available on server');
     }
 
     final cards = <CardModel>[];
-    const globalCardsDir = '/pockard_global/cards';
+    final settings = await _syncService.loadSettings();
+    final globalPath = settings?.globalFolderPath ?? '/pockard_global';
+    final globalCardsDir = '$globalPath/cards';
 
     try {
       // List all JSON files in the global cards directory
@@ -85,13 +91,15 @@ class GlobalDataService {
 
     // Check if global folder is available
     if (!await isGlobalFolderAvailable()) {
-      throw Exception(
-        'Global folder (/pockard_global) not available on server',
-      );
+      final settings = await _syncService.loadSettings();
+      final globalPath = settings?.globalFolderPath ?? '/pockard_global';
+      throw Exception('Global folder ($globalPath) not available on server');
     }
 
     try {
-      const globalCardsDir = '/pockard_global/cards';
+      final settings = await _syncService.loadSettings();
+      final globalPath = settings?.globalFolderPath ?? '/pockard_global';
+      final globalCardsDir = '$globalPath/cards';
 
       // Ensure global cards directory exists
       try {
@@ -115,7 +123,7 @@ class GlobalDataService {
       // Upload cover image if it exists
       if (card.coverImagePath != null &&
           await File(card.coverImagePath!).exists()) {
-        const globalImagesDir = '/pockard_global/images';
+        final globalImagesDir = '$globalPath/images';
 
         // Ensure global images directory exists
         try {
@@ -157,13 +165,15 @@ class GlobalDataService {
 
     // Check if global folder is available
     if (!await isGlobalFolderAvailable()) {
-      throw Exception(
-        'Global folder (/pockard_global) not available on server',
-      );
+      final settings = await _syncService.loadSettings();
+      final globalPath = settings?.globalFolderPath ?? '/pockard_global';
+      throw Exception('Global folder ($globalPath) not available on server');
     }
 
     try {
-      const globalCardsDir = '/pockard_global/cards';
+      final settings = await _syncService.loadSettings();
+      final globalPath = settings?.globalFolderPath ?? '/pockard_global';
+      final globalCardsDir = '$globalPath/cards';
       final remotePath = '$globalCardsDir/$uuid.json';
 
       await _webdavService.deleteFile(remotePath);
@@ -185,20 +195,22 @@ class GlobalDataService {
 
     // Check if global folder is available
     if (!await isGlobalFolderAvailable()) {
-      throw Exception(
-        'Global folder (/pockard_global) not available on server',
-      );
+      final settings = await _syncService.loadSettings();
+      final globalPath = settings?.globalFolderPath ?? '/pockard_global';
+      throw Exception('Global folder ($globalPath) not available on server');
     }
 
     final images = <GlobalImageModel>[];
-    const globalImagesDir = '/pockard_global/images';
+    final settings = await _syncService.loadSettings();
+    final globalPath = settings?.globalFolderPath ?? '/pockard_global';
+    final globalImagesDir = '$globalPath/images';
     debugPrint('DEBUG: Loading global images from: $globalImagesDir');
 
     try {
       // Load metadata first
       Map<String, dynamic> metadata = {};
       try {
-        const metadataPath = '$globalImagesDir/images_metadata.json';
+        final metadataPath = '$globalImagesDir/images_metadata.json';
         debugPrint('DEBUG: Attempting to load metadata from: $metadataPath');
         final bytes = await _webdavService.downloadFile(metadataPath);
         final metadataString = utf8.decode(bytes);
@@ -330,13 +342,15 @@ class GlobalDataService {
 
     // Check if global folder is available
     if (!await isGlobalFolderAvailable()) {
-      throw Exception(
-        'Global folder (/pockard_global) not available on server',
-      );
+      final settings = await _syncService.loadSettings();
+      final globalPath = settings?.globalFolderPath ?? '/pockard_global';
+      throw Exception('Global folder ($globalPath) not available on server');
     }
 
     try {
-      const globalImagesDir = '/pockard_global/images';
+      final settings = await _syncService.loadSettings();
+      final globalPath = settings?.globalFolderPath ?? '/pockard_global';
+      final globalImagesDir = '$globalPath/images';
       debugPrint('DEBUG: Sharing image globally to: $globalImagesDir');
       debugPrint('DEBUG: Image path: $imagePath');
       debugPrint('DEBUG: Image name: $imageName');
@@ -394,8 +408,10 @@ class GlobalDataService {
     String uploaderIdentifier,
   ) async {
     try {
-      const globalImagesDir = '/pockard_global/images';
-      const metadataPath = '$globalImagesDir/images_metadata.json';
+      final settings = await _syncService.loadSettings();
+      final globalPath = settings?.globalFolderPath ?? '/pockard_global';
+      final globalImagesDir = '$globalPath/images';
+      final metadataPath = '$globalImagesDir/images_metadata.json';
 
       // Load existing metadata
       Map<String, dynamic> metadata = {};
@@ -446,13 +462,15 @@ class GlobalDataService {
 
     // Check if global folder is available
     if (!await isGlobalFolderAvailable()) {
-      throw Exception(
-        'Global folder (/pockard_global) not available on server',
-      );
+      final settings = await _syncService.loadSettings();
+      final globalPath = settings?.globalFolderPath ?? '/pockard_global';
+      throw Exception('Global folder ($globalPath) not available on server');
     }
 
     try {
-      const globalImagesDir = '/pockard_global/images';
+      final settings = await _syncService.loadSettings();
+      final globalPath = settings?.globalFolderPath ?? '/pockard_global';
+      final globalImagesDir = '$globalPath/images';
 
       // Find the image file with this UUID
       final files = await _webdavService.listFiles(globalImagesDir);
@@ -477,8 +495,10 @@ class GlobalDataService {
   /// Remove image metadata entry
   Future<void> _removeImageMetadata(String uuid) async {
     try {
-      const globalImagesDir = '/pockard_global/images';
-      const metadataPath = '$globalImagesDir/images_metadata.json';
+      final settings = await _syncService.loadSettings();
+      final globalPath = settings?.globalFolderPath ?? '/pockard_global';
+      final globalImagesDir = '$globalPath/images';
+      final metadataPath = '$globalImagesDir/images_metadata.json';
 
       // Load existing metadata
       Map<String, dynamic> metadata = {};
@@ -518,13 +538,15 @@ class GlobalDataService {
 
     // Check if global folder is available
     if (!await isGlobalFolderAvailable()) {
-      throw Exception(
-        'Global folder (/pockard_global) not available on server',
-      );
+      final settings = await _syncService.loadSettings();
+      final globalPath = settings?.globalFolderPath ?? '/pockard_global';
+      throw Exception('Global folder ($globalPath) not available on server');
     }
 
     try {
-      const globalImagesDir = '/pockard_global/images';
+      final settings = await _syncService.loadSettings();
+      final globalPath = settings?.globalFolderPath ?? '/pockard_global';
+      final globalImagesDir = '$globalPath/images';
       // Use imagePath (UUID-based filename) instead of name (user-friendly display name)
       final remotePath = '$globalImagesDir/${image.imagePath}';
       debugPrint('DEBUG: Downloading global image from: $remotePath');

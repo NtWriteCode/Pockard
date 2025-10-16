@@ -22,11 +22,14 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
   final _serverController = TextEditingController();
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _pockardFolderController = TextEditingController();
+  final _globalFolderController = TextEditingController();
 
   bool _isLoading = false;
   bool _isConnected = false;
   bool _globalFolderAvailable = false;
   bool _useParallelSync = true; // Default to parallel (faster)
+  bool _showAdvancedSettings = false;
   DateTime? _lastSyncDate;
   String? _loadingOperation; // Track which operation is loading
 
@@ -41,6 +44,8 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
     _serverController.dispose();
     _usernameController.dispose();
     _passwordController.dispose();
+    _pockardFolderController.dispose();
+    _globalFolderController.dispose();
     super.dispose();
   }
 
@@ -51,6 +56,8 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
         _serverController.text = settings.serverAddress ?? '';
         _usernameController.text = settings.username ?? '';
         _passwordController.text = settings.password ?? '';
+        _pockardFolderController.text = settings.pockardFolderPath;
+        _globalFolderController.text = settings.globalFolderPath;
         _lastSyncDate = settings.lastSyncDate;
         _globalFolderAvailable = settings.globalFolderAvailable;
         _useParallelSync = settings.useParallelSync;
@@ -112,6 +119,12 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
         username: _usernameController.text.trim(),
         password: _passwordController.text.trim(),
         useParallelSync: _useParallelSync,
+        pockardFolderPath: _pockardFolderController.text.trim().isNotEmpty
+            ? _pockardFolderController.text.trim()
+            : '/pockard',
+        globalFolderPath: _globalFolderController.text.trim().isNotEmpty
+            ? _globalFolderController.text.trim()
+            : '/pockard_global',
       );
 
       final success = await _syncService.testConnection(settings);
@@ -467,6 +480,13 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
             );
           },
         ),
+
+        const SizedBox(height: 16),
+
+        // Advanced Settings Section
+        _buildAdvancedSettingsSection(),
+
+        const SizedBox(height: 16),
 
         SizedBox(
           width: double.infinity,
@@ -882,5 +902,79 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
         });
       }
     }
+  }
+
+  Widget _buildAdvancedSettingsSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        InkWell(
+          onTap: () {
+            setState(() {
+              _showAdvancedSettings = !_showAdvancedSettings;
+            });
+          },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: Row(
+              children: [
+                Text(
+                  AppLocalizations.of(context)!.advancedSettings,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
+                const Spacer(),
+                Icon(
+                  _showAdvancedSettings ? Icons.expand_less : Icons.expand_more,
+                  color: Theme.of(context).colorScheme.primary,
+                  size: 20,
+                ),
+              ],
+            ),
+          ),
+        ),
+        if (_showAdvancedSettings) ...[
+          const SizedBox(height: 16),
+          Text(
+            AppLocalizations.of(context)!.advancedSettingsDescription,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.7),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Builder(
+            builder: (context) {
+              final l10n = AppLocalizations.of(context)!;
+              return Column(
+                children: [
+                  TextField(
+                    controller: _pockardFolderController,
+                    decoration: InputDecoration(
+                      labelText: l10n.pockardFolderPath,
+                      helperText: l10n.pockardFolderPathHint,
+                      border: const OutlineInputBorder(),
+                      prefixIcon: const Icon(Icons.folder),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: _globalFolderController,
+                    decoration: InputDecoration(
+                      labelText: l10n.globalFolderPath,
+                      helperText: l10n.globalFolderPathHint,
+                      border: const OutlineInputBorder(),
+                      prefixIcon: const Icon(Icons.folder_shared),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        ],
+      ],
+    );
   }
 }

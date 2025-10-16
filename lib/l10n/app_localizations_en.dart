@@ -880,7 +880,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tapToUploadBarcodeImage => 'Tap to upload a barcode image';
 
   @override
-  String get testConnection => 'Test Connection';
+  String get testConnection => 'Connect';
 
   @override
   String get text => 'Text';
@@ -992,4 +992,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get yesterday => 'Yesterday';
+
+  @override
+  String get advancedSettings => 'Advanced Settings';
+
+  @override
+  String get advancedSettingsDescription =>
+      'Configure custom folder paths for synchronization';
+
+  @override
+  String get pockardFolderPath => 'Pockard Folder Path';
+
+  @override
+  String get pockardFolderPathHint =>
+      'Path where your cards will be synchronized.\nDefault: /pockard';
+
+  @override
+  String get globalFolderPath => 'Global Folder Path';
+
+  @override
+  String get globalFolderPathHint =>
+      'Path for global shared cards.\nDefault: /pockard_global';
+
+  @override
+  String get showAdvancedSettings => 'Show Advanced Settings';
+
+  @override
+  String get hideAdvancedSettings => 'Hide Advanced Settings';
 }

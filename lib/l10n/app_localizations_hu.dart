@@ -887,7 +887,7 @@ class AppLocalizationsHu extends AppLocalizations {
       'Koppints ide vonalkód kép feltöltéséhez';
 
   @override
-  String get testConnection => 'Kapcsolat tesztelése';
+  String get testConnection => 'Kapcsolódás';
 
   @override
   String get text => 'Szöveg';
@@ -999,4 +999,31 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get yesterday => 'Tegnap';
+
+  @override
+  String get advancedSettings => 'Speciális beállítások';
+
+  @override
+  String get advancedSettingsDescription =>
+      'Egyedi mappa útvonalak konfigurálása szinkronizáláshoz';
+
+  @override
+  String get pockardFolderPath => 'Pockard mappa útvonala';
+
+  @override
+  String get pockardFolderPathHint =>
+      'Útvonal ahol a kártyáid szinkronizálva lesznek.\nAlapértelmezett: /pockard';
+
+  @override
+  String get globalFolderPath => 'Globális mappa útvonala';
+
+  @override
+  String get globalFolderPathHint =>
+      'Útvonal a megosztott kártyákhoz.\nAlapértelmezett: /pockard_global';
+
+  @override
+  String get showAdvancedSettings => 'Speciális beállítások megjelenítése';
+
+  @override
+  String get hideAdvancedSettings => 'Speciális beállítások elrejtése';
 }

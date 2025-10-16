@@ -9,6 +9,8 @@ class SyncSettingsModel {
   final bool lastSyncSuccess;
   final String? lastSyncError;
   final bool useParallelSync;
+  final String pockardFolderPath;
+  final String globalFolderPath;
 
   SyncSettingsModel({
     this.serverAddress,
@@ -21,6 +23,8 @@ class SyncSettingsModel {
     this.lastSyncSuccess = true,
     this.lastSyncError,
     this.useParallelSync = true, // Default to parallel (faster)
+    this.pockardFolderPath = '/pockard',
+    this.globalFolderPath = '/pockard_global',
   });
 
   SyncSettingsModel copyWith({
@@ -34,6 +38,8 @@ class SyncSettingsModel {
     bool? lastSyncSuccess,
     String? lastSyncError,
     bool? useParallelSync,
+    String? pockardFolderPath,
+    String? globalFolderPath,
   }) {
     return SyncSettingsModel(
       serverAddress: serverAddress ?? this.serverAddress,
@@ -41,11 +47,14 @@ class SyncSettingsModel {
       password: password ?? this.password,
       isConnected: isConnected ?? this.isConnected,
       lastSyncDate: lastSyncDate ?? this.lastSyncDate,
-      globalFolderAvailable: globalFolderAvailable ?? this.globalFolderAvailable,
+      globalFolderAvailable:
+          globalFolderAvailable ?? this.globalFolderAvailable,
       lastSyncAttempt: lastSyncAttempt ?? this.lastSyncAttempt,
       lastSyncSuccess: lastSyncSuccess ?? this.lastSyncSuccess,
       lastSyncError: lastSyncError ?? this.lastSyncError,
       useParallelSync: useParallelSync ?? this.useParallelSync,
+      pockardFolderPath: pockardFolderPath ?? this.pockardFolderPath,
+      globalFolderPath: globalFolderPath ?? this.globalFolderPath,
     );
   }
 
@@ -61,6 +70,8 @@ class SyncSettingsModel {
       'lastSyncSuccess': lastSyncSuccess,
       'lastSyncError': lastSyncError,
       'useParallelSync': useParallelSync,
+      'pockardFolderPath': pockardFolderPath,
+      'globalFolderPath': globalFolderPath,
     };
   }
 
@@ -80,17 +91,16 @@ class SyncSettingsModel {
       lastSyncSuccess: map['lastSyncSuccess'] ?? true,
       lastSyncError: map['lastSyncError'],
       useParallelSync: map['useParallelSync'] ?? true, // Default to parallel
+      pockardFolderPath: map['pockardFolderPath'] ?? '/pockard',
+      globalFolderPath: map['globalFolderPath'] ?? '/pockard_global',
     );
   }
 
   bool get hasCredentials {
-    return serverAddress != null &&
-        username != null &&
-        password != null;
+    return serverAddress != null && username != null && password != null;
   }
 
   bool get canSync {
     return hasCredentials && isConnected;
   }
 }
-

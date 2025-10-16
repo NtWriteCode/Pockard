@@ -1661,7 +1661,7 @@ abstract class AppLocalizations {
   /// No description provided for @testConnection.
   ///
   /// In en, this message translates to:
-  /// **'Test Connection'**
+  /// **'Connect'**
   String get testConnection;
 
   /// No description provided for @text.
@@ -1879,6 +1879,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Yesterday'**
   String get yesterday;
+
+  /// No description provided for @advancedSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced Settings'**
+  String get advancedSettings;
+
+  /// No description provided for @advancedSettingsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Configure custom folder paths for synchronization'**
+  String get advancedSettingsDescription;
+
+  /// No description provided for @pockardFolderPath.
+  ///
+  /// In en, this message translates to:
+  /// **'Pockard Folder Path'**
+  String get pockardFolderPath;
+
+  /// No description provided for @pockardFolderPathHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Path where your cards will be synchronized.\nDefault: /pockard'**
+  String get pockardFolderPathHint;
+
+  /// No description provided for @globalFolderPath.
+  ///
+  /// In en, this message translates to:
+  /// **'Global Folder Path'**
+  String get globalFolderPath;
+
+  /// No description provided for @globalFolderPathHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Path for global shared cards.\nDefault: /pockard_global'**
+  String get globalFolderPathHint;
+
+  /// No description provided for @showAdvancedSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Show Advanced Settings'**
+  String get showAdvancedSettings;
+
+  /// No description provided for @hideAdvancedSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide Advanced Settings'**
+  String get hideAdvancedSettings;
 }
 
 class _AppLocalizationsDelegate

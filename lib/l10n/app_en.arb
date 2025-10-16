@@ -260,7 +260,7 @@
   "tapToHideControls": "Tap anywhere to hide controls",
   "tapToShowControls": "Tap anywhere to show controls",
   "tapToUploadBarcodeImage": "Tap to upload a barcode image",
-  "testConnection": "Test Connection",
+  "testConnection": "Connect",
   "text": "Text",
   "textColor": "Text Color",
   "theme": "Theme",
@@ -296,5 +296,13 @@
   "webdavConnection": "Server Connection",
   "white": "White",
   "yes": "Yes",
-  "yesterday": "Yesterday"
+  "yesterday": "Yesterday",
+  "advancedSettings": "Advanced Settings",
+  "advancedSettingsDescription": "Configure custom folder paths for synchronization",
+  "pockardFolderPath": "Pockard Folder Path",
+  "pockardFolderPathHint": "Path where your cards will be synchronized.\nDefault: /pockard",
+  "globalFolderPath": "Global Folder Path",
+  "globalFolderPathHint": "Path for global shared cards.\nDefault: /pockard_global",
+  "showAdvancedSettings": "Show Advanced Settings",
+  "hideAdvancedSettings": "Hide Advanced Settings"
 }
