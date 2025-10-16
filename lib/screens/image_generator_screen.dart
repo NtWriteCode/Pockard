@@ -19,11 +19,11 @@ class ImageGeneratorScreen extends StatefulWidget {
 class _ImageGeneratorScreenState extends State<ImageGeneratorScreen> {
   final GlobalKey _repaintBoundaryKey = GlobalKey();
   final TextEditingController _textController = TextEditingController();
-  
+
   Color _selectedColor = AppColors.imageGeneratorColors[1]; // Default to blue
   Color _textColor = AppColors.white;
   String _customText = '';
-  
+
   // Predefined colors for quick selection
   static const List<Color> _predefinedColors = AppColors.imageGeneratorColors;
 
@@ -46,7 +46,7 @@ class _ImageGeneratorScreenState extends State<ImageGeneratorScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    
+
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.generateImage),
@@ -67,15 +67,15 @@ class _ImageGeneratorScreenState extends State<ImageGeneratorScreen> {
             // Preview Section
             _buildPreviewSection(),
             const SizedBox(height: 24),
-            
+
             // Background Color Selection
             _buildColorSelectionSection(),
             const SizedBox(height: 24),
-            
+
             // Text Input Section
             _buildTextInputSection(),
             const SizedBox(height: 24),
-            
+
             // Text Color Selection
             _buildTextColorSection(),
           ],
@@ -107,7 +107,9 @@ class _ImageGeneratorScreenState extends State<ImageGeneratorScreen> {
                 color: _selectedColor,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.2),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.2),
                   width: 2,
                 ),
               ),
@@ -152,7 +154,7 @@ class _ImageGeneratorScreenState extends State<ImageGeneratorScreen> {
           ),
         ),
         const SizedBox(height: 12),
-        
+
         // Predefined Colors Grid
         Wrap(
           spacing: 8,
@@ -168,9 +170,11 @@ class _ImageGeneratorScreenState extends State<ImageGeneratorScreen> {
                   color: color,
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: isSelected 
+                    color: isSelected
                         ? Theme.of(context).colorScheme.primary
-                        : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3),
+                        : Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withValues(alpha: 0.3),
                     width: isSelected ? 3 : 1,
                   ),
                 ),
@@ -185,9 +189,9 @@ class _ImageGeneratorScreenState extends State<ImageGeneratorScreen> {
             );
           }).toList(),
         ),
-        
+
         const SizedBox(height: 12),
-        
+
         // Custom Color Picker Button
         Builder(
           builder: (context) {
@@ -244,7 +248,6 @@ class _ImageGeneratorScreenState extends State<ImageGeneratorScreen> {
     );
   }
 
-
   Widget _buildTextColorSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -280,14 +283,16 @@ class _ImageGeneratorScreenState extends State<ImageGeneratorScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected 
+          color: isSelected
               ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1)
               : Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isSelected 
+            color: isSelected
                 ? Theme.of(context).colorScheme.primary
-                : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.2),
+                : Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.2),
           ),
         ),
         child: Row(
@@ -300,7 +305,9 @@ class _ImageGeneratorScreenState extends State<ImageGeneratorScreen> {
                 color: color,
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.3),
                 ),
               ),
             ),
@@ -354,75 +361,69 @@ class _ImageGeneratorScreenState extends State<ImageGeneratorScreen> {
 
   double _calculateOptimalFontSize(String text) {
     if (text.isEmpty) return 70.0;
-    
+
     // Start with 70px and decrease if text doesn't fit
     double fontSize = 70.0;
     final availableWidth = 200 * 0.8; // 80% of container width (160px)
     final availableHeight = 200 * 0.8; // 80% of container height (160px)
-    
+
     // Calculate how many lines the text will have
     final lines = text.split('\n');
-    
+
     // Decrease font size until ALL lines fit without overflow
     while (fontSize > 10) {
       bool allLinesFit = true;
-      
+
       // Check each line individually using TextPainter for accurate measurement
       for (final line in lines) {
         if (line.isEmpty) continue;
-        
+
         // Use TextPainter for accurate text measurement
         final textPainter = TextPainter(
           text: TextSpan(
             text: line,
-            style: TextStyle(
-              fontSize: fontSize,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(fontSize: fontSize, fontWeight: FontWeight.bold),
           ),
           textDirection: TextDirection.ltr,
         );
         textPainter.layout();
-        
+
         // If any line would overflow, reduce font size
         if (textPainter.width > availableWidth) {
           allLinesFit = false;
           break;
         }
       }
-      
+
       // Also check if total height fits using TextPainter
       final textPainter = TextPainter(
         text: TextSpan(
           text: text,
-          style: TextStyle(
-            fontSize: fontSize,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(fontSize: fontSize, fontWeight: FontWeight.bold),
         ),
         textDirection: TextDirection.ltr,
         maxLines: lines.length,
       );
       textPainter.layout();
-      
+
       if (textPainter.height > availableHeight) {
         allLinesFit = false;
       }
-      
+
       // If all lines fit, return this font size
       if (allLinesFit) {
         return fontSize;
       }
-      
+
       fontSize -= 2; // Decrease by 2px each iteration
     }
-    
+
     return 10.0; // Minimum font size
   }
 
   int _calculateOptimalLines(String text) {
     if (text.isEmpty) return 1;
-    
+
     // Use actual lines from user input (split by \n)
     final lines = text.split('\n');
     return lines.length;
@@ -434,17 +435,18 @@ class _ImageGeneratorScreenState extends State<ImageGeneratorScreen> {
       showDialog(
         context: context,
         barrierDismissible: false,
-        builder: (context) => const Center(
-          child: CircularProgressIndicator(),
-        ),
+        builder: (context) => const Center(child: CircularProgressIndicator()),
       );
 
       // Capture the RepaintBoundary as an image
-      final RenderRepaintBoundary boundary = 
-          _repaintBoundaryKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
+      final RenderRepaintBoundary boundary =
+          _repaintBoundaryKey.currentContext!.findRenderObject()
+              as RenderRepaintBoundary;
       final ui.Image image = await boundary.toImage(pixelRatio: 3.0);
-      final ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
-      
+      final ByteData? byteData = await image.toByteData(
+        format: ui.ImageByteFormat.png,
+      );
+
       if (byteData != null) {
         // Save to app's documents directory
         final directory = await getApplicationDocumentsDirectory();
@@ -452,15 +454,16 @@ class _ImageGeneratorScreenState extends State<ImageGeneratorScreen> {
         if (!await imagesDir.exists()) {
           await imagesDir.create(recursive: true);
         }
-        
-        final fileName = 'generated_${DateTime.now().millisecondsSinceEpoch}.png';
+
+        final fileName =
+            'generated_${DateTime.now().millisecondsSinceEpoch}.png';
         final filePath = path.join(imagesDir.path, fileName);
         final file = File(filePath);
         await file.writeAsBytes(byteData.buffer.asUint8List());
-        
+
         // Close loading dialog
         if (mounted) Navigator.pop(context);
-        
+
         // Return the generated image path
         if (mounted) {
           Navigator.pop(context, filePath);
@@ -469,13 +472,13 @@ class _ImageGeneratorScreenState extends State<ImageGeneratorScreen> {
     } catch (e) {
       // Close loading dialog
       if (mounted) Navigator.pop(context);
-      
+
       // Show error
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${l10n.errorGeneratingImage}: $e'),
+            content: Text(l10n.errorGeneratingImage(e.toString())),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );

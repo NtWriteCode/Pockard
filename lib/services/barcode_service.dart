@@ -21,7 +21,7 @@ class BarcodeService {
     if (status.isGranted) {
       return true;
     }
-    
+
     final result = await Permission.camera.request();
     return result.isGranted;
   }
@@ -30,9 +30,9 @@ class BarcodeService {
     if (!await requestCameraPermission()) {
       if (context.mounted) {
         final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.cameraPermissionRequired)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.cameraPermissionRequired)));
       }
       return null;
     }
@@ -40,9 +40,7 @@ class BarcodeService {
     if (context.mounted) {
       return Navigator.push<BarcodeResult>(
         context,
-        MaterialPageRoute(
-          builder: (context) => const BarcodeScannerScreen(),
-        ),
+        MaterialPageRoute(builder: (context) => const BarcodeScannerScreen()),
       );
     }
     return null;
@@ -52,14 +50,14 @@ class BarcodeService {
     try {
       final ImagePicker picker = ImagePicker();
       final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-      
+
       if (image == null) return null;
-      
+
       // Use mobile_scanner's built-in analyzeImage method
       final MobileScannerController controller = MobileScannerController();
       final BarcodeCapture? capture = await controller.analyzeImage(image.path);
       await controller.dispose();
-      
+
       if (capture != null && capture.barcodes.isNotEmpty) {
         final barcode = capture.barcodes.first;
         if (barcode.rawValue != null && barcode.rawValue!.isNotEmpty) {
@@ -69,13 +67,13 @@ class BarcodeService {
           );
         }
       }
-      
+
       // No barcode found in image
       if (context.mounted) {
         final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.noBarcodeFoundInImage)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.noBarcodeFoundInImage)));
       }
       return null;
     } catch (e) {
@@ -83,17 +81,16 @@ class BarcodeService {
       if (context.mounted) {
         final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.errorScanningImage)),
+          SnackBar(content: Text(l10n.errorScanningImage(e.toString()))),
         );
       }
       return null;
     }
   }
 
-
   String getBarcodeFormatName(BarcodeFormat format) {
     final formatName = format.toString().split('.').last.toUpperCase();
-    
+
     // Map mobile_scanner format names to our standard names
     switch (formatName) {
       case 'QRCODE':
@@ -148,7 +145,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    
+
     return Scaffold(
       backgroundColor: Colors.black,
       extendBodyBehindAppBar: true,
@@ -198,7 +195,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
               fit: BoxFit.cover,
               onDetect: (BarcodeCapture capture) {
                 if (isScanned) return;
-                
+
                 final List<Barcode> barcodes = capture.barcodes;
                 if (barcodes.isNotEmpty) {
                   final barcode = barcodes.first;
@@ -206,11 +203,13 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
                     setState(() {
                       isScanned = true;
                     });
-                    
+
                     Navigator.of(context).pop(
                       BarcodeResult(
                         data: barcode.rawValue!,
-                        type: BarcodeService().getBarcodeFormatName(barcode.format),
+                        type: BarcodeService().getBarcodeFormatName(
+                          barcode.format,
+                        ),
                       ),
                     );
                   }
@@ -241,10 +240,18 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
                       height: 20,
                       decoration: BoxDecoration(
                         border: Border(
-                          top: BorderSide(color: Theme.of(context).primaryColor, width: 4),
-                          left: BorderSide(color: Theme.of(context).primaryColor, width: 4),
+                          top: BorderSide(
+                            color: Theme.of(context).primaryColor,
+                            width: 4,
+                          ),
+                          left: BorderSide(
+                            color: Theme.of(context).primaryColor,
+                            width: 4,
+                          ),
                         ),
-                        borderRadius: const BorderRadius.only(topLeft: Radius.circular(12)),
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(12),
+                        ),
                       ),
                     ),
                   ),
@@ -256,10 +263,18 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
                       height: 20,
                       decoration: BoxDecoration(
                         border: Border(
-                          top: BorderSide(color: Theme.of(context).primaryColor, width: 4),
-                          right: BorderSide(color: Theme.of(context).primaryColor, width: 4),
+                          top: BorderSide(
+                            color: Theme.of(context).primaryColor,
+                            width: 4,
+                          ),
+                          right: BorderSide(
+                            color: Theme.of(context).primaryColor,
+                            width: 4,
+                          ),
                         ),
-                        borderRadius: const BorderRadius.only(topRight: Radius.circular(12)),
+                        borderRadius: const BorderRadius.only(
+                          topRight: Radius.circular(12),
+                        ),
                       ),
                     ),
                   ),
@@ -271,10 +286,18 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
                       height: 20,
                       decoration: BoxDecoration(
                         border: Border(
-                          bottom: BorderSide(color: Theme.of(context).primaryColor, width: 4),
-                          left: BorderSide(color: Theme.of(context).primaryColor, width: 4),
+                          bottom: BorderSide(
+                            color: Theme.of(context).primaryColor,
+                            width: 4,
+                          ),
+                          left: BorderSide(
+                            color: Theme.of(context).primaryColor,
+                            width: 4,
+                          ),
                         ),
-                        borderRadius: const BorderRadius.only(bottomLeft: Radius.circular(12)),
+                        borderRadius: const BorderRadius.only(
+                          bottomLeft: Radius.circular(12),
+                        ),
                       ),
                     ),
                   ),
@@ -286,10 +309,18 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
                       height: 20,
                       decoration: BoxDecoration(
                         border: Border(
-                          bottom: BorderSide(color: Theme.of(context).primaryColor, width: 4),
-                          right: BorderSide(color: Theme.of(context).primaryColor, width: 4),
+                          bottom: BorderSide(
+                            color: Theme.of(context).primaryColor,
+                            width: 4,
+                          ),
+                          right: BorderSide(
+                            color: Theme.of(context).primaryColor,
+                            width: 4,
+                          ),
                         ),
-                        borderRadius: const BorderRadius.only(bottomRight: Radius.circular(12)),
+                        borderRadius: const BorderRadius.only(
+                          bottomRight: Radius.circular(12),
+                        ),
                       ),
                     ),
                   ),
@@ -305,7 +336,10 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
             child: Container(
               alignment: Alignment.center,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.black.withValues(alpha: 0.6),
                   borderRadius: BorderRadius.circular(20),
@@ -332,4 +366,3 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
     super.dispose();
   }
 }
-

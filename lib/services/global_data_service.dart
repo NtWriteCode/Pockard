@@ -39,7 +39,9 @@ class GlobalDataService {
 
     // Check if global folder is available
     if (!await isGlobalFolderAvailable()) {
-      throw Exception('Global folder (/pockard_global) not available on server');
+      throw Exception(
+        'Global folder (/pockard_global) not available on server',
+      );
     }
 
     final cards = <CardModel>[];
@@ -54,10 +56,10 @@ class GlobalDataService {
         try {
           final remotePath = '$globalCardsDir/$file';
           final bytes = await _webdavService.downloadFile(remotePath);
-          
+
           final jsonString = utf8.decode(bytes);
           final cardData = json.decode(jsonString);
-          
+
           final card = CardModel.fromMap(cardData);
           cards.add(card);
         } catch (e) {
@@ -72,19 +74,25 @@ class GlobalDataService {
   }
 
   /// Share a card globally
-  Future<void> shareCardGlobally(CardModel card, String uploaderIdentifier, String coverSuffix) async {
+  Future<void> shareCardGlobally(
+    CardModel card,
+    String uploaderIdentifier,
+    String coverSuffix,
+  ) async {
     if (!_webdavService.isInitialized) {
       throw Exception('WebDAV client not initialized');
     }
 
     // Check if global folder is available
     if (!await isGlobalFolderAvailable()) {
-      throw Exception('Global folder (/pockard_global) not available on server');
+      throw Exception(
+        'Global folder (/pockard_global) not available on server',
+      );
     }
 
     try {
       const globalCardsDir = '/pockard_global/cards';
-      
+
       // Ensure global cards directory exists
       try {
         await _webdavService.createDirectory(globalCardsDir);
@@ -97,17 +105,18 @@ class GlobalDataService {
       final tempDir = await getTemporaryDirectory();
       final tempFile = File('${tempDir.path}/temp_card_${card.uuid}.json');
       await tempFile.writeAsString(cardJson);
-      
+
       final remotePath = '$globalCardsDir/${card.uuid}.json';
       await _webdavService.uploadFile(tempFile.path, remotePath);
-      
+
       // Clean up temp file
       await tempFile.delete();
 
       // Upload cover image if it exists
-      if (card.coverImagePath != null && await File(card.coverImagePath!).exists()) {
+      if (card.coverImagePath != null &&
+          await File(card.coverImagePath!).exists()) {
         const globalImagesDir = '/pockard_global/images';
-        
+
         // Ensure global images directory exists
         try {
           await _webdavService.createDirectory(globalImagesDir);
@@ -118,12 +127,18 @@ class GlobalDataService {
         final imageFileName = '${card.uuid}_cover.jpg';
         final imageRemotePath = '$globalImagesDir/$imageFileName';
         await _webdavService.uploadFile(card.coverImagePath!, imageRemotePath);
-        
+
         // Update image metadata so author is tracked
         final imageUuid = card.uuid; // Use card UUID without suffix
-        final metadataUpdated = await _updateImageMetadata(imageUuid, '${card.name} $coverSuffix', uploaderIdentifier);
+        final metadataUpdated = await _updateImageMetadata(
+          imageUuid,
+          '${card.name} $coverSuffix',
+          uploaderIdentifier,
+        );
         if (!metadataUpdated) {
-          debugPrint('Warning: Cover image uploaded but metadata update failed');
+          debugPrint(
+            'Warning: Cover image uploaded but metadata update failed',
+          );
         }
       }
 
@@ -142,13 +157,15 @@ class GlobalDataService {
 
     // Check if global folder is available
     if (!await isGlobalFolderAvailable()) {
-      throw Exception('Global folder (/pockard_global) not available on server');
+      throw Exception(
+        'Global folder (/pockard_global) not available on server',
+      );
     }
 
     try {
       const globalCardsDir = '/pockard_global/cards';
       final remotePath = '$globalCardsDir/$uuid.json';
-      
+
       await _webdavService.deleteFile(remotePath);
       debugPrint('Global card deleted: $uuid');
     } catch (e) {
@@ -160,13 +177,17 @@ class GlobalDataService {
   /// Get all global images
   Future<List<GlobalImageModel>> getGlobalImages() async {
     if (!_webdavService.isInitialized) {
-      debugPrint('ERROR: WebDAV client not initialized when loading global images');
+      debugPrint(
+        'ERROR: WebDAV client not initialized when loading global images',
+      );
       throw Exception('WebDAV client not initialized');
     }
 
     // Check if global folder is available
     if (!await isGlobalFolderAvailable()) {
-      throw Exception('Global folder (/pockard_global) not available on server');
+      throw Exception(
+        'Global folder (/pockard_global) not available on server',
+      );
     }
 
     final images = <GlobalImageModel>[];
@@ -185,7 +206,9 @@ class GlobalDataService {
         metadata = json.decode(metadataString);
         debugPrint('DEBUG: Parsed metadata: $metadata');
       } catch (e) {
-        debugPrint('ERROR: No metadata file found or error loading metadata: $e');
+        debugPrint(
+          'ERROR: No metadata file found or error loading metadata: $e',
+        );
         // Continue without metadata
       }
 
@@ -193,18 +216,23 @@ class GlobalDataService {
       debugPrint('DEBUG: Listing files in global images directory...');
       final files = await _webdavService.listFiles(globalImagesDir);
       debugPrint('DEBUG: Found ${files.length} total files: $files');
-      
-      final imageFiles = files.where((file) => 
-        file.toLowerCase().endsWith('.jpg') || 
-        file.toLowerCase().endsWith('.jpeg') || 
-        file.toLowerCase().endsWith('.png')
-      ).toList();
-      debugPrint('DEBUG: Filtered to ${imageFiles.length} image files: $imageFiles');
+
+      final imageFiles = files
+          .where(
+            (file) =>
+                file.toLowerCase().endsWith('.jpg') ||
+                file.toLowerCase().endsWith('.jpeg') ||
+                file.toLowerCase().endsWith('.png'),
+          )
+          .toList();
+      debugPrint(
+        'DEBUG: Filtered to ${imageFiles.length} image files: $imageFiles',
+      );
 
       for (final file in imageFiles) {
         try {
           debugPrint('DEBUG: Processing image file: $file');
-          
+
           // Extract UUID from filename (format: uuid_suffix.extension or uuid.extension)
           final fileName = path.basenameWithoutExtension(file);
           // Remove suffixes like "_cover", "_logo", etc. to get the base UUID
@@ -213,11 +241,11 @@ class GlobalDataService {
             uuid = fileName.split('_').first;
           }
           debugPrint('DEBUG: Extracted UUID: $uuid from filename: $fileName');
-          
+
           // Get metadata for this image
           final imageMetadata = metadata[uuid] as Map<String, dynamic>?;
           debugPrint('DEBUG: Metadata for $uuid: $imageMetadata');
-          
+
           // Use user-friendly name from metadata, fallback to filename
           String displayName;
           if (imageMetadata != null && imageMetadata['name'] != null) {
@@ -226,29 +254,36 @@ class GlobalDataService {
           } else {
             // Fallback to filename if no metadata
             displayName = file;
-            debugPrint('DEBUG: No metadata found, using filename: $displayName');
+            debugPrint(
+              'DEBUG: No metadata found, using filename: $displayName',
+            );
           }
-          
+
           // Get upload date from metadata, fallback to now
           DateTime uploadDate;
           if (imageMetadata != null && imageMetadata['uploadDate'] != null) {
-            uploadDate = DateTime.fromMillisecondsSinceEpoch(imageMetadata['uploadDate'] as int);
+            uploadDate = DateTime.fromMillisecondsSinceEpoch(
+              imageMetadata['uploadDate'] as int,
+            );
             debugPrint('DEBUG: Using metadata upload date: $uploadDate');
           } else {
             uploadDate = DateTime.now();
-            debugPrint('DEBUG: No metadata upload date, using now: $uploadDate');
+            debugPrint(
+              'DEBUG: No metadata upload date, using now: $uploadDate',
+            );
           }
-          
+
           // Get uploader from metadata, fallback to unknown
           String uploader;
-          if (imageMetadata != null && imageMetadata['uploaderPseudoUser'] != null) {
+          if (imageMetadata != null &&
+              imageMetadata['uploaderPseudoUser'] != null) {
             uploader = imageMetadata['uploaderPseudoUser'] as String;
             debugPrint('DEBUG: Using metadata uploader: $uploader');
           } else {
             uploader = 'unknown';
             debugPrint('DEBUG: No metadata uploader, using unknown: $uploader');
           }
-          
+
           final image = GlobalImageModel(
             uuid: uuid,
             name: displayName,
@@ -256,34 +291,48 @@ class GlobalDataService {
             uploadDate: uploadDate,
             uploaderPseudoUser: uploader,
           );
-          
+
           images.add(image);
-          debugPrint('DEBUG: Successfully created GlobalImageModel: name=$displayName, uuid=$uuid, path=$file');
+          debugPrint(
+            'DEBUG: Successfully created GlobalImageModel: name=$displayName, uuid=$uuid, path=$file',
+          );
         } catch (e) {
           debugPrint('ERROR: Failed to process global image $file: $e');
         }
       }
     } catch (e) {
-      debugPrint('ERROR: Failed to load global images from $globalImagesDir: $e');
+      debugPrint(
+        'ERROR: Failed to load global images from $globalImagesDir: $e',
+      );
     }
 
     debugPrint('DEBUG: Returning ${images.length} global images');
     for (final image in images) {
-      debugPrint('DEBUG: Final image - name: "${image.name}", uuid: ${image.uuid}, path: ${image.imagePath}');
+      debugPrint(
+        'DEBUG: Final image - name: "${image.name}", uuid: ${image.uuid}, path: ${image.imagePath}',
+      );
     }
     return images;
   }
 
   /// Share an image globally
-  Future<void> shareImageGlobally(String imagePath, String imageName, String uploaderIdentifier) async {
+  Future<void> shareImageGlobally(
+    String imagePath,
+    String imageName,
+    String uploaderIdentifier,
+  ) async {
     if (!_webdavService.isInitialized) {
-      debugPrint('ERROR: WebDAV client not initialized when sharing image globally');
+      debugPrint(
+        'ERROR: WebDAV client not initialized when sharing image globally',
+      );
       throw Exception('WebDAV client not initialized');
     }
 
     // Check if global folder is available
     if (!await isGlobalFolderAvailable()) {
-      throw Exception('Global folder (/pockard_global) not available on server');
+      throw Exception(
+        'Global folder (/pockard_global) not available on server',
+      );
     }
 
     try {
@@ -292,7 +341,7 @@ class GlobalDataService {
       debugPrint('DEBUG: Image path: $imagePath');
       debugPrint('DEBUG: Image name: $imageName');
       debugPrint('DEBUG: Uploader: $uploaderIdentifier');
-      
+
       // Ensure global images directory exists
       try {
         await _webdavService.createDirectory(globalImagesDir);
@@ -305,8 +354,10 @@ class GlobalDataService {
       final uuid = const Uuid().v4();
       final fileExtension = path.extension(imagePath);
       final fileName = '$uuid$fileExtension';
-      debugPrint('DEBUG: Generated filename: $fileName (UUID: $uuid, extension: $fileExtension)');
-      
+      debugPrint(
+        'DEBUG: Generated filename: $fileName (UUID: $uuid, extension: $fileExtension)',
+      );
+
       final remotePath = '$globalImagesDir/$fileName';
       debugPrint('DEBUG: Uploading image to: $remotePath');
       await _webdavService.uploadFile(imagePath, remotePath);
@@ -314,9 +365,15 @@ class GlobalDataService {
 
       // Update metadata file
       debugPrint('DEBUG: Updating metadata for image: $uuid');
-      final metadataSuccess = await _updateImageMetadata(uuid, imageName, uploaderIdentifier);
+      final metadataSuccess = await _updateImageMetadata(
+        uuid,
+        imageName,
+        uploaderIdentifier,
+      );
       if (!metadataSuccess) {
-        debugPrint('WARNING: Image uploaded but metadata update failed - uploader may show as unknown');
+        debugPrint(
+          'WARNING: Image uploaded but metadata update failed - uploader may show as unknown',
+        );
         // Still consider the operation successful since image was uploaded
       } else {
         debugPrint('DEBUG: Metadata updated successfully');
@@ -331,11 +388,15 @@ class GlobalDataService {
 
   /// Update the images metadata file
   /// Returns true if successful, false if failed
-  Future<bool> _updateImageMetadata(String uuid, String imageName, String uploaderIdentifier) async {
+  Future<bool> _updateImageMetadata(
+    String uuid,
+    String imageName,
+    String uploaderIdentifier,
+  ) async {
     try {
       const globalImagesDir = '/pockard_global/images';
       const metadataPath = '$globalImagesDir/images_metadata.json';
-      
+
       // Load existing metadata
       Map<String, dynamic> metadata = {};
       try {
@@ -359,16 +420,16 @@ class GlobalDataService {
       final tempDir = await getTemporaryDirectory();
       final tempMetadataFile = File('${tempDir.path}/temp_metadata.json');
       await tempMetadataFile.writeAsString(metadataJson);
-      
+
       await _webdavService.uploadFile(tempMetadataFile.path, metadataPath);
-      
+
       // Clean up temp file
       try {
         await tempMetadataFile.delete();
       } catch (e) {
         // Ignore cleanup errors
       }
-      
+
       return true;
     } catch (e) {
       debugPrint('Failed to update image metadata: $e');
@@ -385,25 +446,27 @@ class GlobalDataService {
 
     // Check if global folder is available
     if (!await isGlobalFolderAvailable()) {
-      throw Exception('Global folder (/pockard_global) not available on server');
+      throw Exception(
+        'Global folder (/pockard_global) not available on server',
+      );
     }
 
     try {
       const globalImagesDir = '/pockard_global/images';
-      
+
       // Find the image file with this UUID
       final files = await _webdavService.listFiles(globalImagesDir);
       final imageFile = files.firstWhere(
         (file) => file.startsWith(uuid),
         orElse: () => throw Exception('Image not found'),
       );
-      
+
       final remotePath = '$globalImagesDir/$imageFile';
       await _webdavService.deleteFile(remotePath);
-      
+
       // Remove from metadata
       await _removeImageMetadata(uuid);
-      
+
       debugPrint('Global image deleted: $uuid');
     } catch (e) {
       debugPrint('Error deleting global image: $e');
@@ -416,7 +479,7 @@ class GlobalDataService {
     try {
       const globalImagesDir = '/pockard_global/images';
       const metadataPath = '$globalImagesDir/images_metadata.json';
-      
+
       // Load existing metadata
       Map<String, dynamic> metadata = {};
       try {
@@ -436,10 +499,10 @@ class GlobalDataService {
       final tempDir = await getTemporaryDirectory();
       final tempMetadataFile = File('${tempDir.path}/temp_metadata.json');
       await tempMetadataFile.writeAsString(metadataJson);
-      
+
       await _webdavService.uploadFile(tempMetadataFile.path, metadataPath);
       await tempMetadataFile.delete(); // Clean up temp file
-      
+
       debugPrint('Removed metadata for image: $uuid');
     } catch (e) {
       debugPrint('Error removing image metadata: $e');
@@ -455,7 +518,9 @@ class GlobalDataService {
 
     // Check if global folder is available
     if (!await isGlobalFolderAvailable()) {
-      throw Exception('Global folder (/pockard_global) not available on server');
+      throw Exception(
+        'Global folder (/pockard_global) not available on server',
+      );
     }
 
     try {
@@ -463,18 +528,21 @@ class GlobalDataService {
       // Use imagePath (UUID-based filename) instead of name (user-friendly display name)
       final remotePath = '$globalImagesDir/${image.imagePath}';
       debugPrint('DEBUG: Downloading global image from: $remotePath');
-      
+
       // Download image bytes
       final bytes = await _webdavService.downloadFile(remotePath);
       debugPrint('DEBUG: Downloaded ${bytes.length} bytes');
-      
+
       // Save to temp directory with a unique name
       final tempDir = await getTemporaryDirectory();
-      final finalPath = path.join(tempDir.path, 'pockard_images_${image.uuid}_${path.basename(image.imagePath)}');
-      
+      final finalPath = path.join(
+        tempDir.path,
+        'pockard_images_${image.uuid}_${path.basename(image.imagePath)}',
+      );
+
       await File(finalPath).writeAsBytes(bytes);
       debugPrint('DEBUG: Final image path: $finalPath');
-      
+
       return finalPath;
     } catch (e) {
       debugPrint('Error downloading global image: $e');

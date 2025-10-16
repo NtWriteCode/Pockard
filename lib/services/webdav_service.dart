@@ -16,7 +16,7 @@ class WebDavService {
     if (!serverUrl.startsWith('http://') && !serverUrl.startsWith('https://')) {
       serverUrl = 'https://$serverUrl';
     }
-    
+
     _client = newClient(
       serverUrl,
       user: username,
@@ -29,7 +29,7 @@ class WebDavService {
   Future<bool> testConnection() async {
     try {
       if (_client == null) return false;
-      
+
       // Try to ping the server
       await _client!.ping();
       return true;
@@ -43,7 +43,7 @@ class WebDavService {
   Future<bool> directoryExists(String path) async {
     try {
       if (_client == null) return false;
-      
+
       await _client!.readDir(path);
       return true;
     } catch (e) {
@@ -57,12 +57,13 @@ class WebDavService {
       if (_client == null) {
         throw Exception('WebDAV client not initialized');
       }
-      
+
       await _client!.mkdir(path);
       debugPrint('Created directory: $path');
     } catch (e) {
       // Ignore if directory already exists
-      if (!e.toString().contains('405') && !e.toString().contains('already exists')) {
+      if (!e.toString().contains('405') &&
+          !e.toString().contains('already exists')) {
         debugPrint('Error creating directory $path: $e');
         rethrow;
       }
@@ -72,9 +73,11 @@ class WebDavService {
   /// Create directory structure for the app
   Future<void> createAppDirectories() async {
     if (_client == null) {
-      throw Exception('WebDAV client not initialized');
+      throw Exception(
+        AppLocalizations.of(context)!.exceptionWebdavNotInitialized,
+      );
     }
-    
+
     try {
       // Create /pockard folder
       await createDirectory('/pockard');
@@ -162,7 +165,7 @@ class WebDavService {
           .where((item) => !item.isDir!)
           .map((item) => item.name!)
           .toList();
-      
+
       debugPrint('Listed ${files.length} files in $path');
       return files;
     } catch (e) {
@@ -190,7 +193,7 @@ class WebDavService {
   Future<bool> fileExists(String remotePath) async {
     try {
       if (_client == null) return false;
-      
+
       // Try to read file bytes (if it exists, this won't fail)
       await _client!.read(remotePath);
       return true;
@@ -208,4 +211,3 @@ class WebDavService {
   /// Check if client is initialized
   bool get isInitialized => _client != null;
 }
-

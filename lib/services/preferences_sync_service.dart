@@ -6,7 +6,8 @@ import 'webdav_service.dart';
 
 /// Service for syncing user preferences (display settings, tag order, etc.) via WebDAV
 class PreferencesSyncService {
-  static final PreferencesSyncService _instance = PreferencesSyncService._internal();
+  static final PreferencesSyncService _instance =
+      PreferencesSyncService._internal();
   factory PreferencesSyncService() => _instance;
   PreferencesSyncService._internal();
 
@@ -56,7 +57,7 @@ class PreferencesSyncService {
 
     try {
       const remotePath = '/pockard/preferences.json';
-      
+
       // Check if preferences file exists
       final exists = await _webdavService.fileExists(remotePath);
       if (!exists) {
@@ -96,4 +97,3 @@ class PreferencesSyncService {
     }
   }
 }
-

@@ -9,10 +9,7 @@ import '../l10n/app_localizations.dart';
 class LogoSearchScreen extends StatefulWidget {
   final Function(String) onLogoSelected;
 
-  const LogoSearchScreen({
-    super.key,
-    required this.onLogoSelected,
-  });
+  const LogoSearchScreen({super.key, required this.onLogoSelected});
 
   @override
   State<LogoSearchScreen> createState() => _LogoSearchScreenState();
@@ -53,14 +50,16 @@ class _LogoSearchScreenState extends State<LogoSearchScreen> {
       });
     } catch (e) {
       setState(() {
-        _errorMessage = '${AppLocalizations.of(context)!.exceptionFailedSearchLogos}: $e';
+        _errorMessage =
+            '${AppLocalizations.of(context)!.exceptionFailedSearchLogos}: $e';
         _isLoading = false;
       });
     }
   }
 
   Future<void> _loadMoreResults() async {
-    if (_isLoadingMore || _displayedResults.length >= _allResults.length) return;
+    if (_isLoadingMore || _displayedResults.length >= _allResults.length)
+      return;
 
     setState(() {
       _isLoadingMore = true;
@@ -72,7 +71,10 @@ class _LogoSearchScreenState extends State<LogoSearchScreen> {
     setState(() {
       _currentPage++;
       final startIndex = _currentPage * _resultsPerPage;
-      final endIndex = (startIndex + _resultsPerPage).clamp(0, _allResults.length);
+      final endIndex = (startIndex + _resultsPerPage).clamp(
+        0,
+        _allResults.length,
+      );
       _displayedResults = _allResults.take(endIndex).toList();
       _isLoadingMore = false;
     });
@@ -81,7 +83,7 @@ class _LogoSearchScreenState extends State<LogoSearchScreen> {
   Future<void> _selectLogo(LogoResult logo) async {
     try {
       final l10n = AppLocalizations.of(context)!;
-      
+
       // Show loading dialog
       showDialog(
         context: context,
@@ -98,29 +100,41 @@ class _LogoSearchScreenState extends State<LogoSearchScreen> {
       );
 
       // Step 1: Download the logo SVG
-      final fileName = '${logo.name.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '_')}_logo.svg';
-      final downloadedPath = await LogoSearchService.downloadLogo(logo.imageUrl, fileName);
+      final fileName =
+          '${logo.name.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '_')}_logo.svg';
+      final downloadedPath = await LogoSearchService.downloadLogo(
+        logo.imageUrl,
+        fileName,
+      );
 
       if (downloadedPath == null) {
         if (!mounted) return;
-        throw Exception(AppLocalizations.of(context)!.exceptionFailedDownloadLogo);
+        throw Exception(
+          AppLocalizations.of(context)!.exceptionFailedDownloadLogo,
+        );
       }
 
       // Step 2: Convert SVG to high-res padded PNG (2000px with smart padding)
       final logoService = LogoProcessingService();
-      final paddedPngPath = await logoService.convertSvgToHighResPaddedPng(downloadedPath);
+      final paddedPngPath = await logoService.convertSvgToHighResPaddedPng(
+        downloadedPath,
+      );
 
       // Close loading dialog
       if (mounted) Navigator.pop(context);
 
       if (paddedPngPath == null) {
         if (!mounted) return;
-        throw Exception(AppLocalizations.of(context)!.exceptionFailedProcessLogo);
+        throw Exception(
+          AppLocalizations.of(context)!.exceptionFailedProcessLogo,
+        );
       }
 
       // Step 3: Show cropper with the high-res padded image
       if (!mounted) {
-        throw Exception('Context not available for cropping');
+        throw Exception(
+          AppLocalizations.of(context)!.exceptionContextNotAvailable,
+        );
       }
 
       final croppedFile = await ImageCropper().cropImage(
@@ -132,18 +146,14 @@ class _LogoSearchScreenState extends State<LogoSearchScreen> {
             toolbarWidgetColor: Colors.white,
             initAspectRatio: CropAspectRatioPreset.square,
             lockAspectRatio: true,
-            aspectRatioPresets: [
-              CropAspectRatioPreset.square,
-            ],
+            aspectRatioPresets: [CropAspectRatioPreset.square],
           ),
           IOSUiSettings(
             title: AppLocalizations.of(context)!.adjustLogo,
             doneButtonTitle: AppLocalizations.of(context)!.done,
             cancelButtonTitle: AppLocalizations.of(context)!.cancel,
             aspectRatioLockEnabled: true,
-            aspectRatioPresets: [
-              CropAspectRatioPreset.square,
-            ],
+            aspectRatioPresets: [CropAspectRatioPreset.square],
           ),
         ],
       );
@@ -154,7 +164,9 @@ class _LogoSearchScreenState extends State<LogoSearchScreen> {
         if (await tempFile.exists()) {
           await tempFile.delete();
         }
-        throw Exception('Logo selection cancelled');
+        throw Exception(
+          AppLocalizations.of(context)!.exceptionLogoSelectionCancelled,
+        );
       }
 
       // Step 4: Downscale the cropped image to 500x500
@@ -162,7 +174,9 @@ class _LogoSearchScreenState extends State<LogoSearchScreen> {
 
       if (finalPath == null) {
         if (!mounted) return;
-        throw Exception(AppLocalizations.of(context)!.exceptionFailedFinalizeLogo);
+        throw Exception(
+          AppLocalizations.of(context)!.exceptionFailedFinalizeLogo,
+        );
       }
 
       // Step 5: Clean up temporary files
@@ -203,7 +217,7 @@ class _LogoSearchScreenState extends State<LogoSearchScreen> {
         final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${l10n.failedToProcessLogo}: $e'),
+            content: Text(l10n.errorProcessingLogo(e.toString())),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
@@ -214,15 +228,12 @@ class _LogoSearchScreenState extends State<LogoSearchScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    
+
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.searchLogo),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: _searchLogos,
-          ),
+          IconButton(icon: const Icon(Icons.search), onPressed: _searchLogos),
         ],
       ),
       body: Column(
@@ -248,11 +259,9 @@ class _LogoSearchScreenState extends State<LogoSearchScreen> {
               },
             ),
           ),
-          
+
           // Results
-          Expanded(
-            child: _buildResults(),
-          ),
+          Expanded(child: _buildResults()),
         ],
       ),
     );
@@ -359,15 +368,26 @@ class _LogoSearchScreenState extends State<LogoSearchScreen> {
         // Results info
         if (_allResults.isNotEmpty)
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            child: Text(
-              'Showing ${_displayedResults.length} of ${_allResults.length} logos',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Colors.grey[600],
-              ),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16.0,
+              vertical: 8.0,
+            ),
+            child: Builder(
+              builder: (context) {
+                final l10n = AppLocalizations.of(context)!;
+                return Text(
+                  l10n.showingLogosCount(
+                    _displayedResults.length,
+                    _allResults.length,
+                  ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
+                );
+              },
             ),
           ),
-        
+
         // Grid view
         Expanded(
           child: GridView.builder(
@@ -385,7 +405,7 @@ class _LogoSearchScreenState extends State<LogoSearchScreen> {
             },
           ),
         ),
-        
+
         // Load more button
         if (_displayedResults.length < _allResults.length)
           Padding(
@@ -394,20 +414,22 @@ class _LogoSearchScreenState extends State<LogoSearchScreen> {
               width: double.infinity,
               child: ElevatedButton.icon(
                 onPressed: _isLoadingMore ? null : _loadMoreResults,
-                icon: _isLoadingMore 
-                  ? const SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Icon(Icons.expand_more),
+                icon: _isLoadingMore
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Icon(Icons.expand_more),
                 label: Builder(
                   builder: (context) {
                     final l10n = AppLocalizations.of(context)!;
                     return Text(
-                      _isLoadingMore 
-                        ? l10n.loading
-                        : l10n.loadMore(_allResults.length - _displayedResults.length),
+                      _isLoadingMore
+                          ? l10n.loading
+                          : l10n.loadMore(
+                              _allResults.length - _displayedResults.length,
+                            ),
                     );
                   },
                 ),
@@ -443,9 +465,8 @@ class _LogoSearchScreenState extends State<LogoSearchScreen> {
                     child: SvgPicture.network(
                       logo.imageUrl,
                       fit: BoxFit.contain,
-                      placeholderBuilder: (context) => const Center(
-                        child: CircularProgressIndicator(),
-                      ),
+                      placeholderBuilder: (context) =>
+                          const Center(child: CircularProgressIndicator()),
                       errorBuilder: (context, error, stackTrace) {
                         return const Icon(
                           Icons.image_not_supported,

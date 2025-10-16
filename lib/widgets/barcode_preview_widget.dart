@@ -17,7 +17,7 @@ class BarcodePreviewWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    
+
     // Hide preview if "Image Only" is selected (handled separately)
     if (barcodeType == 'IMAGE_ONLY') {
       return const SizedBox.shrink();
@@ -30,9 +30,9 @@ class BarcodePreviewWidget extends StatelessWidget {
         children: [
           Text(
             l10n.barcodePreview,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w500,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
           ),
           const SizedBox(height: 8),
           Container(
@@ -40,7 +40,9 @@ class BarcodePreviewWidget extends StatelessWidget {
             height: 100,
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
+              color: Theme.of(
+                context,
+              ).colorScheme.surfaceContainerHighest.withOpacity(0.3),
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
                 color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
@@ -49,7 +51,7 @@ class BarcodePreviewWidget extends StatelessWidget {
             ),
             child: Center(
               child: Text(
-                'Scan or enter barcode data to see preview',
+                l10n.barcodePreviewHint,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
@@ -60,15 +62,15 @@ class BarcodePreviewWidget extends StatelessWidget {
         ],
       );
     }
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           l10n.barcodePreview,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.w500,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
         ),
         const SizedBox(height: 8),
         Container(
@@ -115,14 +117,18 @@ class BarcodePreviewWidget extends StatelessWidget {
         backgroundColor: AppColors.white,
       );
     } catch (e) {
+      final l10n = AppLocalizations.of(context)!;
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.error_outline, color: Theme.of(context).colorScheme.error),
+            Icon(
+              Icons.error_outline,
+              color: Theme.of(context).colorScheme.error,
+            ),
             const SizedBox(height: 4),
             Text(
-              'Invalid barcode data',
+              l10n.invalidBarcodeDataPreview,
               style: TextStyle(
                 color: Theme.of(context).colorScheme.error,
                 fontSize: 12,

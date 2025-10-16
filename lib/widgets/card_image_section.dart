@@ -29,15 +29,15 @@ class CardImageSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           l10n.coverImageLabel,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 8),
         Center(
@@ -59,18 +59,18 @@ class CardImageSection extends StatelessWidget {
           // While loading, show fixed size container
           return _buildStaticPlaceholder(context);
         }
-        
+
         final imageSize = snapshot.data!;
         final aspectRatio = imageSize.width / imageSize.height;
-        
+
         // Max height is 200, min width is 200
         const double maxHeight = 200;
         const double minWidth = 200;
         const double maxWidth = 300; // Don't go too wide
-        
+
         double width;
         double height;
-        
+
         if (aspectRatio > 1) {
           // Wider than tall - constrain height, expand width
           height = maxHeight;
@@ -80,9 +80,12 @@ class CardImageSection extends StatelessWidget {
           // Taller than wide or square - constrain to square or make narrower
           height = maxHeight;
           width = height * aspectRatio;
-          width = width.clamp(minWidth * 0.7, minWidth); // Allow narrower for portrait
+          width = width.clamp(
+            minWidth * 0.7,
+            minWidth,
+          ); // Allow narrower for portrait
         }
-        
+
         return Container(
           width: width,
           height: height,
@@ -142,10 +145,7 @@ class CardImageSection extends StatelessWidget {
               child: IconButton(
                 icon: const Icon(Icons.close, color: AppColors.white, size: 18),
                 onPressed: onImageRemoved,
-                constraints: const BoxConstraints(
-                  minWidth: 32,
-                  minHeight: 32,
-                ),
+                constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
               ),
             ),
           ),
@@ -157,7 +157,8 @@ class CardImageSection extends StatelessWidget {
   void _showFullscreenPreview(BuildContext context) {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => _FullscreenImagePreview(imagePath: coverImagePath!),
+        builder: (context) =>
+            _FullscreenImagePreview(imagePath: coverImagePath!),
       ),
     );
   }
@@ -166,23 +167,27 @@ class CardImageSection extends StatelessWidget {
     return InkWell(
       onTap: () => _showImagePickerOptions(context),
       borderRadius: BorderRadius.circular(8),
-        child: SizedBox(
-          width: double.infinity,
-          height: double.infinity,
-          child: Column(
+      child: SizedBox(
+        width: double.infinity,
+        height: double.infinity,
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
               Icons.add_photo_alternate,
               size: 48,
-              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.4),
             ),
             const SizedBox(height: 8),
             Text(
               AppLocalizations.of(context)!.tapToAddCoverImage,
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.6),
                 fontSize: 14,
               ),
             ),
@@ -196,7 +201,7 @@ class CardImageSection extends StatelessWidget {
     if (coverImagePath == null) return const SizedBox.shrink();
 
     final l10n = AppLocalizations.of(context)!;
-    
+
     return Wrap(
       spacing: 8,
       children: [
@@ -249,7 +254,7 @@ class CardImageSection extends StatelessWidget {
               ),
               ListTile(
                 leading: const Icon(Icons.auto_awesome),
-                title: Text(dialogL10n.generateImageOption),
+                title: Text(dialogL10n.generateImage),
                 onTap: () {
                   Navigator.pop(dialogContext);
                   _generateImage(context);
@@ -257,7 +262,7 @@ class CardImageSection extends StatelessWidget {
               ),
               ListTile(
                 leading: const Icon(Icons.search),
-                title: Text(dialogL10n.searchLogoOption),
+                title: Text(dialogL10n.searchLogo),
                 onTap: () {
                   Navigator.pop(dialogContext);
                   _searchLogo(context);
@@ -275,7 +280,7 @@ class CardImageSection extends StatelessWidget {
               if (coverImagePath != null)
                 ListTile(
                   leading: const Icon(Icons.edit),
-                  title: Text(dialogL10n.editCurrentImage),
+                  title: Text(dialogL10n.editCard),
                   onTap: () {
                     Navigator.pop(dialogContext);
                     _editCurrentImage(context);
@@ -295,7 +300,7 @@ class CardImageSection extends StatelessWidget {
         context: context,
         source: fromCamera ? ImageSource.camera : ImageSource.gallery,
       );
-      
+
       if (imagePath != null && onImagePicked != null) {
         onImagePicked!(imagePath);
       }
@@ -303,7 +308,7 @@ class CardImageSection extends StatelessWidget {
       if (context.mounted) {
         final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${l10n.errorPickingImage}: $e')),
+          SnackBar(content: Text(l10n.errorPickingImage(e.toString()))),
         );
       }
     }
@@ -314,8 +319,11 @@ class CardImageSection extends StatelessWidget {
 
     try {
       final ImageService imageService = ImageService();
-      final editedPath = await imageService.editExistingImage(coverImagePath!, context);
-      
+      final editedPath = await imageService.editExistingImage(
+        coverImagePath!,
+        context,
+      );
+
       if (editedPath != null && onImagePicked != null) {
         onImagePicked!(editedPath);
       }
@@ -323,7 +331,7 @@ class CardImageSection extends StatelessWidget {
       if (context.mounted) {
         final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${l10n.errorEditingImage}: $e')),
+          SnackBar(content: Text(l10n.errorEditingImage(e.toString()))),
         );
       }
     }
@@ -347,9 +355,7 @@ class CardImageSection extends StatelessWidget {
 
     final generatedImagePath = await Navigator.push<String>(
       context,
-      MaterialPageRoute(
-        builder: (context) => const ImageGeneratorScreen(),
-      ),
+      MaterialPageRoute(builder: (context) => const ImageGeneratorScreen()),
     );
 
     if (generatedImagePath != null && onImagePicked != null) {
@@ -412,10 +418,7 @@ class _FullscreenImagePreview extends StatelessWidget {
         child: InteractiveViewer(
           minScale: 0.5,
           maxScale: 4.0,
-          child: CoverImageWidget(
-            imagePath: imagePath,
-            fit: BoxFit.contain,
-          ),
+          child: CoverImageWidget(imagePath: imagePath, fit: BoxFit.contain),
         ),
       ),
     );

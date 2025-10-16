@@ -16,11 +16,14 @@ class ImageService {
   final ImagePicker _picker = ImagePicker();
   static const int maxFileSize = 5 * 1024 * 1024; // 5MB in bytes
 
-  Future<String?> pickEditAndSaveImage({required BuildContext context, ImageSource source = ImageSource.gallery}) async {
+  Future<String?> pickEditAndSaveImage({
+    required BuildContext context,
+    ImageSource source = ImageSource.gallery,
+  }) async {
     try {
       // Get localization strings before async operations
       final l10n = AppLocalizations.of(context)!;
-      final editTitle = l10n.editCoverImage;
+      final editTitle = l10n.editCard;
       final doneTitle = l10n.done;
       final cancelTitle = l10n.cancel;
 
@@ -70,14 +73,17 @@ class ImageService {
     }
   }
 
-  Future<String?> editExistingImage(String existingImagePath, BuildContext context) async {
+  Future<String?> editExistingImage(
+    String existingImagePath,
+    BuildContext context,
+  ) async {
     try {
       // Open cropping interface for existing image
       final CroppedFile? croppedFile = await ImageCropper().cropImage(
         sourcePath: existingImagePath,
         uiSettings: [
           AndroidUiSettings(
-            toolbarTitle: AppLocalizations.of(context)!.editCoverImage,
+            toolbarTitle: AppLocalizations.of(context)!.editCard,
             toolbarColor: Colors.deepOrange,
             toolbarWidgetColor: Colors.white,
             initAspectRatio: CropAspectRatioPreset.original,
@@ -91,7 +97,7 @@ class ImageService {
             ],
           ),
           IOSUiSettings(
-            title: AppLocalizations.of(context)!.editCoverImage,
+            title: AppLocalizations.of(context)!.editCard,
             doneButtonTitle: AppLocalizations.of(context)!.done,
             cancelButtonTitle: AppLocalizations.of(context)!.cancel,
             aspectRatioPresets: [
@@ -129,7 +135,9 @@ class ImageService {
     try {
       // Get app documents directory
       final Directory appDocDir = await getApplicationDocumentsDirectory();
-      final Directory imagesDir = Directory(path.join(appDocDir.path, 'images'));
+      final Directory imagesDir = Directory(
+        path.join(appDocDir.path, 'images'),
+      );
       if (!await imagesDir.exists()) {
         await imagesDir.create(recursive: true);
       }
@@ -175,7 +183,7 @@ class ImageService {
       if (result != null) {
         compressedFile = File(result.path);
         final int compressedSize = await compressedFile.length();
-        
+
         if (compressedSize <= maxFileSize) {
           break;
         }
@@ -208,14 +216,23 @@ class ImageService {
 
   bool _isImageFile(String filePath) {
     final String extension = path.extension(filePath).toLowerCase();
-    return ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp'].contains(extension);
+    return [
+      '.jpg',
+      '.jpeg',
+      '.png',
+      '.gif',
+      '.bmp',
+      '.webp',
+    ].contains(extension);
   }
 
   Future<void> cleanupUnusedImages(List<String> usedImagePaths) async {
     try {
       final Directory appDocDir = await getApplicationDocumentsDirectory();
-      final Directory imagesDir = Directory(path.join(appDocDir.path, 'images'));
-      
+      final Directory imagesDir = Directory(
+        path.join(appDocDir.path, 'images'),
+      );
+
       if (!await imagesDir.exists()) return;
 
       final List<FileSystemEntity> files = await imagesDir.list().toList();
@@ -230,5 +247,4 @@ class ImageService {
       debugPrint('Error cleaning up unused images: $e');
     }
   }
-
 }

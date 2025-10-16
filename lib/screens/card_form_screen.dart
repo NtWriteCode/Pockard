@@ -21,11 +21,7 @@ class CardFormScreen extends StatefulWidget {
   final CardModel? card; // null for adding, non-null for editing
   final bool autoStartCamera;
 
-  const CardFormScreen({
-    super.key,
-    this.card,
-    this.autoStartCamera = false,
-  });
+  const CardFormScreen({super.key, this.card, this.autoStartCamera = false});
 
   bool get isEditing => card != null;
 
@@ -55,7 +51,7 @@ class _CardFormScreenState extends State<CardFormScreen> {
     super.initState();
     _initializeControllers();
     _loadAvailableTags();
-    
+
     // Auto-start camera if requested and we're adding a new card
     if (widget.autoStartCamera && !widget.isEditing) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -68,7 +64,9 @@ class _CardFormScreenState extends State<CardFormScreen> {
     if (widget.isEditing) {
       // Initialize with existing card data
       _nameController = TextEditingController(text: widget.card!.name);
-      _barcodeDataController = TextEditingController(text: widget.card!.barcodeData ?? '');
+      _barcodeDataController = TextEditingController(
+        text: widget.card!.barcodeData ?? '',
+      );
       _tags = List.from(widget.card!.tags);
       _coverImagePath = widget.card!.coverImagePath;
       _barcodeImagePath = widget.card!.barcodeImagePath;
@@ -99,19 +97,17 @@ class _CardFormScreenState extends State<CardFormScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.isEditing ? l10n.editCard : l10n.addNewCard),
+        title: Text(widget.isEditing ? l10n.editCard : l10n.addCard),
         backgroundColor: Theme.of(context).primaryColor,
         foregroundColor: Colors.white,
         actions: [
           // Show pin, share and delete buttons only when editing an existing card
           if (widget.isEditing) ...[
             IconButton(
-              icon: Icon(
-                _isPinned ? Icons.push_pin : Icons.push_pin_outlined,
-              ),
+              icon: Icon(_isPinned ? Icons.push_pin : Icons.push_pin_outlined),
               onPressed: _isLoading ? null : _togglePin,
               tooltip: _isPinned ? l10n.unpinCard : l10n.pinCard,
             ),
@@ -188,7 +184,11 @@ class _CardFormScreenState extends State<CardFormScreen> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton.icon(
-                        onPressed: (_barcodeType == 'IMAGE_ONLY' || _barcodeType == 'TEXT') ? null : _scanBarcode,
+                        onPressed:
+                            (_barcodeType == 'IMAGE_ONLY' ||
+                                _barcodeType == 'TEXT')
+                            ? null
+                            : _scanBarcode,
                         icon: const Icon(Icons.qr_code_scanner),
                         label: Text(l10n.scanBarcode),
                       ),
@@ -204,7 +204,7 @@ class _CardFormScreenState extends State<CardFormScreen> {
                         barcodeType: _barcodeType,
                       ),
                     const SizedBox(height: 16),
-                    
+
                     // Only show barcode data field if not in IMAGE_ONLY mode
                     if (_barcodeType != 'IMAGE_ONLY') ...[
                       TextFormField(
@@ -246,7 +246,7 @@ class _CardFormScreenState extends State<CardFormScreen> {
                     DynamicTagInput(
                       initialTags: _tags,
                       availableTags: _availableTags,
-                      hintText: l10n.addTagsHint,
+                      hintText: l10n.tagsHint,
                       onTagsChanged: (tags) {
                         setState(() {
                           _tags = tags;
@@ -272,7 +272,7 @@ class _CardFormScreenState extends State<CardFormScreen> {
     try {
       final cardProvider = Provider.of<CardProvider>(context, listen: false);
       await cardProvider.toggleCardPin(widget.card!.uuid);
-      
+
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
         setState(() {
@@ -290,7 +290,7 @@ class _CardFormScreenState extends State<CardFormScreen> {
         final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${l10n.pinError}: $e'),
+            content: Text(l10n.pinError(e.toString())),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
@@ -313,7 +313,7 @@ class _CardFormScreenState extends State<CardFormScreen> {
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${l10n.barcodeError}: $e')),
+          SnackBar(content: Text(l10n.barcodeError(e.toString()))),
         );
       }
     }
@@ -321,8 +321,10 @@ class _CardFormScreenState extends State<CardFormScreen> {
 
   Future<void> _pickBarcodeImage() async {
     try {
-      final imagePath = await _imageService.pickEditAndSaveImage(context: context);
-      
+      final imagePath = await _imageService.pickEditAndSaveImage(
+        context: context,
+      );
+
       if (imagePath != null && mounted) {
         final l10n = AppLocalizations.of(context)!;
         setState(() {
@@ -337,9 +339,9 @@ class _CardFormScreenState extends State<CardFormScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error uploading image: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error uploading image: $e')));
       }
     }
   }
@@ -359,9 +361,9 @@ class _CardFormScreenState extends State<CardFormScreen> {
       children: [
         Text(
           l10n.barcodePreview,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.w500,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
         ),
         const SizedBox(height: 8),
         GestureDetector(
@@ -372,7 +374,9 @@ class _CardFormScreenState extends State<CardFormScreen> {
             decoration: BoxDecoration(
               color: displayImagePath != null
                   ? Colors.transparent
-                  : Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
+                  : Theme.of(
+                      context,
+                    ).colorScheme.surfaceContainerHighest.withOpacity(0.3),
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
                 color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
@@ -397,7 +401,10 @@ class _CardFormScreenState extends State<CardFormScreen> {
                           top: 8,
                           right: 8,
                           child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
                             decoration: BoxDecoration(
                               color: Theme.of(context).colorScheme.primary,
                               borderRadius: BorderRadius.circular(12),
@@ -421,8 +428,12 @@ class _CardFormScreenState extends State<CardFormScreen> {
                             icon: const Icon(Icons.delete),
                             onPressed: _removeBarcodeImage,
                             style: IconButton.styleFrom(
-                              backgroundColor: Theme.of(context).colorScheme.error,
-                              foregroundColor: Theme.of(context).colorScheme.onError,
+                              backgroundColor: Theme.of(
+                                context,
+                              ).colorScheme.error,
+                              foregroundColor: Theme.of(
+                                context,
+                              ).colorScheme.onError,
                             ),
                           ),
                         ),
@@ -440,19 +451,26 @@ class _CardFormScreenState extends State<CardFormScreen> {
                         const SizedBox(height: 8),
                         Text(
                           l10n.tapToUploadBarcodeImage,
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
-                          ),
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurfaceVariant,
+                              ),
                           textAlign: TextAlign.center,
                         ),
                         if (_coverImagePath != null) ...[
                           const SizedBox(height: 8),
                           Text(
                             '(Cover image will be used)',
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.7),
-                              fontSize: 10,
-                            ),
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurfaceVariant
+                                      .withOpacity(0.7),
+                                  fontSize: 10,
+                                ),
                             textAlign: TextAlign.center,
                           ),
                         ],
@@ -511,9 +529,11 @@ class _CardFormScreenState extends State<CardFormScreen> {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(widget.isEditing 
-              ? l10n.cardUpdatedSuccess
-              : l10n.cardAddedSuccess),
+            content: Text(
+              widget.isEditing
+                  ? l10n.cardUpdatedSuccess
+                  : l10n.cardAddedSuccess,
+            ),
             backgroundColor: Theme.of(context).colorScheme.primary,
           ),
         );
@@ -523,7 +543,7 @@ class _CardFormScreenState extends State<CardFormScreen> {
         final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${l10n.cardSaveError}: $e'),
+            content: Text(l10n.cardSaveError(e.toString())),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
@@ -565,10 +585,7 @@ class _CardFormScreenState extends State<CardFormScreen> {
         final dialogL10n = AppLocalizations.of(context)!;
         return AlertDialog(
           title: Text(dialogL10n.deleteCard),
-          content: Text(
-            '${dialogL10n.deleteCardConfirm} "${widget.card!.name}"?\n\n'
-            '${dialogL10n.actionCannotBeUndone}',
-          ),
+          content: Text(dialogL10n.deleteCardMessage(widget.card!.name)),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),
@@ -589,7 +606,7 @@ class _CardFormScreenState extends State<CardFormScreen> {
     try {
       final cardProvider = Provider.of<CardProvider>(context, listen: false);
       await cardProvider.deleteCard(widget.card!.uuid);
-      
+
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
         Navigator.pop(context); // Go back to main screen
@@ -605,7 +622,7 @@ class _CardFormScreenState extends State<CardFormScreen> {
         final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${l10n.cardDeleteError}: $e'),
+            content: Text(l10n.cardDeleteError(e.toString())),
             backgroundColor: Colors.red,
           ),
         );
@@ -619,21 +636,25 @@ class _CardFormScreenState extends State<CardFormScreen> {
     try {
       final globalService = GlobalDataService();
       final syncService = SyncSettingsService();
-      
+
       // Initialize WebDAV client if needed
       await syncService.initializeFromSettings();
-      
+
       final settings = await syncService.loadSettings();
       if (settings?.username == null) {
         if (!mounted) return;
-        throw Exception(AppLocalizations.of(context)!.exceptionUserNotConfigured);
+        throw Exception(
+          AppLocalizations.of(context)!.exceptionUserNotConfigured,
+        );
       }
 
       // Check if card already exists globally
       bool cardExists = false;
       try {
         final globalCards = await globalService.getGlobalCards();
-        cardExists = globalCards.any((globalCard) => globalCard.uuid == widget.card!.uuid);
+        cardExists = globalCards.any(
+          (globalCard) => globalCard.uuid == widget.card!.uuid,
+        );
       } catch (e) {
         debugPrint('Error checking global cards: $e');
         // Continue with sharing even if check fails
@@ -647,14 +668,18 @@ class _CardFormScreenState extends State<CardFormScreen> {
         builder: (context) {
           final dialogL10n = AppLocalizations.of(context)!;
           return AlertDialog(
-            title: Text(cardExists ? dialogL10n.updateGlobalCard : dialogL10n.shareCardGlobally),
+            title: Text(
+              cardExists
+                  ? dialogL10n.updateGlobalCard
+                  : dialogL10n.shareCardGlobally,
+            ),
             content: Text(
-              cardExists 
-                ? '${dialogL10n.cardExistsInGlobalPool}\n\n'
-                  '${dialogL10n.updateGlobalCardConfirm} "${widget.card!.name}"?\n\n'
-                  '${dialogL10n.overwriteGlobalCard}'
-                : '${dialogL10n.shareCardGloballyConfirm} "${widget.card!.name}" ${dialogL10n.shareCardGloballyConfirm2}\n\n'
-                  '${dialogL10n.cardVisibleToAllUsers}',
+              cardExists
+                  ? '${dialogL10n.cardExistsInGlobalPool}\n\n'
+                        '${dialogL10n.updateGlobalCardConfirm} "${widget.card!.name}"?\n\n'
+                        '${dialogL10n.overwriteGlobalCard}'
+                  : '${dialogL10n.shareCardGloballyConfirm} "${widget.card!.name}" ${dialogL10n.shareCardGloballyConfirm2}\n\n'
+                        '${dialogL10n.cardVisibleToAllUsers}',
             ),
             actions: [
               TextButton(
@@ -675,15 +700,21 @@ class _CardFormScreenState extends State<CardFormScreen> {
       if (!mounted) return;
       // Share/update the card
       final l10nBeforeShare = AppLocalizations.of(context)!;
-      await globalService.shareCardGlobally(widget.card!, settings!.username!, l10nBeforeShare.coverImageSuffix);
-      
+      await globalService.shareCardGlobally(
+        widget.card!,
+        settings!.username!,
+        l10nBeforeShare.coverImageSuffix,
+      );
+
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(cardExists 
-              ? l10n.globalCardUpdatedSuccess
-              : l10n.cardSharedGloballySuccess),
+            content: Text(
+              cardExists
+                  ? l10n.globalCardUpdatedSuccess
+                  : l10n.cardSharedGloballySuccess,
+            ),
             backgroundColor: Colors.green,
           ),
         );
@@ -713,10 +744,10 @@ class _CardFormScreenState extends State<CardFormScreen> {
       try {
         final globalService = GlobalDataService();
         final syncService = SyncSettingsService();
-        
+
         // Initialize WebDAV client if needed
         await syncService.initializeFromSettings();
-        
+
         final settings = await syncService.loadSettings();
         if (settings?.username != null) {
           await globalService.shareImageGlobally(
@@ -736,7 +767,9 @@ class _CardFormScreenState extends State<CardFormScreen> {
           }
         } else {
           if (!mounted) return;
-          throw Exception(AppLocalizations.of(context)!.exceptionUserNotConfigured);
+          throw Exception(
+            AppLocalizations.of(context)!.exceptionUserNotConfigured,
+          );
         }
       } catch (e) {
         if (mounted) {
@@ -765,7 +798,7 @@ class _ImageNameDialogState extends State<_ImageNameDialog> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    
+
     return AlertDialog(
       title: Text(l10n.shareImageGlobally),
       content: Column(

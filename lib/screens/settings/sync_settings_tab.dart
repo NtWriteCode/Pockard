@@ -96,9 +96,9 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
         _usernameController.text.trim().isEmpty ||
         _passwordController.text.trim().isEmpty) {
       final l10n = AppLocalizations.of(context)!;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.fillAllConnectionFields)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.fillAllConnectionFields)));
       return;
     }
 
@@ -115,13 +115,14 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
       );
 
       final success = await _syncService.testConnection(settings);
-      
+
       // Reload settings to get updated global folder status
       final updatedSettings = await _syncService.loadSettings();
-      
+
       setState(() {
         _isConnected = success;
-        _globalFolderAvailable = updatedSettings?.globalFolderAvailable ?? false;
+        _globalFolderAvailable =
+            updatedSettings?.globalFolderAvailable ?? false;
       });
 
       // Update connection manager with new settings and status
@@ -131,14 +132,16 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
 
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
-        final messageText = success ? l10n.connectionSuccessful.toString() : l10n.connectionFailed.toString();
+        final messageText = success
+            ? l10n.connectionSuccessful
+            : l10n.connectionFailed(l10n.unknownError);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(messageText),
             backgroundColor: success ? Colors.green : Colors.red,
           ),
         );
-        
+
         // Show global folder status
         if (success) {
           if (_globalFolderAvailable) {
@@ -151,7 +154,7 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(l10n.globalFolderNotFound),
+                content: Text(l10n.globalFolderNotAvailable),
                 backgroundColor: Colors.orange,
               ),
             );
@@ -166,7 +169,7 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
         final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${l10n.connectionError}: $e'),
+            content: Text(l10n.connectionFailed(e.toString())),
             backgroundColor: Colors.red,
           ),
         );
@@ -232,14 +235,24 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
                 final l10n = AppLocalizations.of(context)!;
                 return Column(
                   children: [
-                    _buildInfoRow(l10n.server, _serverController.text, Icons.dns),
+                    _buildInfoRow(
+                      l10n.server,
+                      _serverController.text,
+                      Icons.dns,
+                    ),
                     const SizedBox(height: 8),
-                    _buildInfoRow(l10n.username, _usernameController.text, Icons.person),
+                    _buildInfoRow(
+                      l10n.username,
+                      _usernameController.text,
+                      Icons.person,
+                    ),
                     const SizedBox(height: 8),
                     _buildInfoRow(
                       l10n.globalFeatures,
                       _globalFolderAvailable ? l10n.enabled : l10n.disabled,
-              _globalFolderAvailable ? Icons.check_circle : Icons.warning,
+                      _globalFolderAvailable
+                          ? Icons.check_circle
+                          : Icons.warning,
                     ),
                   ],
                 );
@@ -328,8 +341,8 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
     return Row(
       children: [
         Icon(
-          icon, 
-          size: 20, 
+          icon,
+          size: 20,
           color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
         ),
         const SizedBox(width: 8),
@@ -344,7 +357,9 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
           child: Text(
             value,
             style: TextStyle(
-              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.8),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.8),
             ),
             overflow: TextOverflow.ellipsis,
           ),
@@ -374,10 +389,11 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
                       final l10n = AppLocalizations.of(context)!;
                       return Text(
                         _isConnected ? l10n.connected : l10n.notConnected,
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: _isConnected ? Colors.green : Colors.red,
-                        ),
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: _isConnected ? Colors.green : Colors.red,
+                            ),
                       );
                     },
                   ),
@@ -386,7 +402,9 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
                       builder: (context) {
                         final l10n = AppLocalizations.of(context)!;
                         return Text(
-                          l10n.lastSyncLabel(_formatLastSync(_lastSyncDate!, context)),
+                          l10n.lastSyncLabel(
+                            _formatLastSync(_lastSyncDate!, context),
+                          ),
                           style: Theme.of(context).textTheme.bodySmall,
                         );
                       },
@@ -406,9 +424,9 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
       children: [
         Text(
           AppLocalizations.of(context)!.webdavConnection,
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 16),
 
@@ -465,7 +483,11 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
                     width: 20,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
-                : Text(_isConnected ? AppLocalizations.of(context)!.connectedCheck : AppLocalizations.of(context)!.testConnection),
+                : Text(
+                    _isConnected
+                        ? AppLocalizations.of(context)!.connectedCheck
+                        : AppLocalizations.of(context)!.testConnection,
+                  ),
           ),
         ),
       ],
@@ -478,9 +500,9 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
       children: [
         Text(
           AppLocalizations.of(context)!.syncActions,
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 16),
 
@@ -495,16 +517,20 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
                         height: 16,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Colors.white,
+                          ),
                         ),
                       )
                     : const Icon(Icons.cloud_upload),
                 label: Builder(
                   builder: (context) {
                     final l10n = AppLocalizations.of(context)!;
-                    return Text(_isLoading && _loadingOperation == 'export' 
-                        ? l10n.exporting
-                        : l10n.exportCards);
+                    return Text(
+                      _isLoading && _loadingOperation == 'export'
+                          ? l10n.exporting
+                          : l10n.exportCards,
+                    );
                   },
                 ),
                 style: ElevatedButton.styleFrom(
@@ -524,16 +550,20 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
                         height: 16,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Colors.white,
+                          ),
                         ),
                       )
                     : const Icon(Icons.cloud_download),
                 label: Builder(
                   builder: (context) {
                     final l10n = AppLocalizations.of(context)!;
-                    return Text(_isLoading && _loadingOperation == 'import' 
-                        ? l10n.importing
-                        : l10n.importCards);
+                    return Text(
+                      _isLoading && _loadingOperation == 'import'
+                          ? l10n.importing
+                          : l10n.importCards,
+                    );
                   },
                 ),
                 style: ElevatedButton.styleFrom(
@@ -545,9 +575,9 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
             ),
           ],
         ),
-        
+
         const SizedBox(height: 16),
-        
+
         // Disconnect button
         Builder(
           builder: (context) {
@@ -604,13 +634,13 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
       setState(() {
         _isConnected = false;
       });
-      
+
       // Disconnect through connection manager
       await _connectionManager.disconnect();
-      
+
       // Refresh connection manager to update UI
       await _connectionManager.refreshSyncStatus();
-      
+
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
@@ -632,13 +662,13 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
     try {
       // Initialize WebDAV client if needed
       await _syncService.initializeFromSettings();
-      
+
       if (!mounted) return;
-      
+
       final cardProvider = Provider.of<CardProvider>(context, listen: false);
       final cards = cardProvider.cards;
       final deletedCards = cardProvider.deletedCards;
-      
+
       if (cards.isEmpty && deletedCards.isEmpty) {
         if (mounted) {
           final l10n = AppLocalizations.of(context)!;
@@ -655,7 +685,7 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
       // Handle deleted cards first
       if (deletedCards.isNotEmpty) {
         await _syncService.handleDeletedCards(deletedCards);
-        
+
         // Permanently delete cards locally after successful server deletion
         for (final card in deletedCards) {
           await cardProvider.permanentlyDeleteCard(card.uuid);
@@ -666,7 +696,7 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
       if (cards.isNotEmpty) {
         await _syncService.exportCards(cards);
       }
-      
+
       // Update sync status (success)
       final now = DateTime.now();
       final currentSettings = await _syncService.loadSettings();
@@ -686,10 +716,13 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
 
       // Also sync preferences
       if (mounted) {
-        final displayProvider = Provider.of<DisplayProvider>(context, listen: false);
+        final displayProvider = Provider.of<DisplayProvider>(
+          context,
+          listen: false,
+        );
         final tagProvider = Provider.of<TagProvider>(context, listen: false);
         final cardProvider = Provider.of<CardProvider>(context, listen: false);
-        
+
         await cardProvider.syncPreferences(
           displaySettings: displayProvider.exportSettings(),
           tagOrder: tagProvider.exportTagOrder(),
@@ -698,14 +731,11 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
 
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
-        final message = deletedCards.isNotEmpty 
-          ? l10n.syncSuccessWithCleanup(cards.length, deletedCards.length)
-          : l10n.syncSuccessExport(cards.length);
+        final message = deletedCards.isNotEmpty
+            ? l10n.syncSuccessWithCleanup(cards.length, deletedCards.length)
+            : l10n.syncSuccessExport(cards.length);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(message),
-            backgroundColor: Colors.green,
-          ),
+          SnackBar(content: Text(message), backgroundColor: Colors.green),
         );
       }
     } catch (e) {
@@ -721,7 +751,7 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
         await _syncService.saveSettings(updatedSettings);
         await _connectionManager.refreshSyncStatus();
       }
-      
+
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
@@ -751,9 +781,9 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
     try {
       // Initialize WebDAV client if needed
       await _syncService.initializeFromSettings();
-      
+
       final importedCards = await _syncService.importCards();
-      
+
       if (importedCards.isEmpty) {
         if (mounted) {
           final l10n = AppLocalizations.of(context)!;
@@ -768,18 +798,22 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
       }
 
       if (!mounted) return;
-      
+
       final cardProvider = Provider.of<CardProvider>(context, listen: false);
-      
+
       // Ensure cards are loaded before checking for duplicates
       await cardProvider.loadCards();
-      
+
       int imported = 0;
       int updated = 0;
 
       for (final card in importedCards) {
-        final existingCard = cardProvider.allCards.where((c) => c.uuid == card.uuid).firstOrNull;
-        debugPrint('Checking card ${card.uuid}: existing=${existingCard != null}');
+        final existingCard = cardProvider.allCards
+            .where((c) => c.uuid == card.uuid)
+            .firstOrNull;
+        debugPrint(
+          'Checking card ${card.uuid}: existing=${existingCard != null}',
+        );
         if (existingCard != null) {
           debugPrint('Updating existing card: ${card.name}');
           await cardProvider.updateCard(card);
@@ -794,19 +828,23 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
       // Also import preferences
       final prefsSync = PreferencesSyncService();
       final preferences = await prefsSync.downloadPreferences();
-      
+
       if (!mounted) return;
-      
+
       if (preferences != null) {
-        final displayProvider = Provider.of<DisplayProvider>(context, listen: false);
+        final displayProvider = Provider.of<DisplayProvider>(
+          context,
+          listen: false,
+        );
         final tagProvider = Provider.of<TagProvider>(context, listen: false);
-        
+
         // Import display settings
-        final displaySettings = preferences['display_settings'] as Map<String, dynamic>?;
+        final displaySettings =
+            preferences['display_settings'] as Map<String, dynamic>?;
         if (displaySettings != null) {
           await displayProvider.importSettings(displaySettings);
         }
-        
+
         // Import tag order
         final tagOrder = (preferences['tag_order'] as List?)?.cast<String>();
         if (tagOrder != null) {
@@ -818,7 +856,9 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
         final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${l10n.importComplete}: $imported ${l10n.newCards}, $updated ${l10n.updated}'),
+            content: Text(
+              '${l10n.importComplete}: $imported ${l10n.newCards}, $updated ${l10n.updated}',
+            ),
             backgroundColor: Colors.green,
           ),
         );

@@ -33,7 +33,7 @@ class _GlobalImagePickerState extends State<GlobalImagePicker> {
     try {
       // Initialize WebDAV client if needed
       await _syncService.initializeFromSettings();
-      
+
       final images = await _globalService.getGlobalImages();
       setState(() {
         _globalImages = images;
@@ -42,7 +42,7 @@ class _GlobalImagePickerState extends State<GlobalImagePicker> {
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${l10n.failedToLoadGlobalImages2}: $e')),
+          SnackBar(content: Text(l10n.errorDownloadingImage(e.toString()))),
         );
       }
     } finally {
@@ -58,14 +58,12 @@ class _GlobalImagePickerState extends State<GlobalImagePicker> {
       showDialog(
         context: context,
         barrierDismissible: false,
-        builder: (context) => const Center(
-          child: CircularProgressIndicator(),
-        ),
+        builder: (context) => const Center(child: CircularProgressIndicator()),
       );
 
       // Download and duplicate the image locally
       final localPath = await _globalService.downloadGlobalImage(imageModel);
-      
+
       if (mounted) {
         Navigator.pop(context); // Close loading dialog
         Navigator.pop(context, localPath); // Return local path
@@ -76,7 +74,7 @@ class _GlobalImagePickerState extends State<GlobalImagePicker> {
         final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${l10n.failedToDownloadImage}: $e'),
+            content: Text(l10n.errorDownloadingImage(e.toString())),
             backgroundColor: Colors.red,
           ),
         );
@@ -99,8 +97,8 @@ class _GlobalImagePickerState extends State<GlobalImagePicker> {
                   child: Text(
                     AppLocalizations.of(context)!.chooseFromGlobalImages,
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
                 IconButton(
@@ -111,32 +109,54 @@ class _GlobalImagePickerState extends State<GlobalImagePicker> {
             ),
             const SizedBox(height: 16),
             if (_isLoading)
-              const Expanded(
-                child: Center(child: CircularProgressIndicator()),
-              )
+              const Expanded(child: Center(child: CircularProgressIndicator()))
             else if (_globalImages.isEmpty)
               Expanded(
                 child: Center(
-                  child: Builder(
-                    builder: (context) {
-                      final l10n = AppLocalizations.of(context)!;
-                      return Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.image, size: 64, color: Colors.grey),
-                          const SizedBox(height: 16),
-                          Text(
-                            l10n.noGlobalImages,
-                            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            l10n.noImagesSharedYet,
-                            style: const TextStyle(color: Colors.grey),
-                          ),
-                        ],
-                      );
-                    },
+                  child: Padding(
+                    padding: const EdgeInsets.all(32.0),
+                    child: Builder(
+                      builder: (context) {
+                        final l10n = AppLocalizations.of(context)!;
+                        return Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.image_outlined,
+                              size: 80,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurface.withValues(alpha: 0.3),
+                            ),
+                            const SizedBox(height: 24),
+                            Text(
+                              l10n.noGlobalImages,
+                              style: Theme.of(context).textTheme.titleLarge
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurface
+                                        .withValues(alpha: 0.6),
+                                  ),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              l10n.noImagesSharedYet,
+                              style: Theme.of(context).textTheme.bodyMedium
+                                  ?.copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurface
+                                        .withValues(alpha: 0.5),
+                                  ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        );
+                      },
+                    ),
                   ),
                 ),
               )
@@ -162,9 +182,12 @@ class _GlobalImagePickerState extends State<GlobalImagePicker> {
                             Expanded(
                               flex: 3,
                               child: FutureBuilder<String>(
-                                future: _globalService.downloadGlobalImage(image),
+                                future: _globalService.downloadGlobalImage(
+                                  image,
+                                ),
                                 builder: (context, snapshot) {
-                                  if (snapshot.connectionState == ConnectionState.waiting) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
                                     return Container(
                                       color: Colors.grey[200],
                                       child: const Center(
@@ -172,7 +195,7 @@ class _GlobalImagePickerState extends State<GlobalImagePicker> {
                                       ),
                                     );
                                   }
-                                  
+
                                   if (snapshot.hasData) {
                                     return ClipRRect(
                                       borderRadius: const BorderRadius.vertical(
@@ -181,18 +204,20 @@ class _GlobalImagePickerState extends State<GlobalImagePicker> {
                                       child: Image.file(
                                         File(snapshot.data!),
                                         fit: BoxFit.cover,
-                                        errorBuilder: (context, error, stackTrace) => Container(
-                                          color: Colors.grey[200],
-                                          child: const Icon(
-                                            Icons.broken_image,
-                                            size: 48,
-                                            color: Colors.grey,
-                                          ),
-                                        ),
+                                        errorBuilder:
+                                            (context, error, stackTrace) =>
+                                                Container(
+                                                  color: Colors.grey[200],
+                                                  child: const Icon(
+                                                    Icons.broken_image,
+                                                    size: 48,
+                                                    color: Colors.grey,
+                                                  ),
+                                                ),
                                       ),
                                     );
                                   }
-                                  
+
                                   return Container(
                                     color: Colors.grey[200],
                                     child: const Icon(
@@ -231,7 +256,9 @@ class _GlobalImagePickerState extends State<GlobalImagePicker> {
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                     Text(
-                                      DateFormat('MMM dd').format(image.uploadDate),
+                                      DateFormat(
+                                        'MMM dd',
+                                      ).format(image.uploadDate),
                                       style: TextStyle(
                                         color: Colors.grey[600],
                                         fontSize: 12,

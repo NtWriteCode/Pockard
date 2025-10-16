@@ -54,9 +54,9 @@ class _GlobalImagesTabState extends State<GlobalImagesTab> {
     } catch (e) {
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${l10n.error}: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('${l10n.error}: $e')));
       }
     } finally {
       if (mounted) {
@@ -83,7 +83,7 @@ class _GlobalImagesTabState extends State<GlobalImagesTab> {
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${l10n.failedToLoadGlobalImages}: $e')),
+          SnackBar(content: Text(l10n.errorDownloadingImage(e.toString()))),
         );
       }
     } finally {
@@ -106,7 +106,7 @@ class _GlobalImagesTabState extends State<GlobalImagesTab> {
         final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(l10n.globalImageDeletedSuccess),
+            content: Text(l10n.imageDeletedSuccess),
             backgroundColor: Colors.green,
           ),
         );
@@ -116,7 +116,7 @@ class _GlobalImagesTabState extends State<GlobalImagesTab> {
         final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${l10n.failedToDeleteGlobalImage}: $e'),
+            content: Text(l10n.errorDeletingGlobalImage(e.toString())),
             backgroundColor: Colors.red,
           ),
         );
@@ -194,7 +194,10 @@ class _GlobalImagesTabState extends State<GlobalImagesTab> {
         _isLoading = true;
       });
 
-      final imagePath = await _imageService.pickEditAndSaveImage(context: context, source: source);
+      final imagePath = await _imageService.pickEditAndSaveImage(
+        context: context,
+        source: source,
+      );
       if (imagePath != null) {
         await _showImageNameDialog(imagePath);
       }
@@ -202,7 +205,7 @@ class _GlobalImagesTabState extends State<GlobalImagesTab> {
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${l10n.errorPickingImage}: $e')),
+          SnackBar(content: Text(l10n.errorPickingImage(e.toString()))),
         );
       }
     } finally {
@@ -216,7 +219,7 @@ class _GlobalImagesTabState extends State<GlobalImagesTab> {
 
   Future<void> _showImageNameDialog(String imagePath) async {
     final nameController = TextEditingController();
-    
+
     final result = await showDialog<String>(
       context: context,
       builder: (dialogContext) {
@@ -241,7 +244,11 @@ class _GlobalImagesTabState extends State<GlobalImagesTab> {
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) => Container(
                       color: Colors.grey[200],
-                      child: const Icon(Icons.image, size: 48, color: Colors.grey),
+                      child: const Icon(
+                        Icons.image,
+                        size: 48,
+                        color: Colors.grey,
+                      ),
                     ),
                   ),
                 ),
@@ -251,7 +258,7 @@ class _GlobalImagesTabState extends State<GlobalImagesTab> {
                 controller: nameController,
                 decoration: InputDecoration(
                   labelText: dialogL10n.imageName,
-                  hintText: dialogL10n.imageNameHint2,
+                  hintText: dialogL10n.imageNameHint,
                   border: const OutlineInputBorder(),
                 ),
                 autofocus: true,
@@ -296,8 +303,12 @@ class _GlobalImagesTabState extends State<GlobalImagesTab> {
       }
 
       // Use username as uploader identifier (no more pseudoUser)
-      await _globalService.shareImageGlobally(imagePath, imageName, settings.username!);
-      
+      await _globalService.shareImageGlobally(
+        imagePath,
+        imageName,
+        settings.username!,
+      );
+
       // Refresh the global images list
       await _loadGlobalImages();
 
@@ -315,7 +326,7 @@ class _GlobalImagesTabState extends State<GlobalImagesTab> {
         final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${l10n.failedToUploadImage}: $e'),
+            content: Text(l10n.errorUploadingImage(e.toString())),
             backgroundColor: Colors.red,
           ),
         );
@@ -362,9 +373,13 @@ class _GlobalImagesTabState extends State<GlobalImagesTab> {
                             return Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                const Icon(Icons.broken_image, size: 64, color: Colors.grey),
+                                const Icon(
+                                  Icons.broken_image,
+                                  size: 64,
+                                  color: Colors.grey,
+                                ),
                                 const SizedBox(height: 16),
-                                Text(l10n.failedToLoadImage),
+                                Text(l10n.unknownError),
                               ],
                             );
                           },
@@ -413,7 +428,7 @@ class _GlobalImagesTabState extends State<GlobalImagesTab> {
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${l10n.failedToLoadImage}: $e')),
+          SnackBar(content: Text(l10n.errorDownloadingImage(e.toString()))),
         );
       }
     }
@@ -442,7 +457,10 @@ class _GlobalImagesTabState extends State<GlobalImagesTab> {
                     children: [
                       Text(
                         l10n.globalFolderNotAvailable,
-                        style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                        style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 16),
@@ -463,7 +481,10 @@ class _GlobalImagesTabState extends State<GlobalImagesTab> {
                             const SizedBox(height: 12),
                             Text(
                               l10n.createGlobalFolderManually,
-                              style: TextStyle(fontSize: 14, color: Colors.grey.shade700),
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey.shade700,
+                              ),
                               textAlign: TextAlign.center,
                             ),
                           ],
@@ -504,12 +525,15 @@ class _GlobalImagesTabState extends State<GlobalImagesTab> {
                   children: [
                     Text(
                       l10n.noGlobalImages,
-                      style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       l10n.noImagesSharedYet,
-              style: const TextStyle(color: Colors.grey),
+                      style: const TextStyle(color: Colors.grey),
                     ),
                   ],
                 );
@@ -519,26 +543,26 @@ class _GlobalImagesTabState extends State<GlobalImagesTab> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-              Builder(
-                builder: (context) {
-                  final l10n = AppLocalizations.of(context)!;
-                  return Row(
-                    children: [
-                      ElevatedButton.icon(
-                        onPressed: _showImageUploadOptions,
-                        icon: const Icon(Icons.add_photo_alternate),
-                        label: Text(l10n.uploadImage),
-                      ),
-                      const SizedBox(width: 16),
-                      ElevatedButton.icon(
-                        onPressed: _loadGlobalImages,
-                        icon: const Icon(Icons.refresh),
-                        label: Text(l10n.refresh),
-                      ),
-                    ],
-                  );
-                },
-              ),
+                Builder(
+                  builder: (context) {
+                    final l10n = AppLocalizations.of(context)!;
+                    return Row(
+                      children: [
+                        ElevatedButton.icon(
+                          onPressed: _showImageUploadOptions,
+                          icon: const Icon(Icons.add_photo_alternate),
+                          label: Text(l10n.uploadImage),
+                        ),
+                        const SizedBox(width: 16),
+                        ElevatedButton.icon(
+                          onPressed: _loadGlobalImages,
+                          icon: const Icon(Icons.refresh),
+                          label: Text(l10n.refresh),
+                        ),
+                      ],
+                    );
+                  },
+                ),
               ],
             ),
           ],
@@ -554,10 +578,12 @@ class _GlobalImagesTabState extends State<GlobalImagesTab> {
             children: [
               Expanded(
                 child: Text(
-                  AppLocalizations.of(context)!.globalImagesCount(_globalImages.length),
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                  AppLocalizations.of(
+                    context,
+                  )!.globalImagesCount(_globalImages.length),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                 ),
               ),
               IconButton(
@@ -592,104 +618,116 @@ class _GlobalImagesTabState extends State<GlobalImagesTab> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                    Expanded(
-                      child: FutureBuilder<String>(
-                        future: _globalService.downloadGlobalImage(image),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState == ConnectionState.waiting) {
+                      Expanded(
+                        child: FutureBuilder<String>(
+                          future: _globalService.downloadGlobalImage(image),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return Container(
+                                color: Colors.grey[200],
+                                child: const Center(
+                                  child: CircularProgressIndicator(),
+                                ),
+                              );
+                            }
+
+                            if (snapshot.hasData) {
+                              return ClipRRect(
+                                borderRadius: const BorderRadius.vertical(
+                                  top: Radius.circular(12),
+                                ),
+                                child: Image.file(
+                                  File(snapshot.data!),
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      Container(
+                                        color: Colors.grey[200],
+                                        child: const Icon(
+                                          Icons.broken_image,
+                                          size: 48,
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                ),
+                              );
+                            }
+
                             return Container(
                               color: Colors.grey[200],
-                              child: const Center(
-                                child: CircularProgressIndicator(),
+                              child: const Icon(
+                                Icons.image,
+                                size: 48,
+                                color: Colors.grey,
                               ),
                             );
-                          }
-                          
-                          if (snapshot.hasData) {
-                            return ClipRRect(
-                              borderRadius: const BorderRadius.vertical(
-                                top: Radius.circular(12),
+                          },
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              image.name,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w500,
+                                fontSize: 14,
                               ),
-                              child: Image.file(
-                                File(snapshot.data!),
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) => Container(
-                                  color: Colors.grey[200],
-                                  child: const Icon(
-                                    Icons.broken_image,
-                                    size: 48,
-                                    color: Colors.grey,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'By ${image.uploaderPseudoUser}',
+                              style: TextStyle(
+                                color: Colors.grey[600],
+                                fontSize: 12,
+                              ),
+                            ),
+                            Text(
+                              DateFormat(
+                                'MMM dd, yyyy',
+                              ).format(image.uploadDate),
+                              style: TextStyle(
+                                color: Colors.grey[600],
+                                fontSize: 12,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Expanded(
+                                  child: Builder(
+                                    builder: (context) {
+                                      final l10n = AppLocalizations.of(
+                                        context,
+                                      )!;
+                                      return TextButton.icon(
+                                        onPressed: () =>
+                                            _showDeleteConfirmation(image),
+                                        icon: const Icon(
+                                          Icons.delete,
+                                          size: 16,
+                                        ),
+                                        label: Text(l10n.delete),
+                                        style: TextButton.styleFrom(
+                                          foregroundColor: Colors.red,
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 8,
+                                          ),
+                                        ),
+                                      );
+                                    },
                                   ),
                                 ),
-                              ),
-                            );
-                          }
-                          
-                          return Container(
-                            color: Colors.grey[200],
-                            child: const Icon(
-                              Icons.image,
-                              size: 48,
-                              color: Colors.grey,
+                              ],
                             ),
-                          );
-                        },
+                          ],
+                        ),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            image.name,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 14,
-                            ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'By ${image.uploaderPseudoUser}',
-                            style: TextStyle(
-                              color: Colors.grey[600],
-                              fontSize: 12,
-                            ),
-                          ),
-                          Text(
-                            DateFormat('MMM dd, yyyy').format(image.uploadDate),
-                            style: TextStyle(
-                              color: Colors.grey[600],
-                              fontSize: 12,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              Expanded(
-                            child: Builder(
-                              builder: (context) {
-                                final l10n = AppLocalizations.of(context)!;
-                                return TextButton.icon(
-                                  onPressed: () => _showDeleteConfirmation(image),
-                                  icon: const Icon(Icons.delete, size: 16),
-                                  label: Text(l10n.delete),
-                                  style: TextButton.styleFrom(
-                                    foregroundColor: Colors.red,
-                                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                                  ),
-                                );
-                              },
-                            ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
                     ],
                   ),
                 ),

@@ -53,9 +53,9 @@ class _GlobalCardsTabState extends State<GlobalCardsTab> {
     } catch (e) {
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${l10n.error}: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('${l10n.error}: $e')));
       }
     } finally {
       if (mounted) {
@@ -82,7 +82,7 @@ class _GlobalCardsTabState extends State<GlobalCardsTab> {
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${l10n.failedToLoadGlobalCards}: $e')),
+          SnackBar(content: Text(l10n.errorDownloadingCard(e.toString()))),
         );
       }
     } finally {
@@ -98,7 +98,7 @@ class _GlobalCardsTabState extends State<GlobalCardsTab> {
     try {
       final cardProvider = Provider.of<CardProvider>(context, listen: false);
       final existingCard = cardProvider.getCardById(card.uuid);
-      
+
       if (existingCard != null) {
         await cardProvider.updateCard(card);
       } else {
@@ -119,7 +119,7 @@ class _GlobalCardsTabState extends State<GlobalCardsTab> {
         final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${l10n.failedToImportCard}: $e'),
+            content: Text(l10n.errorImportingCards(e.toString())),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
@@ -138,7 +138,7 @@ class _GlobalCardsTabState extends State<GlobalCardsTab> {
         final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(l10n.globalCardDeletedSuccess),
+            content: Text(l10n.cardDeletedSuccess),
             backgroundColor: Theme.of(context).colorScheme.primary,
           ),
         );
@@ -148,7 +148,7 @@ class _GlobalCardsTabState extends State<GlobalCardsTab> {
         final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${l10n.failedToDeleteGlobalCard}: $e'),
+            content: Text(l10n.errorDeletingGlobalCard(e.toString())),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
@@ -159,7 +159,7 @@ class _GlobalCardsTabState extends State<GlobalCardsTab> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    
+
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -176,7 +176,10 @@ class _GlobalCardsTabState extends State<GlobalCardsTab> {
               const SizedBox(height: 16),
               Text(
                 l10n.globalFolderNotAvailable,
-                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 16),
@@ -197,7 +200,10 @@ class _GlobalCardsTabState extends State<GlobalCardsTab> {
                     const SizedBox(height: 12),
                     Text(
                       l10n.createGlobalFolderManually,
-                      style: TextStyle(fontSize: 14, color: Colors.grey.shade700),
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey.shade700,
+                      ),
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -229,7 +235,10 @@ class _GlobalCardsTabState extends State<GlobalCardsTab> {
                   children: [
                     Text(
                       l10n.noGlobalCards,
-                      style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     const SizedBox(height: 8),
                     Text(
@@ -263,10 +272,12 @@ class _GlobalCardsTabState extends State<GlobalCardsTab> {
             children: [
               Expanded(
                 child: Text(
-                  AppLocalizations.of(context)!.globalCardsCount(_globalCards.length),
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                  AppLocalizations.of(
+                    context,
+                  )!.globalCardsCount(_globalCards.length),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                 ),
               ),
               IconButton(
@@ -305,9 +316,9 @@ class _GlobalCardsTabState extends State<GlobalCardsTab> {
             children: [
               Text(
                 card.name,
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
               Builder(
@@ -317,7 +328,10 @@ class _GlobalCardsTabState extends State<GlobalCardsTab> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       ListTile(
-                        leading: const Icon(Icons.download, color: Colors.green),
+                        leading: const Icon(
+                          Icons.download,
+                          color: Colors.green,
+                        ),
                         title: Text(dialogL10n.importCard),
                         subtitle: Text(dialogL10n.importCardDescription),
                         onTap: () {
@@ -328,7 +342,9 @@ class _GlobalCardsTabState extends State<GlobalCardsTab> {
                       ListTile(
                         leading: const Icon(Icons.delete, color: Colors.red),
                         title: Text(dialogL10n.deleteFromGlobalPool),
-                        subtitle: Text(dialogL10n.deleteFromGlobalPoolDescription),
+                        subtitle: Text(
+                          dialogL10n.deleteFromGlobalPoolDescription,
+                        ),
                         onTap: () {
                           Navigator.pop(context);
                           _showDeleteConfirmation(card);
@@ -363,7 +379,9 @@ class _GlobalCardsTabState extends State<GlobalCardsTab> {
                 Navigator.of(dialogContext).pop();
                 _deleteGlobalCard(card);
               },
-              style: TextButton.styleFrom(foregroundColor: Theme.of(dialogContext).colorScheme.error),
+              style: TextButton.styleFrom(
+                foregroundColor: Theme.of(dialogContext).colorScheme.error,
+              ),
               child: Text(dialogL10n.delete),
             ),
           ],
