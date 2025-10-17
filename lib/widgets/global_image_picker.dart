@@ -41,7 +41,7 @@ class _GlobalImagePickerState extends State<GlobalImagePicker> {
     } catch (e) {
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.errorDownloadingImage(e.toString()))));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.errorDownloadingImage(e.toString())), backgroundColor: Theme.of(context).colorScheme.error));
       }
     } finally {
       setState(() {
@@ -70,7 +70,7 @@ class _GlobalImagePickerState extends State<GlobalImagePicker> {
       if (mounted) {
         Navigator.pop(context); // Close loading dialog
         final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.errorDownloadingImage(e.toString())), backgroundColor: Colors.red));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.errorDownloadingImage(e.toString())), backgroundColor: Theme.of(context).colorScheme.error));
       }
     }
   }

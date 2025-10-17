@@ -394,7 +394,7 @@ class DisplaySettingsTab extends StatelessWidget {
               await cardProvider.resetAllStatistics();
 
               if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.statisticsResetSuccess)));
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.statisticsResetSuccess), backgroundColor: Theme.of(context).colorScheme.primary));
               }
             },
             style: ElevatedButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.error, foregroundColor: Theme.of(context).colorScheme.onError),

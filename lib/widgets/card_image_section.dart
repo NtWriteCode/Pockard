@@ -252,7 +252,7 @@ class CardImageSection extends StatelessWidget {
     } catch (e) {
       if (context.mounted) {
         final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.errorPickingImage(e.toString()))));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.errorPickingImage(e.toString())), backgroundColor: Theme.of(context).colorScheme.error));
       }
     }
   }
@@ -270,7 +270,7 @@ class CardImageSection extends StatelessWidget {
     } catch (e) {
       if (context.mounted) {
         final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.errorEditingImage(e.toString()))));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.errorEditingImage(e.toString())), backgroundColor: Theme.of(context).colorScheme.error));
       }
     }
   }

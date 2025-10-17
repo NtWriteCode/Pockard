@@ -162,7 +162,10 @@ class _MainScreenState extends State<MainScreen> {
                         final updatedSettings = _connectionManager.syncSettings;
                         final success = updatedSettings?.lastSyncSuccess ?? false;
                         messenger.showSnackBar(
-                          SnackBar(content: Text(success ? l10n.syncCompletedSuccess : l10n.syncFailed), backgroundColor: success ? Colors.green : Colors.red),
+                          SnackBar(
+                            content: Text(success ? l10n.syncCompletedSuccess : l10n.syncFailed),
+                            backgroundColor: success ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.error,
+                          ),
                         );
                       }
                     } finally {

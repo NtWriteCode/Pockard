@@ -30,7 +30,7 @@ class BarcodeService {
     if (!await requestCameraPermission()) {
       if (context.mounted) {
         final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.cameraPermissionRequired)));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.cameraPermissionRequired), backgroundColor: Theme.of(context).colorScheme.error));
       }
       return null;
     }
@@ -63,14 +63,14 @@ class BarcodeService {
       // No barcode found in image
       if (context.mounted) {
         final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.noBarcodeFoundInImage)));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.noBarcodeFoundInImage), backgroundColor: Theme.of(context).colorScheme.surface));
       }
       return null;
     } catch (e) {
       debugPrint('Error scanning image: $e');
       if (context.mounted) {
         final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.errorScanningImage(e.toString()))));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.errorScanningImage(e.toString())), backgroundColor: Theme.of(context).colorScheme.error));
       }
       return null;
     }

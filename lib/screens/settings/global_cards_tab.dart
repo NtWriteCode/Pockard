@@ -53,7 +53,7 @@ class _GlobalCardsTabState extends State<GlobalCardsTab> {
     } catch (e) {
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${l10n.error}: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${l10n.error}: $e'), backgroundColor: Theme.of(context).colorScheme.error));
       }
     } finally {
       if (mounted) {
@@ -79,7 +79,7 @@ class _GlobalCardsTabState extends State<GlobalCardsTab> {
     } catch (e) {
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.errorDownloadingCard(e.toString()))));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.errorDownloadingCard(e.toString())), backgroundColor: Theme.of(context).colorScheme.error));
       }
     } finally {
       if (mounted) {

@@ -262,7 +262,7 @@ class _CardFormScreenState extends State<CardFormScreen> {
     } catch (e) {
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.barcodeError(e.toString()))));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.barcodeError(e.toString())), backgroundColor: Theme.of(context).colorScheme.error));
       }
     }
   }
@@ -280,7 +280,7 @@ class _CardFormScreenState extends State<CardFormScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error uploading image: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error uploading image: $e'), backgroundColor: Theme.of(context).colorScheme.error));
       }
     }
   }
@@ -482,12 +482,12 @@ class _CardFormScreenState extends State<CardFormScreen> {
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
         Navigator.pop(context); // Go back to main screen
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.cardDeletedSuccess), backgroundColor: Colors.green));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.cardDeletedSuccess), backgroundColor: Theme.of(context).colorScheme.primary));
       }
     } catch (e) {
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.cardDeleteError(e.toString())), backgroundColor: Colors.red));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.cardDeleteError(e.toString())), backgroundColor: Theme.of(context).colorScheme.error));
       }
     }
   }
@@ -552,14 +552,14 @@ class _CardFormScreenState extends State<CardFormScreen> {
 
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(cardExists ? l10n.globalCardUpdatedSuccess : l10n.cardSharedGloballySuccess), backgroundColor: Colors.green));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(cardExists ? l10n.globalCardUpdatedSuccess : l10n.cardSharedGloballySuccess), backgroundColor: Theme.of(context).colorScheme.primary),
+        );
       }
     } catch (e) {
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${l10n.shareCardGloballyError}: $e'), backgroundColor: Colors.red));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${l10n.shareCardGloballyError}: $e'), backgroundColor: Theme.of(context).colorScheme.error));
       }
     }
   }
@@ -583,7 +583,7 @@ class _CardFormScreenState extends State<CardFormScreen> {
 
           if (mounted) {
             final l10n = AppLocalizations.of(context)!;
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.imageSharedGloballySuccess), backgroundColor: Colors.green));
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.imageSharedGloballySuccess), backgroundColor: Theme.of(context).colorScheme.primary));
           }
         } else {
           if (!mounted) return;
@@ -592,7 +592,7 @@ class _CardFormScreenState extends State<CardFormScreen> {
       } catch (e) {
         if (mounted) {
           final l10n = AppLocalizations.of(context)!;
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${l10n.shareImageGloballyError}: $e'), backgroundColor: Colors.red));
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${l10n.shareImageGloballyError}: $e'), backgroundColor: Theme.of(context).colorScheme.error));
         }
       }
     }

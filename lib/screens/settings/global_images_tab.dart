@@ -54,7 +54,7 @@ class _GlobalImagesTabState extends State<GlobalImagesTab> {
     } catch (e) {
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${l10n.error}: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${l10n.error}: $e'), backgroundColor: Theme.of(context).colorScheme.error));
       }
     } finally {
       if (mounted) {
@@ -80,7 +80,7 @@ class _GlobalImagesTabState extends State<GlobalImagesTab> {
     } catch (e) {
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.errorDownloadingImage(e.toString()))));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.errorDownloadingImage(e.toString())), backgroundColor: Theme.of(context).colorScheme.error));
       }
     } finally {
       if (mounted) {
@@ -100,12 +100,12 @@ class _GlobalImagesTabState extends State<GlobalImagesTab> {
         });
 
         final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.imageDeletedSuccess), backgroundColor: Colors.green));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.imageDeletedSuccess), backgroundColor: Theme.of(context).colorScheme.primary));
       }
     } catch (e) {
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.errorDeletingGlobalImage(e.toString())), backgroundColor: Colors.red));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.errorDeletingGlobalImage(e.toString())), backgroundColor: Theme.of(context).colorScheme.error));
       }
     }
   }
@@ -184,7 +184,7 @@ class _GlobalImagesTabState extends State<GlobalImagesTab> {
     } catch (e) {
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.errorPickingImage(e.toString()))));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.errorPickingImage(e.toString())), backgroundColor: Theme.of(context).colorScheme.error));
       }
     } finally {
       if (mounted) {
@@ -277,12 +277,12 @@ class _GlobalImagesTabState extends State<GlobalImagesTab> {
 
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.imageUploadedSuccess), backgroundColor: Colors.green));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.imageUploadedSuccess), backgroundColor: Theme.of(context).colorScheme.primary));
       }
     } catch (e) {
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.errorUploadingImage(e.toString())), backgroundColor: Colors.red));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.errorUploadingImage(e.toString())), backgroundColor: Theme.of(context).colorScheme.error));
       }
     } finally {
       if (mounted) {
@@ -360,7 +360,7 @@ class _GlobalImagesTabState extends State<GlobalImagesTab> {
     } catch (e) {
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.errorDownloadingImage(e.toString()))));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.errorDownloadingImage(e.toString())), backgroundColor: Theme.of(context).colorScheme.error));
       }
     }
   }

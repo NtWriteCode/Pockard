@@ -238,9 +238,11 @@ class CardDetailScreen extends StatelessWidget {
                   final l10n = AppLocalizations.of(context)!;
                   if (success) {
                     Navigator.of(context).pop(); // Go back to main screen
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.cardDeletedSuccess)));
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.cardDeletedSuccess), backgroundColor: Theme.of(context).colorScheme.primary));
                   } else {
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.cardDeleteError(l10n.unknownError))));
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(SnackBar(content: Text(l10n.cardDeleteError(l10n.unknownError)), backgroundColor: Theme.of(context).colorScheme.error));
                   }
                 }
               },
@@ -273,12 +275,12 @@ class CardDetailScreen extends StatelessWidget {
 
       if (context.mounted) {
         final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.cardSharedGloballySuccess), backgroundColor: Colors.green));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.cardSharedGloballySuccess), backgroundColor: Theme.of(context).colorScheme.primary));
       }
     } catch (e) {
       if (context.mounted) {
         final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${l10n.shareCardGloballyError}: $e'), backgroundColor: Colors.red));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${l10n.shareCardGloballyError}: $e'), backgroundColor: Theme.of(context).colorScheme.error));
       }
     }
   }

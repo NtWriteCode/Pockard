@@ -101,7 +101,7 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
   Future<void> _testConnection() async {
     if (_serverController.text.trim().isEmpty || _usernameController.text.trim().isEmpty || _passwordController.text.trim().isEmpty) {
       final l10n = AppLocalizations.of(context)!;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.fillAllConnectionFields)));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.fillAllConnectionFields), backgroundColor: Theme.of(context).colorScheme.surface));
       return;
     }
 
@@ -137,14 +137,16 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
         final messageText = success ? l10n.connectionSuccessful : l10n.connectionFailed(l10n.unknownError);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(messageText), backgroundColor: success ? Colors.green : Colors.red));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(messageText), backgroundColor: success ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.error));
 
         // Show global folder status
         if (success) {
           if (_globalFolderAvailable) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.globalFolderDetected), backgroundColor: Colors.blue));
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.globalFolderDetected), backgroundColor: Theme.of(context).colorScheme.secondary));
           } else {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.globalFolderNotAvailable), backgroundColor: Colors.orange));
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.globalFolderNotAvailable), backgroundColor: Theme.of(context).colorScheme.surface));
           }
         }
       }
@@ -154,7 +156,7 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
       });
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.connectionFailed(e.toString())), backgroundColor: Colors.red));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.connectionFailed(e.toString())), backgroundColor: Theme.of(context).colorScheme.error));
       }
     } finally {
       setState(() {
@@ -507,7 +509,7 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
 
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.disconnectedSuccessfully), backgroundColor: Colors.orange));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.disconnectedSuccessfully), backgroundColor: Theme.of(context).colorScheme.surface));
       }
     }
   }
@@ -531,7 +533,7 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
       if (cards.isEmpty && deletedCards.isEmpty) {
         if (mounted) {
           final l10n = AppLocalizations.of(context)!;
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.noCardsToSync), backgroundColor: Colors.orange));
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.noCardsToSync), backgroundColor: Theme.of(context).colorScheme.surface));
         }
         return;
       }
@@ -575,7 +577,7 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
         final message = deletedCards.isNotEmpty ? l10n.syncSuccessWithCleanup(cards.length, deletedCards.length) : l10n.syncSuccessExport(cards.length);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message), backgroundColor: Colors.green));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message), backgroundColor: Theme.of(context).colorScheme.primary));
       }
     } catch (e) {
       // Update sync status (failure)
@@ -589,7 +591,9 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
 
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${l10n.syncFailed}: $e'), backgroundColor: Colors.red, duration: const Duration(seconds: 5)));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('${l10n.syncFailed}: $e'), backgroundColor: Theme.of(context).colorScheme.error, duration: const Duration(seconds: 5)));
       }
     } finally {
       if (mounted) {
@@ -616,7 +620,7 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
       if (importedCards.isEmpty) {
         if (mounted) {
           final l10n = AppLocalizations.of(context)!;
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.noCardsToImport), backgroundColor: Colors.orange));
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.noCardsToImport), backgroundColor: Theme.of(context).colorScheme.surface));
         }
         return;
       }
@@ -670,14 +674,16 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
 
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('${l10n.importComplete}: $imported ${l10n.newCards}, $updated ${l10n.updated}'), backgroundColor: Colors.green));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('${l10n.importComplete}: $imported ${l10n.newCards}, $updated ${l10n.updated}'), backgroundColor: Theme.of(context).colorScheme.primary),
+        );
       }
     } catch (e) {
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${l10n.importFailed}: $e'), backgroundColor: Colors.red, duration: const Duration(seconds: 5)));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('${l10n.importFailed}: $e'), backgroundColor: Theme.of(context).colorScheme.error, duration: const Duration(seconds: 5)));
       }
     } finally {
       if (mounted) {
