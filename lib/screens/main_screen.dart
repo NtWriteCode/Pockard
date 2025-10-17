@@ -35,6 +35,12 @@ class _MainScreenState extends State<MainScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<CardProvider>(context, listen: false).loadCards();
       Provider.of<TagProvider>(context, listen: false).loadTags();
+      // Trigger a rebuild when connection status changes
+      _connectionManager.syncStatus.listen((_) {
+        if (mounted) {
+          setState(() {});
+        }
+      });
     });
   }
 
