@@ -616,7 +616,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get parallelSync => 'Parallel Sync';
 
   @override
-  String get parallelSyncDescription => 'Upload cards simultaneously (faster, but may overwhelm some servers)';
+  String get parallelSyncDescription => 'Upload multiple cards at once for faster syncing.';
+
+  @override
+  String get parallelSyncWarningTitle => 'Potential Issue with Parallel Sync';
+
+  @override
+  String get parallelSyncWarningContent =>
+      'Some WebDAV servers do not support parallel uploads, which can cause \'Locked\' errors during synchronization. If you experience issues, disabling this option and using sequential sync is recommended.';
+
+  @override
+  String get ok => 'OK';
 
   @override
   String get password => 'Password';

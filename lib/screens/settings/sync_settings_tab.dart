@@ -266,6 +266,18 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
                   subtitle: Text(l10n.parallelSyncDescription),
                   value: _useParallelSync,
                   onChanged: (value) async {
+                    if (value) {
+                      // Show warning dialog when enabling parallel sync
+                      final l10n = AppLocalizations.of(context)!;
+                      await showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: Text(l10n.parallelSyncWarningTitle),
+                          content: Text(l10n.parallelSyncWarningContent),
+                          actions: [TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(l10n.ok))],
+                        ),
+                      );
+                    }
                     setState(() {
                       _useParallelSync = value;
                     });

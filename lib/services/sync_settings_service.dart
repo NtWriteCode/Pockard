@@ -29,7 +29,7 @@ class SyncSettingsService {
       final lastSyncAttemptTimestamp = prefs.getInt('last_sync_attempt_timestamp');
       final lastSyncSuccess = prefs.getBool('last_sync_success') ?? true;
       final lastSyncError = prefs.getString('last_sync_error');
-      final useParallelSync = prefs.getBool('use_parallel_sync') ?? true;
+      final useParallelSync = prefs.getBool('use_parallel_sync') ?? false; // Changed default to false
       final pockardFolderPath = prefs.getString('pockard_folder_path') ?? '/pockard';
       final globalFolderPath = prefs.getString('global_folder_path') ?? '/pockard_global';
 

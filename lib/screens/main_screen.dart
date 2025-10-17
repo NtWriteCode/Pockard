@@ -130,7 +130,11 @@ class _MainScreenState extends State<MainScreen> {
                 const SizedBox(height: 12),
                 Text(l10n.syncStatusError, style: const TextStyle(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 4),
-                Text(settings.lastSyncError!, style: const TextStyle(fontSize: 12, color: Colors.red)),
+                SelectableText(
+                  settings.lastSyncError!,
+                  style: const TextStyle(fontSize: 12, color: Colors.red),
+                  textAlign: TextAlign.justify,
+                ),
               ],
             ],
           ],

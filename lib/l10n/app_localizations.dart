@@ -1205,8 +1205,26 @@ abstract class AppLocalizations {
   /// No description provided for @parallelSyncDescription.
   ///
   /// In en, this message translates to:
-  /// **'Upload cards simultaneously (faster, but may overwhelm some servers)'**
+  /// **'Upload multiple cards at once for faster syncing.'**
   String get parallelSyncDescription;
+
+  /// No description provided for @parallelSyncWarningTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Potential Issue with Parallel Sync'**
+  String get parallelSyncWarningTitle;
+
+  /// No description provided for @parallelSyncWarningContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Some WebDAV servers do not support parallel uploads, which can cause \'Locked\' errors during synchronization. If you experience issues, disabling this option and using sequential sync is recommended.'**
+  String get parallelSyncWarningContent;
+
+  /// No description provided for @ok.
+  ///
+  /// In en, this message translates to:
+  /// **'OK'**
+  String get ok;
 
   /// No description provided for @password.
   ///

@@ -616,7 +616,17 @@ class AppLocalizationsHu extends AppLocalizations {
   String get parallelSync => 'Párhuzamos Szinkronizálás';
 
   @override
-  String get parallelSyncDescription => 'Kártyák egyidejű feltöltése (gyorsabb, de túlterhelheti egyes szervereket)';
+  String get parallelSyncDescription => 'Több kártya feltöltése egyszerre a gyorsabb szinkronizálás érdekében.';
+
+  @override
+  String get parallelSyncWarningTitle => 'Lehetséges probléma a párhuzamos szinkronizálással';
+
+  @override
+  String get parallelSyncWarningContent =>
+      'Néhány WebDAV szerver nem támogatja a párhuzamos feltöltéseket, ami \'Zárolt\' hibákat okozhat a szinkronizálás során. Ha problémákat tapasztal, javasolt letiltani ezt az opciót és szekvenciális szinkronizálást használni.';
+
+  @override
+  String get ok => 'OK';
 
   @override
   String get password => 'Jelszó';

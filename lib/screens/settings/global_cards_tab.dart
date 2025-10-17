@@ -195,9 +195,17 @@ class _GlobalCardsTabState extends State<GlobalCardsTab> {
                 final l10n = AppLocalizations.of(context)!;
                 return Column(
                   children: [
-                    Text(l10n.noGlobalCards, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                    Text(
+                      l10n.noGlobalCards,
+                      style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                      textAlign: TextAlign.center,
+                    ),
                     const SizedBox(height: 8),
-                    Text(l10n.noCardsSharedYet, style: const TextStyle(color: Colors.grey)),
+                    Text(
+                      l10n.noCardsSharedYet,
+                      style: const TextStyle(color: Colors.grey),
+                      textAlign: TextAlign.center,
+                    ),
                   ],
                 );
               },
