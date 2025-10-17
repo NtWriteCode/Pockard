@@ -319,11 +319,28 @@ class SyncSettingsService {
       final useParallel = settings?.useParallelSync ?? true;
 
       if (useParallel) {
-        // Parallel upload (faster)
-        await Future.wait(
-          cards.map((card) => _uploadCard(card, pockardPath)),
-          eagerError: false, // Continue even if some uploads fail
-        );
+        // Parallel upload (faster) - but collect and report any failures
+        final uploadFutures = cards.map((card) => _uploadCard(card, pockardPath)).toList();
+
+        // Use a different approach to handle errors in parallel uploads
+        final List<Object?> results = [];
+        final List<String> failedCards = [];
+
+        // Wait for all futures to complete and collect results/errors
+        for (int i = 0; i < uploadFutures.length; i++) {
+          try {
+            await uploadFutures[i];
+            results.add(null); // Success
+          } catch (e) {
+            results.add(e);
+            failedCards.add('${cards[i].name} (${cards[i].uuid}): $e');
+          }
+        }
+
+        if (failedCards.isNotEmpty) {
+          throw Exception('Failed to upload ${failedCards.length} card(s):\n${failedCards.join('\n')}');
+        }
+
         debugPrint('Cards exported successfully (parallel mode)');
       } else {
         // Sequential upload (more conservative)
@@ -382,7 +399,8 @@ class SyncSettingsService {
       }
     } catch (e) {
       debugPrint('Error exporting card ${card.uuid}: $e');
-      // Don't rethrow - let other cards continue uploading
+      // Rethrow the error so it can be properly handled by the caller
+      rethrow;
     }
   }
 

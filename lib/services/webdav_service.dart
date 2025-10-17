@@ -27,7 +27,31 @@ class WebDavService {
 
       // Try to ping the server
       await _client!.ping();
-      return true;
+
+      // Test write permissions by attempting to create a test file
+      try {
+        final testData = Uint8List.fromList('test'.codeUnits);
+        final testPath = '/pockard/.write_test_${DateTime.now().millisecondsSinceEpoch}';
+        await _client!.write(testPath, testData);
+
+        // Clean up test file
+        try {
+          await _client!.remove(testPath);
+        } catch (cleanupError) {
+          debugPrint('Warning: Could not clean up test file: $cleanupError');
+        }
+
+        debugPrint('WebDAV connection and write permissions verified');
+        return true;
+      } catch (writeError) {
+        debugPrint('WebDAV write permission test failed: $writeError');
+        // Check if it's a permission error
+        final errorString = writeError.toString().toLowerCase();
+        if (errorString.contains('403') || errorString.contains('forbidden')) {
+          debugPrint('Write permission denied - user may have read-only access');
+        }
+        return false;
+      }
     } catch (e) {
       debugPrint('WebDAV connection test failed: $e');
       return false;
@@ -110,6 +134,17 @@ class WebDavService {
       debugPrint('Uploaded file: $remotePath');
     } catch (e) {
       debugPrint('Error uploading file $remotePath: $e');
+      // Check for specific permission errors
+      final errorString = e.toString().toLowerCase();
+      if (errorString.contains('403') || errorString.contains('forbidden')) {
+        throw Exception('Write permission denied: Server returned 403 Forbidden. Please check your WebDAV permissions.');
+      } else if (errorString.contains('401') || errorString.contains('unauthorized')) {
+        throw Exception('Authentication failed: Server returned 401 Unauthorized. Please check your credentials.');
+      } else if (errorString.contains('404') || errorString.contains('not found')) {
+        throw Exception('Directory not found: Server returned 404. Please check if the WebDAV path exists.');
+      } else if (errorString.contains('500') || errorString.contains('internal server error')) {
+        throw Exception('Server error: Server returned 500 Internal Server Error. Please try again later.');
+      }
       rethrow;
     }
   }
@@ -125,6 +160,17 @@ class WebDavService {
       debugPrint('Uploaded bytes to: $remotePath');
     } catch (e) {
       debugPrint('Error uploading bytes to $remotePath: $e');
+      // Check for specific permission errors
+      final errorString = e.toString().toLowerCase();
+      if (errorString.contains('403') || errorString.contains('forbidden')) {
+        throw Exception('Write permission denied: Server returned 403 Forbidden. Please check your WebDAV permissions.');
+      } else if (errorString.contains('401') || errorString.contains('unauthorized')) {
+        throw Exception('Authentication failed: Server returned 401 Unauthorized. Please check your credentials.');
+      } else if (errorString.contains('404') || errorString.contains('not found')) {
+        throw Exception('Directory not found: Server returned 404. Please check if the WebDAV path exists.');
+      } else if (errorString.contains('500') || errorString.contains('internal server error')) {
+        throw Exception('Server error: Server returned 500 Internal Server Error. Please try again later.');
+      }
       rethrow;
     }
   }
