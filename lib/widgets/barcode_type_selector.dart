@@ -32,7 +32,11 @@ class BarcodeTypeSelector extends StatelessWidget {
                   border: Border.all(color: isSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.outline, width: 1),
                 ),
                 child: Text(
-                  type['value'] == 'IMAGE_ONLY' ? l10n.imageOnlyLabel : type['label']!,
+                  type['value'] == 'IMAGE_ONLY'
+                      ? l10n.imageOnlyLabel
+                      : type['value'] == 'TEXT'
+                      ? l10n.textOnlyLabel
+                      : type['label']!,
                   style: TextStyle(
                     color: isSelected ? Theme.of(context).colorScheme.onPrimary : Theme.of(context).colorScheme.onSurface,
                     fontSize: 12,

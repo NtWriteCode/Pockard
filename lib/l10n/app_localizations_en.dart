@@ -448,6 +448,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get imageOnlyLabel => 'Image Only';
 
   @override
+  String get textOnlyLabel => 'Text Only';
+
+  @override
   String get images => 'Images';
 
   @override

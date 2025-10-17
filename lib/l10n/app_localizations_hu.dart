@@ -448,6 +448,9 @@ class AppLocalizationsHu extends AppLocalizations {
   String get imageOnlyLabel => 'Csak kép';
 
   @override
+  String get textOnlyLabel => 'Csak szöveg';
+
+  @override
   String get images => 'Képek';
 
   @override

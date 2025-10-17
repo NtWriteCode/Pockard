@@ -878,6 +878,12 @@ abstract class AppLocalizations {
   /// **'Image Only'**
   String get imageOnlyLabel;
 
+  /// No description provided for @textOnlyLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Text Only'**
+  String get textOnlyLabel;
+
   /// No description provided for @images.
   ///
   /// In en, this message translates to:
