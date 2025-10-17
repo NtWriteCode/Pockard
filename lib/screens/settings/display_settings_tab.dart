@@ -4,6 +4,7 @@ import '../../l10n/app_localizations.dart';
 import '../../providers/display_provider.dart';
 import '../../providers/language_provider.dart';
 import '../../providers/card_provider.dart';
+import '../../constants/app_colors.dart';
 
 class DisplaySettingsTab extends StatelessWidget {
   const DisplaySettingsTab({super.key});
@@ -16,6 +17,8 @@ class DisplaySettingsTab extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildThemeSection(context),
+          const SizedBox(height: 24),
+          _buildFlavorSection(context),
           const SizedBox(height: 24),
           _buildLanguageSection(context),
           const SizedBox(height: 24),
@@ -70,6 +73,82 @@ class DisplaySettingsTab extends StatelessWidget {
         );
       },
     );
+  }
+
+  Widget _buildFlavorSection(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
+    return Consumer<DisplayProvider>(
+      builder: (context, displayProvider, child) {
+        if (displayProvider.currentTheme == AppTheme.materialYou) {
+          return const SizedBox.shrink();
+        }
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              l10n.themeFlavor,
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface),
+            ),
+            const SizedBox(height: 8),
+            Text(l10n.themeFlavorDescription, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7))),
+            const SizedBox(height: 16),
+            Card(
+              clipBehavior: Clip.antiAlias,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: AppFlavor.values.map((flavor) {
+                      final isSelected = displayProvider.currentFlavor == flavor;
+                      final color = _getFlavorColor(flavor);
+
+                      return GestureDetector(
+                        onTap: () => displayProvider.setFlavor(flavor),
+                        child: Tooltip(
+                          message: _getLocalizedFlavorName(context, flavor),
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 8.0),
+                            width: 48,
+                            height: 48,
+                            decoration: BoxDecoration(
+                              color: color,
+                              shape: BoxShape.circle,
+                              border: Border.all(color: isSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).dividerColor, width: isSelected ? 3 : 1),
+                              boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 4, offset: const Offset(0, 2))],
+                            ),
+                            child: isSelected ? const Icon(Icons.check, color: Colors.white) : null,
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Color _getFlavorColor(AppFlavor flavor) {
+    switch (flavor) {
+      case AppFlavor.pockard:
+        return AppColors.pockardFlavor;
+      case AppFlavor.blue:
+        return AppColors.blueFlavor;
+      case AppFlavor.green:
+        return AppColors.greenFlavor;
+      case AppFlavor.purple:
+        return AppColors.purpleFlavor;
+      case AppFlavor.orange:
+        return AppColors.orangeFlavor;
+      case AppFlavor.teal:
+        return AppColors.tealFlavor;
+    }
   }
 
   Widget _buildLanguageSection(BuildContext context) {
@@ -263,6 +342,24 @@ class DisplaySettingsTab extends StatelessWidget {
         return l10n.themeAmoledDesc;
       case AppTheme.materialYou:
         return l10n.themeMaterialYouDesc;
+    }
+  }
+
+  String _getLocalizedFlavorName(BuildContext context, AppFlavor flavor) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (flavor) {
+      case AppFlavor.pockard:
+        return l10n.flavorPockard;
+      case AppFlavor.blue:
+        return l10n.flavorBlue;
+      case AppFlavor.green:
+        return l10n.flavorGreen;
+      case AppFlavor.purple:
+        return l10n.flavorPurple;
+      case AppFlavor.orange:
+        return l10n.flavorOrange;
+      case AppFlavor.teal:
+        return l10n.flavorTeal;
     }
   }
 

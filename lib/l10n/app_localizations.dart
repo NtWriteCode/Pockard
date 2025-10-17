@@ -875,13 +875,13 @@ abstract class AppLocalizations {
   /// No description provided for @imageOnlyLabel.
   ///
   /// In en, this message translates to:
-  /// **'Image Only'**
+  /// **'Image'**
   String get imageOnlyLabel;
 
   /// No description provided for @textOnlyLabel.
   ///
   /// In en, this message translates to:
-  /// **'Text Only'**
+  /// **'Text'**
   String get textOnlyLabel;
 
   /// No description provided for @images.
@@ -1307,7 +1307,7 @@ abstract class AppLocalizations {
   /// No description provided for @scanBarcode.
   ///
   /// In en, this message translates to:
-  /// **'Scan Barcode/QR Code'**
+  /// **'Scan Code'**
   String get scanBarcode;
 
   /// No description provided for @scanFromImage.
@@ -1321,12 +1321,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Search'**
   String get search;
-
-  /// No description provided for @searchCards.
-  ///
-  /// In en, this message translates to:
-  /// **'Search cards...'**
-  String get searchCards;
 
   /// No description provided for @searchForLogos.
   ///
@@ -1741,6 +1735,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Material You theme with dynamic colors'**
   String get themeMaterialYouDesc;
+
+  /// No description provided for @themeFlavor.
+  ///
+  /// In en, this message translates to:
+  /// **'Theme Flavor'**
+  String get themeFlavor;
+
+  /// No description provided for @themeFlavorDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a color accent for the selected theme (not applicable for Material You).'**
+  String get themeFlavorDescription;
+
+  /// No description provided for @flavorPockard.
+  ///
+  /// In en, this message translates to:
+  /// **'Pockard (Default)'**
+  String get flavorPockard;
+
+  /// No description provided for @flavorBlue.
+  ///
+  /// In en, this message translates to:
+  /// **'Blue'**
+  String get flavorBlue;
+
+  /// No description provided for @flavorGreen.
+  ///
+  /// In en, this message translates to:
+  /// **'Green'**
+  String get flavorGreen;
+
+  /// No description provided for @flavorPurple.
+  ///
+  /// In en, this message translates to:
+  /// **'Purple'**
+  String get flavorPurple;
+
+  /// No description provided for @flavorOrange.
+  ///
+  /// In en, this message translates to:
+  /// **'Orange'**
+  String get flavorOrange;
+
+  /// No description provided for @flavorTeal.
+  ///
+  /// In en, this message translates to:
+  /// **'Teal'**
+  String get flavorTeal;
 
   /// No description provided for @timesUsed.
   ///

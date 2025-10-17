@@ -288,9 +288,9 @@ class _LogoSearchScreenState extends State<LogoSearchScreen> {
                 final l10n = AppLocalizations.of(context)!;
                 return Column(
                   children: [
-                    Text(l10n.searchForLogos, style: const TextStyle(fontSize: 18, color: Colors.grey)),
+                    Text(l10n.searchForLogos, style: TextStyle(fontSize: 18, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6))),
                     const SizedBox(height: 8),
-                    Text(l10n.enterShopName, style: const TextStyle(color: Colors.grey)),
+                    Text(l10n.enterShopName, style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6))),
                   ],
                 );
               },

@@ -445,10 +445,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get imageNameHint => 'Image name';
 
   @override
-  String get imageOnlyLabel => 'Image Only';
+  String get imageOnlyLabel => 'Image';
 
   @override
-  String get textOnlyLabel => 'Text Only';
+  String get textOnlyLabel => 'Text';
 
   @override
   String get images => 'Images';
@@ -669,16 +669,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get saveCard => 'Save Card';
 
   @override
-  String get scanBarcode => 'Scan Barcode/QR Code';
+  String get scanBarcode => 'Scan Code';
 
   @override
   String get scanFromImage => 'Scan from Image';
 
   @override
   String get search => 'Search';
-
-  @override
-  String get searchCards => 'Search cards...';
 
   @override
   String get searchForLogos => 'Search for logos';
@@ -892,6 +889,30 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get themeMaterialYouDesc => 'Material You theme with dynamic colors';
+
+  @override
+  String get themeFlavor => 'Theme Flavor';
+
+  @override
+  String get themeFlavorDescription => 'Choose a color accent for the selected theme (not applicable for Material You).';
+
+  @override
+  String get flavorPockard => 'Pockard (Default)';
+
+  @override
+  String get flavorBlue => 'Blue';
+
+  @override
+  String get flavorGreen => 'Green';
+
+  @override
+  String get flavorPurple => 'Purple';
+
+  @override
+  String get flavorOrange => 'Orange';
+
+  @override
+  String get flavorTeal => 'Teal';
 
   @override
   String get timesUsed => 'Times used';

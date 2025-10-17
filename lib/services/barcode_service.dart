@@ -167,12 +167,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _scanFromGallery,
-        icon: const Icon(Icons.photo_library),
-        label: Text(l10n.scanFromImage),
-        backgroundColor: Theme.of(context).colorScheme.primary,
-      ),
+      floatingActionButton: FloatingActionButton.extended(onPressed: _scanFromGallery, icon: const Icon(Icons.photo_library), label: Text(l10n.scanFromImage)),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: Stack(
         children: [

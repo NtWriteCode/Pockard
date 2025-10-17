@@ -445,10 +445,10 @@ class AppLocalizationsHu extends AppLocalizations {
   String get imageNameHint => 'Kép neve';
 
   @override
-  String get imageOnlyLabel => 'Csak kép';
+  String get imageOnlyLabel => 'Kép';
 
   @override
-  String get textOnlyLabel => 'Csak szöveg';
+  String get textOnlyLabel => 'Szöveg';
 
   @override
   String get images => 'Képek';
@@ -669,16 +669,13 @@ class AppLocalizationsHu extends AppLocalizations {
   String get saveCard => 'Kártya Mentése';
 
   @override
-  String get scanBarcode => 'Vonalkód/QR kód beolvasása';
+  String get scanBarcode => 'Kód beolvasása';
 
   @override
   String get scanFromImage => 'Képről beolvasás';
 
   @override
   String get search => 'Keresés';
-
-  @override
-  String get searchCards => 'Kártyák keresése...';
 
   @override
   String get searchForLogos => 'Logók keresése';
@@ -892,6 +889,30 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get themeMaterialYouDesc => 'Material You téma dinamikus színekkel';
+
+  @override
+  String get themeFlavor => 'Színvilág';
+
+  @override
+  String get themeFlavorDescription => 'Válasszon egy alapszínt a témához (nem alkalmazható a Material You esetén).';
+
+  @override
+  String get flavorPockard => 'Pockard (Alapértelmezett)';
+
+  @override
+  String get flavorBlue => 'Kék';
+
+  @override
+  String get flavorGreen => 'Zöld';
+
+  @override
+  String get flavorPurple => 'Lila';
+
+  @override
+  String get flavorOrange => 'Narancs';
+
+  @override
+  String get flavorTeal => 'Zöldeskék';
 
   @override
   String get timesUsed => 'Használatok száma';

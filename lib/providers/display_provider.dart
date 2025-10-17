@@ -7,6 +7,8 @@ enum AppTheme { light, dark, amoled, materialYou }
 
 enum LayoutMode { rows, grid, minimal }
 
+enum AppFlavor { pockard, blue, green, purple, orange, teal }
+
 class DisplayProvider extends ChangeNotifier {
   static const String _themeKey = 'app_theme';
   static const String _layoutKey = 'layout_mode';
@@ -14,6 +16,7 @@ class DisplayProvider extends ChangeNotifier {
   static const String _autoCameraKey = 'auto_open_camera';
   static const String _showGridNamesKey = 'show_grid_names';
   static const String _maxBrightnessKey = 'max_brightness_enabled';
+  static const String _flavorKey = 'app_flavor';
 
   AppTheme _currentTheme = AppTheme.light;
   LayoutMode _layoutMode = LayoutMode.rows;
@@ -22,6 +25,7 @@ class DisplayProvider extends ChangeNotifier {
   bool _showGridNames = true; // Show card names in grid view
   bool _maxBrightnessEnabled = true; // Enable max brightness on barcode view
   ThemeData? _cachedMaterialYouTheme; // Cached Material You theme with system colors
+  AppFlavor _currentFlavor = AppFlavor.pockard;
 
   AppTheme get currentTheme => _currentTheme;
   LayoutMode get layoutMode => _layoutMode;
@@ -29,6 +33,7 @@ class DisplayProvider extends ChangeNotifier {
   bool get autoOpenCamera => _autoOpenCamera;
   bool get showGridNames => _showGridNames;
   bool get maxBrightnessEnabled => _maxBrightnessEnabled;
+  AppFlavor get currentFlavor => _currentFlavor;
 
   /// Get the current theme data
   ThemeData get themeData {
@@ -47,7 +52,7 @@ class DisplayProvider extends ChangeNotifier {
 
   /// Light theme
   ThemeData get _lightTheme {
-    final colorScheme = ColorScheme.fromSeed(seedColor: AppColors.primarySeed, brightness: Brightness.light);
+    final colorScheme = ColorScheme.fromSeed(seedColor: _flavorSeedColor, brightness: Brightness.light);
 
     return ThemeData(
       colorScheme: colorScheme,
@@ -76,7 +81,7 @@ class DisplayProvider extends ChangeNotifier {
 
   /// Dark theme
   ThemeData get _darkTheme {
-    final colorScheme = ColorScheme.fromSeed(seedColor: AppColors.primarySeed, brightness: Brightness.dark);
+    final colorScheme = ColorScheme.fromSeed(seedColor: _flavorSeedColor, brightness: Brightness.dark);
 
     return ThemeData(
       colorScheme: colorScheme,
@@ -105,7 +110,7 @@ class DisplayProvider extends ChangeNotifier {
 
   /// Pure black (AMOLED) theme
   ThemeData get _amoledTheme {
-    final colorScheme = ColorScheme.fromSeed(seedColor: AppColors.primarySeed, brightness: Brightness.dark).copyWith(
+    final colorScheme = ColorScheme.fromSeed(seedColor: _flavorSeedColor, brightness: Brightness.dark).copyWith(
       // Override specific colors for AMOLED (pure black)
       surface: AppColors.black,
       onSurface: AppColors.white,
@@ -226,6 +231,10 @@ class DisplayProvider extends ChangeNotifier {
     // Load max brightness setting
     _maxBrightnessEnabled = prefs.getBool(_maxBrightnessKey) ?? true;
 
+    // Load flavor
+    final flavorIndex = prefs.getInt(_flavorKey) ?? 0;
+    _currentFlavor = AppFlavor.values[flavorIndex];
+
     // Pre-build Material You theme if it's the selected theme
     if (_currentTheme == AppTheme.materialYou) {
       _cachedMaterialYouTheme = await _buildMaterialYouTheme();
@@ -288,6 +297,14 @@ class DisplayProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Set flavor
+  Future<void> setFlavor(AppFlavor flavor) async {
+    _currentFlavor = flavor;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_flavorKey, flavor.index);
+    notifyListeners();
+  }
+
   /// Get theme name key for localization lookup
   /// Returns the key to use with AppLocalizations
   String getThemeNameKey(AppTheme theme) {
@@ -316,6 +333,24 @@ class DisplayProvider extends ChangeNotifier {
     }
   }
 
+  /// Get the seed color for the current flavor
+  Color get _flavorSeedColor {
+    switch (_currentFlavor) {
+      case AppFlavor.pockard:
+        return AppColors.pockardFlavor;
+      case AppFlavor.blue:
+        return AppColors.blueFlavor;
+      case AppFlavor.green:
+        return AppColors.greenFlavor;
+      case AppFlavor.purple:
+        return AppColors.purpleFlavor;
+      case AppFlavor.orange:
+        return AppColors.orangeFlavor;
+      case AppFlavor.teal:
+        return AppColors.tealFlavor;
+    }
+  }
+
   /// Export display settings to a map for syncing
   Map<String, dynamic> exportSettings() {
     return {
@@ -325,6 +360,7 @@ class DisplayProvider extends ChangeNotifier {
       'auto_open_camera': _autoOpenCamera,
       'show_grid_names': _showGridNames,
       'max_brightness_enabled': _maxBrightnessEnabled,
+      'flavor': _currentFlavor.index,
     };
   }
 
@@ -337,6 +373,7 @@ class DisplayProvider extends ChangeNotifier {
       _autoOpenCamera = settings['auto_open_camera'] ?? true;
       _showGridNames = settings['show_grid_names'] ?? true;
       _maxBrightnessEnabled = settings['max_brightness_enabled'] ?? true;
+      _currentFlavor = AppFlavor.values[settings['flavor'] ?? 0];
 
       // Pre-build Material You theme if selected
       if (_currentTheme == AppTheme.materialYou) {
@@ -351,6 +388,7 @@ class DisplayProvider extends ChangeNotifier {
       await prefs.setBool(_autoCameraKey, _autoOpenCamera);
       await prefs.setBool(_showGridNamesKey, _showGridNames);
       await prefs.setBool(_maxBrightnessKey, _maxBrightnessEnabled);
+      await prefs.setInt(_flavorKey, _currentFlavor.index); // Save flavor setting
 
       notifyListeners();
     } catch (e) {

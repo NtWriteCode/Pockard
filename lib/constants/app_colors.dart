@@ -70,6 +70,26 @@ class AppColors {
   /// Transparent
   static const Color transparent = Colors.transparent;
 
+  // ========== FLAVOR COLORS ==========
+
+  /// Pockard flavor seed color (default red)
+  static const Color pockardFlavor = Color(0xFFDE3932);
+
+  /// Blue flavor seed color
+  static const Color blueFlavor = Color(0xFF2196F3);
+
+  /// Green flavor seed color
+  static const Color greenFlavor = Color(0xFF4CAF50);
+
+  /// Purple flavor seed color
+  static const Color purpleFlavor = Color(0xFF9C27B0);
+
+  /// Orange flavor seed color
+  static const Color orangeFlavor = Color(0xFFFF9800);
+
+  /// Teal flavor seed color
+  static const Color tealFlavor = Color(0xFF009688);
+
   // ========== UTILITY METHODS ==========
 
   /// Get contrast color (white or black) for a given background color

@@ -229,11 +229,11 @@ class _MainScreenState extends State<MainScreen> {
                 controller: _searchController,
                 autofocus: true,
                 decoration: InputDecoration(
-                  hintText: l10n.searchCards,
+                  hintText: l10n.search,
                   border: InputBorder.none,
-                  hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6)),
+                  hintStyle: TextStyle(color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.6)),
                 ),
-                style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+                style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
                 onChanged: (query) {
                   Provider.of<CardProvider>(context, listen: false).setSearchQuery(query);
                 },
