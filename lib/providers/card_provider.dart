@@ -206,8 +206,14 @@ class CardProvider with ChangeNotifier {
       await _databaseService.incrementCardUsage(uuid);
       final index = _cards.indexWhere((c) => c.uuid == uuid);
       if (index != -1) {
-        _cards[index] = _cards[index].copyWith(usageCount: _cards[index].usageCount + 1, updateDate: DateTime.now());
+        final newUsageCount = _cards[index].usageCount + 1;
+        _cards[index] = _cards[index].copyWith(usageCount: newUsageCount, updateDate: DateTime.now());
         notifyListeners();
+
+        // Auto-sync every 5 usages to save on network requests
+        if (newUsageCount % 5 == 0) {
+          _autoSync();
+        }
       }
     } catch (e) {
       debugPrint('Error incrementing card usage: $e');
