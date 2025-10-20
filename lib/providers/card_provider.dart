@@ -386,7 +386,7 @@ class CardProvider with ChangeNotifier {
         }
       }
 
-      // Export active cards
+      // Export active cards using manifest-based approach
       if (activeCards.isNotEmpty) {
         await _syncService.exportCards(activeCards);
       }

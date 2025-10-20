@@ -5,7 +5,9 @@ import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/card_model.dart';
 import '../models/sync_settings_model.dart';
+import '../models/sync_manifest_model.dart';
 import 'webdav_service.dart';
+import 'database_service.dart';
 
 /// Service responsible for sync settings and card synchronization via WebDAV
 class SyncSettingsService {
@@ -29,7 +31,7 @@ class SyncSettingsService {
       final lastSyncAttemptTimestamp = prefs.getInt('last_sync_attempt_timestamp');
       final lastSyncSuccess = prefs.getBool('last_sync_success') ?? true;
       final lastSyncError = prefs.getString('last_sync_error');
-      final useParallelSync = prefs.getBool('use_parallel_sync') ?? false; // Changed default to false
+      final useParallelSync = prefs.getBool('use_parallel_sync') ?? false;
       final pockardFolderPath = prefs.getString('pockard_folder_path') ?? '/pockard';
       final globalFolderPath = prefs.getString('global_folder_path') ?? '/pockard_global';
 
@@ -117,8 +119,8 @@ class SyncSettingsService {
     }
   }
 
-  /// Import cards from WebDAV server
-  Future<List<CardModel>> importCards() async {
+  /// Import cards from WebDAV server (legacy method - use importCardsWithManifest instead)
+  Future<List<CardModel>> _importCardsLegacy() async {
     if (!_webdavService.isInitialized) {
       throw Exception('WebDAV client not initialized');
     }
@@ -302,8 +304,8 @@ class SyncSettingsService {
     }
   }
 
-  /// Export cards to WebDAV server
-  Future<void> exportCards(List<CardModel> cards) async {
+  /// Export cards to WebDAV server (legacy method - use exportCardsWithManifest instead)
+  Future<void> _exportCardsLegacy(List<CardModel> cards) async {
     if (!_webdavService.isInitialized) {
       throw Exception('WebDAV client not initialized');
     }
@@ -319,21 +321,29 @@ class SyncSettingsService {
       final useParallel = settings?.useParallelSync ?? true;
 
       if (useParallel) {
-        // Parallel upload (faster) - but collect and report any failures
-        final uploadFutures = cards.map((card) => _uploadCard(card, pockardPath)).toList();
+        // Parallel upload with rate limiting to prevent overwhelming the server
+        const maxConcurrent = 3; // Limit concurrent uploads
+        const delayBetweenBatches = Duration(milliseconds: 200); // Small delay between batches
 
-        // Use a different approach to handle errors in parallel uploads
-        final List<Object?> results = [];
         final List<String> failedCards = [];
 
-        // Wait for all futures to complete and collect results/errors
-        for (int i = 0; i < uploadFutures.length; i++) {
-          try {
-            await uploadFutures[i];
-            results.add(null); // Success
-          } catch (e) {
-            results.add(e);
-            failedCards.add('${cards[i].name} (${cards[i].uuid}): $e');
+        // Process cards in batches to avoid overwhelming the server
+        for (int i = 0; i < cards.length; i += maxConcurrent) {
+          final batch = cards.skip(i).take(maxConcurrent).toList();
+          final uploadFutures = batch.map((card) => _uploadCard(card, pockardPath)).toList();
+
+          // Wait for all futures in this batch to complete
+          for (int j = 0; j < uploadFutures.length; j++) {
+            try {
+              await uploadFutures[j];
+            } catch (e) {
+              failedCards.add('${batch[j].name} (${batch[j].uuid}): $e');
+            }
+          }
+
+          // Add small delay between batches to reduce server load
+          if (i + maxConcurrent < cards.length) {
+            await Future.delayed(delayBetweenBatches);
           }
         }
 
@@ -341,7 +351,7 @@ class SyncSettingsService {
           throw Exception('Failed to upload ${failedCards.length} card(s):\n${failedCards.join('\n')}');
         }
 
-        debugPrint('Cards exported successfully (parallel mode)');
+        debugPrint('Cards exported successfully (parallel mode with rate limiting)');
       } else {
         // Sequential upload (more conservative)
         for (final card in cards) {
@@ -362,6 +372,79 @@ class SyncSettingsService {
     }
   }
 
+  /// Export cards to WebDAV server using a manifest file
+  Future<void> exportCardsWithManifest(List<CardModel> cards, DateTime preferencesTimestamp) async {
+    if (!_webdavService.isInitialized) {
+      throw Exception('WebDAV client not initialized');
+    }
+
+    final settings = await loadSettings();
+    final pockardPath = settings?.pockardFolderPath ?? '/pockard';
+
+    try {
+      // Ensure app directories exist
+      await _webdavService.createAppDirectories(pockardPath: pockardPath);
+
+      // 1. Try to get existing remote manifest to compare
+      SyncManifest? remoteManifest;
+      try {
+        final manifestBytes = await _webdavService.downloadFile('$pockardPath/manifest.json');
+        final manifestJson = json.decode(utf8.decode(manifestBytes));
+        remoteManifest = SyncManifest.fromJson(manifestJson);
+      } catch (e) {
+        debugPrint('No existing manifest found, will upload all cards: $e');
+      }
+
+      // 2. Determine which cards need to be uploaded
+      final cardsToUpload = <CardModel>[];
+      if (remoteManifest != null) {
+        // Compare with remote manifest to find changed cards
+        for (final card in cards) {
+          final remoteTimestamp = remoteManifest.cardTimestamps[card.uuid];
+          if (remoteTimestamp == null || card.updateDate.isAfter(remoteTimestamp)) {
+            cardsToUpload.add(card);
+          }
+        }
+      } else {
+        // No remote manifest, upload all cards
+        cardsToUpload.addAll(cards);
+      }
+
+      // 3. Upload only the changed cards
+      if (cardsToUpload.isNotEmpty) {
+        await _exportCardsLegacy(cardsToUpload);
+      }
+
+      // 4. Create and upload the new manifest
+      final manifest = SyncManifest(preferencesLastModified: preferencesTimestamp, cardTimestamps: {for (var card in cards) card.uuid: card.updateDate});
+
+      final manifestJson = json.encode(manifest.toJson());
+      final tempDir = await getTemporaryDirectory();
+      final tempManifestFile = File('${tempDir.path}/manifest.json');
+      await tempManifestFile.writeAsString(manifestJson);
+
+      // Ensure file is fully written before attempting upload
+      if (!await tempManifestFile.exists()) {
+        throw Exception('Failed to create temporary manifest file');
+      }
+
+      await _webdavService.uploadFile(tempManifestFile.path, '$pockardPath/manifest.json');
+      await tempManifestFile.delete();
+
+      debugPrint('Exported ${cardsToUpload.length} changed cards out of ${cards.length} total cards');
+
+      // Update last sync date
+      final currentSettings = await loadSettings();
+      if (currentSettings != null) {
+        final updatedSettings = currentSettings.copyWith(lastSyncDate: DateTime.now());
+        await saveSettings(updatedSettings);
+      }
+    } catch (e) {
+      debugPrint('Error exporting cards with manifest: $e');
+      rethrow;
+    }
+  }
+
   /// Upload a single card (JSON + image)
   Future<void> _uploadCard(CardModel card, String pockardPath) async {
     try {
@@ -377,6 +460,11 @@ class SyncSettingsService {
       final tempDir = await getTemporaryDirectory();
       final tempFile = File('${tempDir.path}/temp_card_${card.uuid}.json');
       await tempFile.writeAsString(cardJson);
+
+      // Ensure file is fully written before attempting upload
+      if (!await tempFile.exists()) {
+        throw Exception('Failed to create temporary file for card ${card.uuid}');
+      }
 
       final remotePath = '$pockardPath/cards/${card.uuid}.json';
       await _webdavService.uploadFile(tempFile.path, remotePath);
@@ -404,6 +492,99 @@ class SyncSettingsService {
     }
   }
 
+  /// Import cards from WebDAV server using a manifest file
+  Future<List<CardModel>> importCardsWithManifest() async {
+    if (!_webdavService.isInitialized) {
+      throw Exception('WebDAV client not initialized');
+    }
+
+    final settings = await loadSettings();
+    final pockardPath = settings?.pockardFolderPath ?? '/pockard';
+
+    try {
+      // 1. Download the manifest file
+      final manifestBytes = await _webdavService.downloadFile('$pockardPath/manifest.json');
+      final manifestJson = json.decode(utf8.decode(manifestBytes));
+      final remoteManifest = SyncManifest.fromJson(manifestJson);
+
+      // 2. Get local card data for comparison
+      final localCards = await DatabaseService().getAllCards();
+      final localCardMap = {for (var card in localCards) card.uuid: card};
+
+      final cardsToImport = <CardModel>[];
+
+      // 3. Compare remote manifest with local data
+      for (final remoteEntry in remoteManifest.cardTimestamps.entries) {
+        final remoteUuid = remoteEntry.key;
+        final remoteTimestamp = remoteEntry.value;
+        final localCard = localCardMap[remoteUuid];
+
+        // If card is new or updated on the server, download it
+        if (localCard == null || remoteTimestamp.isAfter(localCard.updateDate)) {
+          final card = await _downloadCard(remoteUuid, pockardPath);
+          if (card != null) {
+            cardsToImport.add(card);
+          }
+        }
+      }
+
+      // 4. Handle deletions: cards present locally but not in remote manifest
+      for (final localCard in localCards) {
+        if (!remoteManifest.cardTimestamps.containsKey(localCard.uuid)) {
+          await DatabaseService().deleteCard(localCard.uuid);
+        }
+      }
+
+      return cardsToImport;
+    } catch (e) {
+      // If manifest doesn't exist or is corrupted, fall back to legacy import
+      debugPrint('Manifest-based import failed, falling back to legacy import: $e');
+      return await _importCardsLegacy();
+    }
+  }
+
+  Future<CardModel?> _downloadCard(String uuid, String pockardPath) async {
+    try {
+      final remotePath = '$pockardPath/cards/$uuid.json';
+      final bytes = await _webdavService.downloadFile(remotePath);
+      final jsonString = utf8.decode(bytes);
+      final cardData = json.decode(jsonString);
+      var card = CardModel.fromMap(cardData);
+
+      // Image import logic (simplified from original importCards)
+      if (card.coverImagePath == 'HAS_IMAGE') {
+        final imageRemotePath = '$pockardPath/images/${card.uuid}_cover.jpg';
+        final appDir = await getApplicationDocumentsDirectory();
+        final imagesDir = Directory('${appDir.path}/images');
+        if (!await imagesDir.exists()) {
+          await imagesDir.create(recursive: true);
+        }
+        final localImagePath = '${imagesDir.path}/${card.uuid}_cover.jpg';
+        final imageBytes = await _webdavService.downloadFile(imageRemotePath);
+        await File(localImagePath).writeAsBytes(imageBytes);
+        card = card.copyWith(coverImagePath: localImagePath);
+      }
+
+      if (card.barcodeImagePath == 'HAS_BARCODE_IMAGE') {
+        final barcodeImageRemotePath = '$pockardPath/images/${card.uuid}_barcode.jpg';
+        final appDir = await getApplicationDocumentsDirectory();
+        final imagesDir = Directory('${appDir.path}/images');
+        if (!await imagesDir.exists()) {
+          await imagesDir.create(recursive: true);
+        }
+        final localBarcodeImagePath = '${imagesDir.path}/${card.uuid}_barcode.jpg';
+        final barcodeImageBytes = await _webdavService.downloadFile(barcodeImageRemotePath);
+        await File(localBarcodeImagePath).writeAsBytes(barcodeImageBytes);
+        card = card.copyWith(barcodeImagePath: localBarcodeImagePath);
+      }
+
+      return card;
+    } catch (e) {
+      debugPrint('Error downloading card $uuid: $e');
+      return null;
+    }
+  }
+
   /// Initialize WebDAV client with stored settings
   Future<bool> initializeFromSettings() async {
     final settings = await loadSettings();
@@ -417,5 +598,17 @@ class SyncSettingsService {
   /// Disconnect WebDAV client
   void disconnect() {
     _webdavService.disconnect();
+  }
+
+  /// Import cards from WebDAV server (public method - uses manifest-based approach)
+  Future<List<CardModel>> importCards() async {
+    return await importCardsWithManifest();
+  }
+
+  /// Export cards to WebDAV server (public method - uses manifest-based approach)
+  Future<void> exportCards(List<CardModel> cards) async {
+    // Use current time as preferences timestamp since we don't have access to actual preferences modification time here
+    // The UI should call exportCardsWithManifest directly with the proper timestamp
+    await exportCardsWithManifest(cards, DateTime.now());
   }
 }

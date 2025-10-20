@@ -560,9 +560,13 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
         }
       }
 
-      // Export active cards
+      // Export active cards with proper preferences timestamp
       if (cards.isNotEmpty) {
-        await _syncService.exportCards(cards);
+        // Use current time as preferences timestamp since we don't track individual preference changes
+        // In a more sophisticated system, you'd track when each preference was last modified
+        final preferencesTimestamp = DateTime.now();
+
+        await _syncService.exportCardsWithManifest(cards, preferencesTimestamp);
       }
 
       // Update sync status (success)
@@ -627,7 +631,7 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
       // Initialize WebDAV client if needed
       await _syncService.initializeFromSettings();
 
-      final importedCards = await _syncService.importCards();
+      final importedCards = await _syncService.importCardsWithManifest();
 
       if (importedCards.isEmpty) {
         if (mounted) {

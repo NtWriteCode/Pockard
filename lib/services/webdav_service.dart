@@ -9,6 +9,7 @@ class WebDavService {
   WebDavService._internal();
 
   Client? _client;
+  DateTime? _lastRequestTime;
 
   /// Initialize WebDAV client with credentials
   void initialize(String serverUrl, String username, String password) {
@@ -18,6 +19,20 @@ class WebDavService {
     }
 
     _client = newClient(serverUrl, user: username, password: password, debug: false);
+  }
+
+  /// Add rate limiting between requests to prevent overwhelming the server
+  Future<void> _rateLimit() async {
+    if (_lastRequestTime != null) {
+      final timeSinceLastRequest = DateTime.now().difference(_lastRequestTime!);
+      const minDelay = Duration(milliseconds: 100); // Minimum 100ms between requests
+
+      if (timeSinceLastRequest < minDelay) {
+        final delayNeeded = minDelay - timeSinceLastRequest;
+        await Future.delayed(delayNeeded);
+      }
+    }
+    _lastRequestTime = DateTime.now();
   }
 
   /// Test connection to WebDAV server
@@ -117,61 +132,109 @@ class WebDavService {
     }
   }
 
-  /// Upload a file to WebDAV server
+  /// Upload a file to WebDAV server with retry logic
   Future<void> uploadFile(String localPath, String remotePath) async {
-    try {
-      if (_client == null) {
-        throw Exception('WebDAV client not initialized');
-      }
+    const maxRetries = 3;
+    const baseDelay = Duration(milliseconds: 500);
 
-      final file = io.File(localPath);
-      if (!await file.exists()) {
-        throw Exception('Local file does not exist: $localPath');
-      }
+    for (int attempt = 0; attempt < maxRetries; attempt++) {
+      try {
+        if (_client == null) {
+          throw Exception('WebDAV client not initialized');
+        }
 
-      final bytes = await file.readAsBytes();
-      await _client!.write(remotePath, bytes);
-      debugPrint('Uploaded file: $remotePath');
-    } catch (e) {
-      debugPrint('Error uploading file $remotePath: $e');
-      // Check for specific permission errors
-      final errorString = e.toString().toLowerCase();
-      if (errorString.contains('403') || errorString.contains('forbidden')) {
-        throw Exception('Write permission denied: Server returned 403 Forbidden. Please check your WebDAV permissions.');
-      } else if (errorString.contains('401') || errorString.contains('unauthorized')) {
-        throw Exception('Authentication failed: Server returned 401 Unauthorized. Please check your credentials.');
-      } else if (errorString.contains('404') || errorString.contains('not found')) {
-        throw Exception('Directory not found: Server returned 404. Please check if the WebDAV path exists.');
-      } else if (errorString.contains('500') || errorString.contains('internal server error')) {
-        throw Exception('Server error: Server returned 500 Internal Server Error. Please try again later.');
+        final file = io.File(localPath);
+        if (!await file.exists()) {
+          throw Exception('Local file does not exist: $localPath');
+        }
+
+        final bytes = await file.readAsBytes();
+        await _rateLimit(); // Add rate limiting
+        await _client!.write(remotePath, bytes);
+        debugPrint('Uploaded file: $remotePath');
+        return; // Success, exit retry loop
+      } catch (e) {
+        debugPrint('Error uploading file $remotePath (attempt ${attempt + 1}/$maxRetries): $e');
+
+        // Check for specific errors
+        final errorString = e.toString().toLowerCase();
+
+        // Handle locked responses with retry
+        if (errorString.contains('423') || errorString.contains('locked')) {
+          if (attempt < maxRetries - 1) {
+            final delay = Duration(milliseconds: baseDelay.inMilliseconds * (1 << attempt)); // Exponential backoff
+            debugPrint('File locked, retrying in ${delay.inMilliseconds}ms...');
+            await Future.delayed(delay);
+            continue;
+          } else {
+            throw Exception('File locked: Server returned 423 Locked after $maxRetries attempts. The file may be in use by another process.');
+          }
+        }
+
+        // Handle other specific errors
+        if (errorString.contains('403') || errorString.contains('forbidden')) {
+          throw Exception('Write permission denied: Server returned 403 Forbidden. Please check your WebDAV permissions.');
+        } else if (errorString.contains('401') || errorString.contains('unauthorized')) {
+          throw Exception('Authentication failed: Server returned 401 Unauthorized. Please check your credentials.');
+        } else if (errorString.contains('404') || errorString.contains('not found')) {
+          throw Exception('Directory not found: Server returned 404. Please check if the WebDAV path exists.');
+        } else if (errorString.contains('500') || errorString.contains('internal server error')) {
+          throw Exception('Server error: Server returned 500 Internal Server Error. Please try again later.');
+        }
+
+        // For other errors, don't retry
+        rethrow;
       }
-      rethrow;
     }
   }
 
-  /// Upload bytes directly to WebDAV server
+  /// Upload bytes directly to WebDAV server with retry logic
   Future<void> uploadBytes(Uint8List bytes, String remotePath) async {
-    try {
-      if (_client == null) {
-        throw Exception('WebDAV client not initialized');
-      }
+    const maxRetries = 3;
+    const baseDelay = Duration(milliseconds: 500);
 
-      await _client!.write(remotePath, bytes);
-      debugPrint('Uploaded bytes to: $remotePath');
-    } catch (e) {
-      debugPrint('Error uploading bytes to $remotePath: $e');
-      // Check for specific permission errors
-      final errorString = e.toString().toLowerCase();
-      if (errorString.contains('403') || errorString.contains('forbidden')) {
-        throw Exception('Write permission denied: Server returned 403 Forbidden. Please check your WebDAV permissions.');
-      } else if (errorString.contains('401') || errorString.contains('unauthorized')) {
-        throw Exception('Authentication failed: Server returned 401 Unauthorized. Please check your credentials.');
-      } else if (errorString.contains('404') || errorString.contains('not found')) {
-        throw Exception('Directory not found: Server returned 404. Please check if the WebDAV path exists.');
-      } else if (errorString.contains('500') || errorString.contains('internal server error')) {
-        throw Exception('Server error: Server returned 500 Internal Server Error. Please try again later.');
+    for (int attempt = 0; attempt < maxRetries; attempt++) {
+      try {
+        if (_client == null) {
+          throw Exception('WebDAV client not initialized');
+        }
+
+        await _rateLimit(); // Add rate limiting
+        await _client!.write(remotePath, bytes);
+        debugPrint('Uploaded bytes to: $remotePath');
+        return; // Success, exit retry loop
+      } catch (e) {
+        debugPrint('Error uploading bytes to $remotePath (attempt ${attempt + 1}/$maxRetries): $e');
+
+        // Check for specific errors
+        final errorString = e.toString().toLowerCase();
+
+        // Handle locked responses with retry
+        if (errorString.contains('423') || errorString.contains('locked')) {
+          if (attempt < maxRetries - 1) {
+            final delay = Duration(milliseconds: baseDelay.inMilliseconds * (1 << attempt)); // Exponential backoff
+            debugPrint('File locked, retrying in ${delay.inMilliseconds}ms...');
+            await Future.delayed(delay);
+            continue;
+          } else {
+            throw Exception('File locked: Server returned 423 Locked after $maxRetries attempts. The file may be in use by another process.');
+          }
+        }
+
+        // Handle other specific errors
+        if (errorString.contains('403') || errorString.contains('forbidden')) {
+          throw Exception('Write permission denied: Server returned 403 Forbidden. Please check your WebDAV permissions.');
+        } else if (errorString.contains('401') || errorString.contains('unauthorized')) {
+          throw Exception('Authentication failed: Server returned 401 Unauthorized. Please check your credentials.');
+        } else if (errorString.contains('404') || errorString.contains('not found')) {
+          throw Exception('Directory not found: Server returned 404. Please check if the WebDAV path exists.');
+        } else if (errorString.contains('500') || errorString.contains('internal server error')) {
+          throw Exception('Server error: Server returned 500 Internal Server Error. Please try again later.');
+        }
+
+        // For other errors, don't retry
+        rethrow;
       }
-      rethrow;
     }
   }
 
@@ -182,6 +245,7 @@ class WebDavService {
         throw Exception('WebDAV client not initialized');
       }
 
+      await _rateLimit(); // Add rate limiting
       final bytes = await _client!.read(remotePath);
       debugPrint('Downloaded file: $remotePath');
       return Uint8List.fromList(bytes);
@@ -198,6 +262,7 @@ class WebDavService {
         throw Exception('WebDAV client not initialized');
       }
 
+      await _rateLimit(); // Add rate limiting
       final list = await _client!.readDir(path);
       final files = list.where((item) => !item.isDir!).map((item) => item.name!).toList();
 
@@ -216,6 +281,7 @@ class WebDavService {
         throw Exception('WebDAV client not initialized');
       }
 
+      await _rateLimit(); // Add rate limiting
       await _client!.remove(remotePath);
       debugPrint('Deleted file: $remotePath');
     } catch (e) {
@@ -230,6 +296,7 @@ class WebDavService {
       if (_client == null) return false;
 
       // Try to read file bytes (if it exists, this won't fail)
+      await _rateLimit(); // Add rate limiting
       await _client!.read(remotePath);
       return true;
     } catch (e) {

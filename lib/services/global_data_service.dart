@@ -108,6 +108,11 @@ class GlobalDataService {
       final tempFile = File('${tempDir.path}/temp_card_${card.uuid}.json');
       await tempFile.writeAsString(cardJson);
 
+      // Ensure file is fully written before attempting upload
+      if (!await tempFile.exists()) {
+        throw Exception('Failed to create temporary file for card ${card.uuid}');
+      }
+
       final remotePath = '$globalCardsDir/${card.uuid}.json';
       await _webdavService.uploadFile(tempFile.path, remotePath);
 
@@ -370,6 +375,11 @@ class GlobalDataService {
       final tempMetadataFile = File('${tempDir.path}/temp_metadata.json');
       await tempMetadataFile.writeAsString(metadataJson);
 
+      // Ensure file is fully written before attempting upload
+      if (!await tempMetadataFile.exists()) {
+        throw Exception('Failed to create temporary metadata file');
+      }
+
       await _webdavService.uploadFile(tempMetadataFile.path, metadataPath);
 
       // Clean up temp file
@@ -449,6 +459,11 @@ class GlobalDataService {
       final tempDir = await getTemporaryDirectory();
       final tempMetadataFile = File('${tempDir.path}/temp_metadata.json');
       await tempMetadataFile.writeAsString(metadataJson);
+
+      // Ensure file is fully written before attempting upload
+      if (!await tempMetadataFile.exists()) {
+        throw Exception('Failed to create temporary metadata file');
+      }
 
       await _webdavService.uploadFile(tempMetadataFile.path, metadataPath);
       await tempMetadataFile.delete(); // Clean up temp file

@@ -27,6 +27,11 @@ class PreferencesSyncService {
       final tempFile = File('${tempDir.path}/temp_preferences.json');
       await tempFile.writeAsString(preferencesJson);
 
+      // Ensure file is fully written before attempting upload
+      if (!await tempFile.exists()) {
+        throw Exception('Failed to create temporary preferences file');
+      }
+
       // Upload to WebDAV
       const remotePath = '/pockard/preferences.json';
       await _webdavService.uploadFile(tempFile.path, remotePath);

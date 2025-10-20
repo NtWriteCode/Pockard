@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
 import 'display_settings_tab.dart';
 import 'tags_settings_tab.dart';
 import 'sync_settings_tab.dart';
 import '../../l10n/app_localizations.dart';
+import '../../providers/card_provider.dart';
+import '../../providers/display_provider.dart';
+import '../../providers/tag_provider.dart';
 
 class SettingsScreen extends StatefulWidget {
   final int initialTabIndex;
@@ -24,6 +29,13 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
 
   @override
   void dispose() {
+    // When the settings screen is closed, automatically sync preferences
+    final displayProvider = Provider.of<DisplayProvider>(context, listen: false);
+    final tagProvider = Provider.of<TagProvider>(context, listen: false);
+    final cardProvider = Provider.of<CardProvider>(context, listen: false);
+
+    cardProvider.syncPreferences(displaySettings: displayProvider.exportSettings(), tagOrder: tagProvider.exportTagOrder());
+
     _tabController.dispose();
     super.dispose();
   }
