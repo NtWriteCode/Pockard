@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:image_picker/image_picker.dart';
 import '../models/card_model.dart';
 import '../providers/card_provider.dart';
 import '../providers/tag_provider.dart';
@@ -13,6 +14,9 @@ import '../widgets/barcode_type_selector.dart';
 import '../widgets/barcode_preview_widget.dart';
 import '../widgets/card_image_section.dart';
 import '../widgets/dynamic_tag_input.dart';
+import '../widgets/global_image_picker.dart';
+import '../screens/image_generator_screen.dart';
+import '../screens/logo_search_screen.dart';
 import '../constants/barcode_types.dart';
 import '../l10n/app_localizations.dart';
 
@@ -268,8 +272,67 @@ class _CardFormScreenState extends State<CardFormScreen> {
   }
 
   Future<void> _pickBarcodeImage() async {
+    _showBarcodeImagePickerOptions();
+  }
+
+  void _showBarcodeImagePickerOptions() {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        final dialogL10n = AppLocalizations.of(dialogContext)!;
+        return SafeArea(
+          child: Wrap(
+            children: [
+              ListTile(
+                leading: const Icon(Icons.camera_alt),
+                title: Text(dialogL10n.camera),
+                onTap: () {
+                  Navigator.pop(dialogContext);
+                  _pickAndEditBarcodeImage(true);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_library),
+                title: Text(dialogL10n.gallery),
+                onTap: () {
+                  Navigator.pop(dialogContext);
+                  _pickAndEditBarcodeImage(false);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.auto_awesome),
+                title: Text(dialogL10n.generateImage),
+                onTap: () {
+                  Navigator.pop(dialogContext);
+                  _generateBarcodeImage();
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.search),
+                title: Text(dialogL10n.searchLogo),
+                onTap: () {
+                  Navigator.pop(dialogContext);
+                  _searchBarcodeLogo();
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.cloud),
+                title: Text(dialogL10n.globalImages),
+                onTap: () {
+                  Navigator.pop(dialogContext);
+                  _pickGlobalBarcodeImage();
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _pickAndEditBarcodeImage(bool fromCamera) async {
     try {
-      final imagePath = await _imageService.pickEditAndSaveImage(context: context);
+      final imagePath = await _imageService.pickEditAndSaveImage(context: context, source: fromCamera ? ImageSource.camera : ImageSource.gallery);
 
       if (imagePath != null && mounted) {
         final l10n = AppLocalizations.of(context)!;
@@ -282,6 +345,57 @@ class _CardFormScreenState extends State<CardFormScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error uploading image: $e'), backgroundColor: Theme.of(context).colorScheme.error));
       }
+    }
+  }
+
+  Future<void> _generateBarcodeImage() async {
+    if (!mounted) return;
+
+    final generatedImagePath = await Navigator.push<String>(context, MaterialPageRoute(builder: (context) => const ImageGeneratorScreen()));
+
+    if (generatedImagePath != null && mounted) {
+      final l10n = AppLocalizations.of(context)!;
+      setState(() {
+        _barcodeImagePath = generatedImagePath;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.barcodeImageUploaded), backgroundColor: Theme.of(context).colorScheme.primary));
+    }
+  }
+
+  Future<void> _searchBarcodeLogo() async {
+    if (!mounted) return;
+
+    final selectedImagePath = await Navigator.push<String>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => LogoSearchScreen(
+          onLogoSelected: (imagePath) {
+            Navigator.pop(context, imagePath);
+          },
+        ),
+      ),
+    );
+
+    if (selectedImagePath != null && mounted) {
+      final l10n = AppLocalizations.of(context)!;
+      setState(() {
+        _barcodeImagePath = selectedImagePath;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.barcodeImageUploaded), backgroundColor: Theme.of(context).colorScheme.primary));
+    }
+  }
+
+  Future<void> _pickGlobalBarcodeImage() async {
+    if (!mounted) return;
+
+    final selectedImage = await showDialog<String>(context: context, builder: (context) => const GlobalImagePicker());
+
+    if (selectedImage != null && mounted) {
+      final l10n = AppLocalizations.of(context)!;
+      setState(() {
+        _barcodeImagePath = selectedImage;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.barcodeImageUploaded), backgroundColor: Theme.of(context).colorScheme.primary));
     }
   }
 

@@ -319,27 +319,54 @@ class CardProvider with ChangeNotifier {
   /// Sync user preferences (display settings and tag order) to server
   /// This should be called by the UI when preferences change
   Future<void> syncPreferences({required Map<String, dynamic> displaySettings, required List<String> tagOrder}) async {
+    debugPrint('CardProvider: Starting preferences sync...');
+    final attemptTime = DateTime.now();
+
     try {
       // Check if sync is configured
       final settings = await _syncService.loadSettings();
       if (settings == null || !settings.hasCredentials) {
-        debugPrint('Preferences sync skipped: No WebDAV credentials configured');
+        debugPrint('CardProvider: Preferences sync skipped: No WebDAV credentials configured');
         return;
       }
+      debugPrint('CardProvider: WebDAV credentials found, proceeding with sync');
 
       // Initialize WebDAV client
       final initialized = await _syncService.initializeFromSettings();
       if (!initialized) {
-        debugPrint('Preferences sync failed: Could not initialize WebDAV client');
+        debugPrint('CardProvider: Preferences sync failed: Could not initialize WebDAV client');
+
+        // Record failed attempt
+        final updatedSettings = settings.copyWith(lastSyncAttempt: attemptTime, lastSyncSuccess: false, lastSyncError: 'Failed to initialize WebDAV client for preferences sync');
+        await _syncService.saveSettings(updatedSettings);
+        await _connectionManager.refreshSyncStatus();
         return;
       }
+      debugPrint('CardProvider: WebDAV client initialized successfully');
 
       final prefsSync = PreferencesSyncService();
       await prefsSync.uploadPreferences(displaySettings: displaySettings, tagOrder: tagOrder);
 
-      debugPrint('Preferences synced successfully');
+      // Record successful preferences sync
+      final updatedSettings = settings.copyWith(lastSyncAttempt: attemptTime, lastSyncSuccess: true, lastSyncError: null);
+      await _syncService.saveSettings(updatedSettings);
+      await _connectionManager.refreshSyncStatus();
+
+      debugPrint('CardProvider: Preferences synced successfully');
     } catch (e) {
-      debugPrint('Error syncing preferences: $e');
+      debugPrint('CardProvider: Error syncing preferences: $e');
+
+      // Record failed preferences sync
+      try {
+        final settings = await _syncService.loadSettings();
+        if (settings != null) {
+          final updatedSettings = settings.copyWith(lastSyncAttempt: attemptTime, lastSyncSuccess: false, lastSyncError: 'Preferences sync failed: $e');
+          await _syncService.saveSettings(updatedSettings);
+          await _connectionManager.refreshSyncStatus();
+        }
+      } catch (saveError) {
+        debugPrint('CardProvider: Failed to save preferences sync error: $saveError');
+      }
       // Don't rethrow - preferences sync is non-critical
     }
   }

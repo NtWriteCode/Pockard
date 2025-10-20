@@ -20,6 +20,9 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  DisplayProvider? _displayProvider;
+  TagProvider? _tagProvider;
+  CardProvider? _cardProvider;
 
   @override
   void initState() {
@@ -28,13 +31,31 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Store provider references when dependencies are available
+    _displayProvider = Provider.of<DisplayProvider>(context, listen: false);
+    _tagProvider = Provider.of<TagProvider>(context, listen: false);
+    _cardProvider = Provider.of<CardProvider>(context, listen: false);
+  }
+
+  @override
   void dispose() {
     // When the settings screen is closed, automatically sync preferences
-    final displayProvider = Provider.of<DisplayProvider>(context, listen: false);
-    final tagProvider = Provider.of<TagProvider>(context, listen: false);
-    final cardProvider = Provider.of<CardProvider>(context, listen: false);
-
-    cardProvider.syncPreferences(displaySettings: displayProvider.exportSettings(), tagOrder: tagProvider.exportTagOrder());
+    // Use stored provider references to avoid accessing deactivated widget tree
+    if (_displayProvider != null && _tagProvider != null && _cardProvider != null) {
+      // Sync preferences asynchronously (don't await to avoid blocking dispose)
+      _cardProvider!
+          .syncPreferences(displaySettings: _displayProvider!.exportSettings(), tagOrder: _tagProvider!.exportTagOrder())
+          .then((_) {
+            debugPrint('Settings screen: Preferences sync completed on dispose');
+          })
+          .catchError((error) {
+            debugPrint('Settings screen: Preferences sync failed on dispose: $error');
+          });
+    } else {
+      debugPrint('Settings screen: Provider references not available, skipping preferences sync');
+    }
 
     _tabController.dispose();
     super.dispose();
