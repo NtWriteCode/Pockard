@@ -72,6 +72,8 @@ jobs:
           echo "$KEYSTORE_BASE64" | base64 --decode > $HOME/upload-keystore.jks
       
       - name: Build APK (arm64-v8a)
+        env:
+          REMOVE_DEBUG_SUFFIX: true
         run: |
           flutter build apk --release --target-platform android-arm64 --split-per-abi --no-tree-shake-icons
       

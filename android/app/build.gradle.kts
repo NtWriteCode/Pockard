@@ -6,7 +6,16 @@ plugins {
 }
 
 android {
-    namespace = "com.ntwritecode.pockard"
+    // Base package name without debug suffix
+    val basePackageName = "com.ntwritecode.pockard"
+    // Add debug suffix by default, remove it in CI/CD with environment variable
+    val packageName = if (System.getenv("REMOVE_DEBUG_SUFFIX") == "true") {
+        basePackageName
+    } else {
+        "$basePackageName.debug"
+    }
+    
+    namespace = packageName
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -21,7 +30,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.ntwritecode.pockard"
+        applicationId = packageName
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
