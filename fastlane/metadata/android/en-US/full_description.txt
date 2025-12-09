@@ -1,0 +1,30 @@
+Never lose a loyalty card again! Pockard is a modern, privacy-focused Android app that digitizes all your loyalty cards, barcodes, and membership cards into one beautiful, easy-to-use app.
+
+✨ Coolest Features
+
+📸 Smart Scanning
+- Camera & Image Scanning: Scan barcodes with your camera or from gallery screenshots - works 100% offline!
+- Manual Entry: Type in barcode data when scanning isn't an option
+- Auto Logo Search: Automatically find and add store logos to your cards
+
+🎨 Beautiful & Customizable
+- 3 Stunning Themes: Light, Dark, and AMOLED Black (pure black for OLED screens)
+- Multiple View Modes: Detailed List, Visual Grid, or Compact Minimal
+- Flexible Display: Pin favorites, hide card names in grid, customize layout
+
+🏷️ Smart Organization
+- Tags & Filters: Categorize cards (Shopping, Food, Travel, etc.) and filter instantly
+- Smart Sorting: By recent use, usage count, name (A-Z), or date added
+- Usage Statistics: Track which cards you use most
+
+☁️ Self-Hosted Sync
+- Your Data, Your Server: Sync cards across devices using any WebDAV server (Nextcloud, SFTPGo, etc.)
+- Family Sharing: Share cards and images with family members
+- Privacy First: No third-party cloud, no data collection, open source client
+
+⭐ Why Pockard?
+- ✅ 100% Privacy: Your data stays on your device
+- ✅ No Subscriptions: Free and open source
+- ✅ Offline First: Works without internet
+- ✅ Beautiful Design: Modern Material Design 3
+- ✅ Self-Hosted Sync: You control your data
