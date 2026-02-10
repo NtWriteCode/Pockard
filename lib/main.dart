@@ -14,7 +14,8 @@ void main() async {
 
   // Initialize background SFTP connection
   final connectionManager = ConnectionManager();
-  await connectionManager.initializeConnection();
+  // Don't await the connection check - let it run in background so app starts immediately
+  connectionManager.initializeConnection();
 
   runApp(const PockardApp());
 }

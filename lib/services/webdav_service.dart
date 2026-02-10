@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io' as io;
 import 'package:flutter/foundation.dart';
 import 'package:webdav_client/webdav_client.dart';
@@ -10,6 +11,10 @@ class WebDavService {
 
   Client? _client;
   DateTime? _lastRequestTime;
+
+  // Timeouts to prevent hanging on slow connections
+  static const Duration _connectionTimeout = Duration(seconds: 10);
+  static const Duration _transferTimeout = Duration(seconds: 30);
 
   /// Initialize WebDAV client with credentials
   void initialize(String serverUrl, String username, String password) {
@@ -41,17 +46,17 @@ class WebDavService {
       if (_client == null) return false;
 
       // Try to ping the server
-      await _client!.ping();
+      await _client!.ping().timeout(_connectionTimeout);
 
       // Test write permissions by attempting to create a test file
       try {
         final testData = Uint8List.fromList('test'.codeUnits);
         final testPath = '/pockard/.write_test_${DateTime.now().millisecondsSinceEpoch}';
-        await _client!.write(testPath, testData);
+        await _client!.write(testPath, testData).timeout(_connectionTimeout);
 
         // Clean up test file
         try {
-          await _client!.remove(testPath);
+          await _client!.remove(testPath).timeout(_connectionTimeout);
         } catch (cleanupError) {
           debugPrint('Warning: Could not clean up test file: $cleanupError');
         }
@@ -78,7 +83,7 @@ class WebDavService {
     try {
       if (_client == null) return false;
 
-      await _client!.readDir(path);
+      await _client!.readDir(path).timeout(_connectionTimeout);
       return true;
     } catch (e) {
       return false;
@@ -92,7 +97,7 @@ class WebDavService {
         throw Exception('WebDAV client not initialized');
       }
 
-      await _client!.mkdir(path);
+      await _client!.mkdir(path).timeout(_connectionTimeout);
       debugPrint('Created directory: $path');
     } catch (e) {
       // Ignore if directory already exists
@@ -150,7 +155,7 @@ class WebDavService {
 
         final bytes = await file.readAsBytes();
         await _rateLimit(); // Add rate limiting
-        await _client!.write(remotePath, bytes);
+        await _client!.write(remotePath, bytes).timeout(_transferTimeout);
         debugPrint('Uploaded file: $remotePath');
         return; // Success, exit retry loop
       } catch (e) {
@@ -200,7 +205,7 @@ class WebDavService {
         }
 
         await _rateLimit(); // Add rate limiting
-        await _client!.write(remotePath, bytes);
+        await _client!.write(remotePath, bytes).timeout(_transferTimeout);
         debugPrint('Uploaded bytes to: $remotePath');
         return; // Success, exit retry loop
       } catch (e) {
@@ -246,7 +251,7 @@ class WebDavService {
       }
 
       await _rateLimit(); // Add rate limiting
-      final bytes = await _client!.read(remotePath);
+      final bytes = await _client!.read(remotePath).timeout(_transferTimeout);
       debugPrint('Downloaded file: $remotePath');
       return Uint8List.fromList(bytes);
     } catch (e) {
@@ -263,7 +268,7 @@ class WebDavService {
       }
 
       await _rateLimit(); // Add rate limiting
-      final list = await _client!.readDir(path);
+      final list = await _client!.readDir(path).timeout(_connectionTimeout);
       final files = list.where((item) => !item.isDir!).map((item) => item.name!).toList();
 
       debugPrint('Listed ${files.length} files in $path');
@@ -282,7 +287,7 @@ class WebDavService {
       }
 
       await _rateLimit(); // Add rate limiting
-      await _client!.remove(remotePath);
+      await _client!.remove(remotePath).timeout(_connectionTimeout);
       debugPrint('Deleted file: $remotePath');
     } catch (e) {
       debugPrint('Error deleting file $remotePath: $e');
@@ -297,7 +302,7 @@ class WebDavService {
 
       // Try to read file bytes (if it exists, this won't fail)
       await _rateLimit(); // Add rate limiting
-      await _client!.read(remotePath);
+      await _client!.read(remotePath).timeout(_transferTimeout);
       return true;
     } catch (e) {
       return false;
