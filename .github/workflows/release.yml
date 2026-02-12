@@ -4,10 +4,14 @@ on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
 
 concurrency:
   group: release-${{ github.ref }}
   cancel-in-progress: true
+
+env:
+  PROJECT_PATH: '.'
 
 permissions:
   contents: write
@@ -18,6 +22,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     
+    defaults:
+      run:
+        working-directory: ${{ env.PROJECT_PATH }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
@@ -32,7 +40,6 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.35.6'
           channel: 'stable'
           cache: true
       
@@ -42,28 +49,28 @@ jobs:
       - name: Get dependencies
         run: flutter pub get
       
-      - name: Extract version from tag
+      - name: Extract version
         id: version
         run: |
-          TAG_NAME=${GITHUB_REF#refs/tags/v}
+          if [[ $GITHUB_REF == refs/tags/* ]]; then
+            TAG_NAME=${GITHUB_REF#refs/tags/v}
+          else
+            TAG_NAME="dev-$(date +'%Y%m%d-%H%M%S')"
+          fi
           echo "version=$TAG_NAME" >> $GITHUB_OUTPUT
           echo "Extracted version: $TAG_NAME"
       
-      - name: Update pubspec.yaml version
+      - name: Update version in pubspec.yaml
         run: |
           VERSION=${{ steps.version.outputs.version }}
-          # Extract version name and code (e.g., "1.0.1+2" -> version="1.0.1" code="2")
           if [[ "$VERSION" == *"+"* ]]; then
-            # Tag includes build number (e.g., v1.0.1+2)
             sed -i "s/^version: .*/version: $VERSION/" pubspec.yaml
           else
-            # Tag only has version name (e.g., v1.0.1), auto-increment build number
-            CURRENT_BUILD=$(grep "^version:" pubspec.yaml | sed 's/.*+//')
-            NEW_BUILD=$((CURRENT_BUILD + 1))
-            sed -i "s/^version: .*/version: ${VERSION}+${NEW_BUILD}/" pubspec.yaml
+            # Use GitHub run number to ensure a strictly increasing build number (versionCode)
+            # This avoids the issue where using the static pubspec.yaml always results in the same build number (e.g., 2 -> 2002).
+            BUILD_NUMBER=$(( 3000 + ${{ github.run_number }} ))
+            sed -i "s/^version: .*/version: ${VERSION}+${BUILD_NUMBER}/" pubspec.yaml
           fi
-          echo "Updated pubspec.yaml version:"
-          grep "^version:" pubspec.yaml
       
       - name: Decode keystore
         env:
@@ -96,15 +103,23 @@ jobs:
       
       - name: Rename APK
         run: |
-          TAG_NAME=${GITHUB_REF#refs/tags/}
-          mv build/app/outputs/flutter-apk/app-arm64-v8a-release.apk build/app/outputs/flutter-apk/pockard-${TAG_NAME}-arm64-v8a.apk
+          VERSION=${{ steps.version.outputs.version }}
+          mv build/app/outputs/flutter-apk/app-arm64-v8a-release.apk build/app/outputs/flutter-apk/${{ github.event.repository.name }}-${VERSION}-arm64-v8a.apk
+
+      - name: Upload APK as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-apk
+          path: ${{ env.PROJECT_PATH }}/build/app/outputs/flutter-apk/*-arm64-v8a.apk
+          retention-days: 5
       
       - name: Create Release and Upload Assets
+        if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
-          files: build/app/outputs/flutter-apk/pockard-${{ github.ref_name }}-arm64-v8a.apk
+          files: ${{ env.PROJECT_PATH }}/build/app/outputs/flutter-apk/${{ github.event.repository.name }}-${{ steps.version.outputs.version }}-arm64-v8a.apk
           body: |
-            ## 🎉 Pockard ${{ github.ref_name }}
+            ## 🎉 ${{ github.event.repository.name }} ${{ steps.version.outputs.version }}
             
             ### 📦 Download
             - **ARM64 (arm64-v8a)**: For modern Android devices (2019+)
