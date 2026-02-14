@@ -16,8 +16,11 @@ class CardImageSection extends StatelessWidget {
   final VoidCallback? onImageRemoved;
   final VoidCallback? onImageSharedGlobally;
   final bool showGlobalOptions;
+  final String? title;
+  final String? placeholderLabel;
+  final double height;
 
-  const CardImageSection({super.key, this.coverImagePath, this.onImagePicked, this.onImageRemoved, this.onImageSharedGlobally, this.showGlobalOptions = true});
+  const CardImageSection({super.key, this.coverImagePath, this.onImagePicked, this.onImageRemoved, this.onImageSharedGlobally, this.showGlobalOptions = true, this.title, this.placeholderLabel, this.height = 200});
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +29,12 @@ class CardImageSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(l10n.coverImageLabel, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
+        Text(
+          title ?? l10n.coverImageLabel,
+          style: (height < 150 ? Theme.of(context).textTheme.titleSmall : Theme.of(context).textTheme.titleMedium)?.copyWith(fontWeight: FontWeight.w600),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
         const SizedBox(height: 8),
         Center(child: coverImagePath != null ? _buildDynamicImagePreview(context) : _buildStaticPlaceholder(context)),
         const SizedBox(height: 8),
@@ -47,29 +55,29 @@ class CardImageSection extends StatelessWidget {
         final imageSize = snapshot.data!;
         final aspectRatio = imageSize.width / imageSize.height;
 
-        // Max height is 200, min width is 200
-        const double maxHeight = 200;
-        const double minWidth = 200;
+        // Use parameter height, min width is 100
+        final double maxHeight = height;
+        const double minWidth = 100;
         const double maxWidth = 300; // Don't go too wide
 
-        double width;
-        double height;
+        double previewWidth;
+        double previewHeight;
 
         if (aspectRatio > 1) {
           // Wider than tall - constrain height, expand width
-          height = maxHeight;
-          width = height * aspectRatio;
-          width = width.clamp(minWidth, maxWidth);
+          previewHeight = maxHeight;
+          previewWidth = previewHeight * aspectRatio;
+          previewWidth = previewWidth.clamp(minWidth, maxWidth);
         } else {
           // Taller than wide or square - constrain to square or make narrower
-          height = maxHeight;
-          width = height * aspectRatio;
-          width = width.clamp(minWidth * 0.7, minWidth); // Allow narrower for portrait
+          previewHeight = maxHeight;
+          previewWidth = previewHeight * aspectRatio;
+          previewWidth = previewWidth.clamp(minWidth * 0.7, minWidth); // Allow narrower for portrait
         }
 
         return Container(
-          width: width,
-          height: height,
+          width: previewWidth,
+          height: previewHeight,
           decoration: BoxDecoration(
             border: Border.all(color: Theme.of(context).colorScheme.outline),
             borderRadius: BorderRadius.circular(8),
@@ -82,8 +90,8 @@ class CardImageSection extends StatelessWidget {
 
   Widget _buildStaticPlaceholder(BuildContext context) {
     return SizedBox(
-      width: 200,
-      height: 200,
+      width: double.infinity,
+      height: height,
       child: Container(
         decoration: BoxDecoration(
           border: Border.all(color: Theme.of(context).colorScheme.outline),
@@ -146,7 +154,7 @@ class CardImageSection extends StatelessWidget {
             Icon(Icons.add_photo_alternate, size: 48, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4)),
             const SizedBox(height: 8),
             Text(
-              AppLocalizations.of(context)!.tapToAddCoverImage,
+              placeholderLabel ?? AppLocalizations.of(context)!.tapToAddCoverImage,
               textAlign: TextAlign.center,
               style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 14),
             ),
@@ -164,12 +172,21 @@ class CardImageSection extends StatelessWidget {
     return Wrap(
       spacing: 8,
       children: [
-        TextButton.icon(onPressed: () => _showImagePickerOptions(context), icon: const Icon(Icons.edit, size: 16), label: Text(l10n.changeImage)),
-        if (showGlobalOptions) TextButton.icon(onPressed: onImageSharedGlobally, icon: const Icon(Icons.cloud_upload, size: 16), label: Text(l10n.shareGlobally)),
+        TextButton.icon(
+          onPressed: () => _showImagePickerOptions(context),
+          icon: const Icon(Icons.edit, size: 14),
+          label: Text(l10n.changeImage, style: const TextStyle(fontSize: 12)),
+        ),
+        if (showGlobalOptions)
+          TextButton.icon(
+            onPressed: onImageSharedGlobally,
+            icon: const Icon(Icons.cloud_upload, size: 14),
+            label: Text(l10n.shareGlobally, style: const TextStyle(fontSize: 12)),
+          ),
         TextButton.icon(
           onPressed: onImageRemoved,
-          icon: const Icon(Icons.delete, size: 16),
-          label: Text(l10n.removeImage),
+          icon: const Icon(Icons.delete, size: 14),
+          label: Text(l10n.removeImage, style: const TextStyle(fontSize: 12)),
           style: TextButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.error),
         ),
       ],

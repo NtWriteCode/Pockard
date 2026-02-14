@@ -31,9 +31,9 @@ class BarcodePreviewWidget extends StatelessWidget {
             height: 100,
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.3),
+              color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Theme.of(context).colorScheme.outline.withOpacity(0.3), style: BorderStyle.solid),
+              border: Border.all(color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3), style: BorderStyle.solid),
             ),
             child: Center(
               child: Text(

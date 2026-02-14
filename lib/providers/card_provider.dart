@@ -20,9 +20,10 @@ class CardProvider with ChangeNotifier {
   String _selectedTag = '';
   String _searchQuery = '';
   String _sortBy = 'recent'; // recent, usage, name, date_added
+  CardCategory _filterCategory = CardCategory.loyalty;
 
   List<CardModel> get cards {
-    List<CardModel> filteredCards = _cards.where((card) => !card.isDeleted).toList();
+    List<CardModel> filteredCards = _cards.where((card) => !card.isDeleted && card.category == _filterCategory).toList();
 
     // Apply tag filter
     if (_selectedTag.isNotEmpty) {
@@ -108,7 +109,7 @@ class CardProvider with ChangeNotifier {
 
   Future<void> _loadTags() async {
     try {
-      _allTags = await _databaseService.getAllTags();
+      _allTags = await _databaseService.getAllTags(category: _filterCategory);
     } catch (e) {
       debugPrint('Error loading tags: $e');
     }
@@ -161,6 +162,9 @@ class CardProvider with ChangeNotifier {
       }
       if (card.barcodeImagePath != null) {
         await _imageService.deleteImage(card.barcodeImagePath!);
+      }
+      if (card.backImagePath != null) {
+        await _imageService.deleteImage(card.backImagePath!);
       }
 
       await _databaseService.deleteCard(uuid);
@@ -269,6 +273,13 @@ class CardProvider with ChangeNotifier {
     _searchQuery = query;
     notifyListeners();
   }
+
+  void setFilterCategory(CardCategory category) {
+    _filterCategory = category;
+    notifyListeners();
+  }
+
+  CardCategory get filterCategory => _filterCategory;
 
   Future<void> setSortBy(String sortBy) async {
     _sortBy = sortBy;

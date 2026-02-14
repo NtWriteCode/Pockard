@@ -24,8 +24,14 @@ import '../l10n/app_localizations.dart';
 class CardFormScreen extends StatefulWidget {
   final CardModel? card; // null for adding, non-null for editing
   final bool autoStartCamera;
+  final CardCategory category;
 
-  const CardFormScreen({super.key, this.card, this.autoStartCamera = false});
+  const CardFormScreen({
+    super.key, 
+    this.card, 
+    this.autoStartCamera = false, 
+    this.category = CardCategory.loyalty,
+  });
 
   bool get isEditing => card != null;
 
@@ -45,10 +51,12 @@ class _CardFormScreenState extends State<CardFormScreen> {
   final ImageService _imageService = ImageService();
 
   String? _coverImagePath;
+  String? _backImagePath;
   String? _barcodeImagePath;
-  String _barcodeType = 'QR';
+  String _barcodeType = 'QR'; // Will be set in _initializeControllers
   bool _isLoading = false;
   bool _isPinned = false;
+  late CardCategory _category;
 
   @override
   void initState() {
@@ -56,8 +64,8 @@ class _CardFormScreenState extends State<CardFormScreen> {
     _initializeControllers();
     _loadAvailableTags();
 
-    // Auto-start camera if requested and we're adding a new card
-    if (widget.autoStartCamera && !widget.isEditing) {
+    // Auto-start camera if requested and we're adding a new card (only for loyalty cards)
+    if (widget.autoStartCamera && !widget.isEditing && widget.category != CardCategory.identity) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _scanBarcode();
       });
@@ -71,19 +79,23 @@ class _CardFormScreenState extends State<CardFormScreen> {
       _barcodeDataController = TextEditingController(text: widget.card!.barcodeData ?? '');
       _tags = List.from(widget.card!.tags);
       _coverImagePath = widget.card!.coverImagePath;
+      _backImagePath = widget.card!.backImagePath;
       _barcodeImagePath = widget.card!.barcodeImagePath;
       _barcodeType = widget.card!.barcodeType ?? 'QR';
       _isPinned = widget.card!.isPinned;
+      _category = widget.card!.category;
     } else {
       // Initialize empty for new card
       _nameController = TextEditingController();
       _barcodeDataController = TextEditingController();
       _tags = [];
+      _category = widget.category;
+      _barcodeType = _category == CardCategory.identity ? 'TEXT' : 'QR';
     }
   }
 
   Future<void> _loadAvailableTags() async {
-    final tags = await _databaseService.getAllTags();
+    final tags = await _databaseService.getAllTags(category: _category);
     setState(() {
       _availableTags = tags;
     });
@@ -113,7 +125,8 @@ class _CardFormScreenState extends State<CardFormScreen> {
               onPressed: _isLoading ? null : _togglePin,
               tooltip: _isPinned ? l10n.unpinCard : l10n.pinCard,
             ),
-            IconButton(icon: const Icon(Icons.public), onPressed: _isLoading ? null : _shareCardGlobally, tooltip: l10n.shareGlobally),
+            if (_category != CardCategory.identity)
+              IconButton(icon: const Icon(Icons.public), onPressed: _isLoading ? null : _shareCardGlobally, tooltip: l10n.shareGlobally),
             IconButton(icon: const Icon(Icons.delete), onPressed: _isLoading ? null : _deleteCard, tooltip: l10n.deleteCard),
           ],
           IconButton(
@@ -132,13 +145,65 @@ class _CardFormScreenState extends State<CardFormScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Cover image section
-                    CardImageSection(
-                      coverImagePath: _coverImagePath,
-                      onImagePicked: (imagePath) => _setImagePath(imagePath),
-                      onImageRemoved: () => _removeImage(),
-                      onImageSharedGlobally: () => _shareImageGlobally(),
+                    // Category selector (only if adding or if users want to change)
+                    SegmentedButton<CardCategory>(
+                      segments: [
+                        ButtonSegment(value: CardCategory.loyalty, icon: const Icon(Icons.credit_card), label: Text(l10n.loyaltyCards)),
+                        ButtonSegment(value: CardCategory.identity, icon: const Icon(Icons.badge_outlined), label: Text(l10n.identityCards)),
+                      ],
+                      selected: {_category},
+                      onSelectionChanged: (Set<CardCategory> newSelection) {
+                        setState(() {
+                          _category = newSelection.first;
+                          // If switching to identity, maybe default barcode to TEXT if adding
+                          if (!widget.isEditing) {
+                            _barcodeType = _category == CardCategory.identity ? 'TEXT' : 'QR';
+                          }
+                          _loadAvailableTags();
+                        });
+                      },
                     ),
+                    const SizedBox(height: 24),
+
+                    // Image section(s)
+                    if (_category == CardCategory.identity)
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: CardImageSection(
+                              title: l10n.frontImageLabel,
+                              placeholderLabel: l10n.tapToAddFrontImage,
+                              coverImagePath: _coverImagePath,
+                              onImagePicked: (imagePath) => _setImagePath(imagePath),
+                              onImageRemoved: () => _removeImage(),
+                              showGlobalOptions: false, // Don't allow sharing ID images
+                              height: 120,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: CardImageSection(
+                              title: l10n.backImageLabel,
+                              placeholderLabel: l10n.tapToAddBackImage,
+                              coverImagePath: _backImagePath,
+                              onImagePicked: (imagePath) => setState(() => _backImagePath = imagePath),
+                              onImageRemoved: () => setState(() => _backImagePath = null),
+                              showGlobalOptions: false, // Don't allow sharing ID images
+                              height: 120,
+                            ),
+                          ),
+                        ],
+                      )
+                    else
+                      CardImageSection(
+                        title: l10n.coverImageLabel,
+                        placeholderLabel: l10n.tapToAddCoverImage,
+                        coverImagePath: _coverImagePath,
+                        onImagePicked: (imagePath) => _setImagePath(imagePath),
+                        onImageRemoved: () => _removeImage(),
+                        onImageSharedGlobally: () => _shareImageGlobally(),
+                      ),
                     const SizedBox(height: 24),
 
                     // Card name
@@ -420,9 +485,9 @@ class _CardFormScreenState extends State<CardFormScreen> {
             width: double.infinity,
             height: 150,
             decoration: BoxDecoration(
-              color: displayImagePath != null ? Colors.transparent : Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.3),
+              color: displayImagePath != null ? Colors.transparent : Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Theme.of(context).colorScheme.outline.withOpacity(0.3)),
+              border: Border.all(color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3)),
             ),
             child: displayImagePath != null
                 ? Stack(
@@ -474,7 +539,7 @@ class _CardFormScreenState extends State<CardFormScreen> {
                           const SizedBox(height: 8),
                           Text(
                             '(Cover image will be used)',
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.7), fontSize: 10),
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.7), fontSize: 10),
                             textAlign: TextAlign.center,
                           ),
                         ],
@@ -505,6 +570,8 @@ class _CardFormScreenState extends State<CardFormScreen> {
           barcodeImagePath: _barcodeImagePath,
           tags: _tags,
           coverImagePath: _coverImagePath,
+          backImagePath: _backImagePath,
+          category: _category,
           updateDate: DateTime.now(),
         );
         await cardProvider.updateCard(updatedCard);
@@ -518,6 +585,8 @@ class _CardFormScreenState extends State<CardFormScreen> {
           barcodeImagePath: _barcodeImagePath,
           tags: _tags,
           coverImagePath: _coverImagePath,
+          backImagePath: _backImagePath,
+          category: _category,
           creationDate: DateTime.now(),
           updateDate: DateTime.now(),
           usageCount: 0,
@@ -607,7 +676,7 @@ class _CardFormScreenState extends State<CardFormScreen> {
   }
 
   Future<void> _shareCardGlobally() async {
-    if (!widget.isEditing) return;
+    if (!widget.isEditing || _category == CardCategory.identity) return;
 
     try {
       final globalService = GlobalDataService();

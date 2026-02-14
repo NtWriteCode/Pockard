@@ -15,10 +15,14 @@ class FullscreenCoverImageScreen extends StatefulWidget {
 
 class _FullscreenCoverImageScreenState extends State<FullscreenCoverImageScreen> {
   bool _showAppBar = true;
+  late final PageController _pageController;
+  int _currentIndex = 0;
 
   @override
   void initState() {
     super.initState();
+
+    _pageController = PageController();
 
     // Hide app bar after 3 seconds
     Future.delayed(const Duration(seconds: 3), () {
@@ -30,6 +34,31 @@ class _FullscreenCoverImageScreenState extends State<FullscreenCoverImageScreen>
     });
   }
 
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  List<Map<String, String>> _getAvailableImages(AppLocalizations? l10n) {
+    if (l10n == null) return [];
+    final isIdentity = widget.card.category == CardCategory.identity;
+
+    final available = <Map<String, String>>[];
+
+    if (widget.card.barcodeImagePath != null && File(widget.card.barcodeImagePath!).existsSync()) {
+      available.add({'path': widget.card.barcodeImagePath!, 'label': l10n.barcodeImageLabel});
+    }
+    if (widget.card.coverImagePath != null && File(widget.card.coverImagePath!).existsSync()) {
+      available.add({'path': widget.card.coverImagePath!, 'label': isIdentity ? l10n.frontImageLabel : l10n.coverImageLabel});
+    }
+    if (widget.card.backImagePath != null && File(widget.card.backImagePath!).existsSync()) {
+      available.add({'path': widget.card.backImagePath!, 'label': l10n.backImageLabel});
+    }
+
+    return available;
+  }
+
   void _toggleAppBarVisibility() {
     setState(() {
       _showAppBar = !_showAppBar;
@@ -38,11 +67,28 @@ class _FullscreenCoverImageScreenState extends State<FullscreenCoverImageScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final images = _getAvailableImages(l10n);
+
+    if (images.isEmpty) {
+      return Scaffold(
+        backgroundColor: Colors.black,
+        appBar: AppBar(backgroundColor: Colors.transparent, foregroundColor: Colors.white, elevation: 0),
+        body: _buildNoImageWidget(),
+      );
+    }
+
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: _showAppBar
           ? AppBar(
-              title: Text(widget.card.name),
+              title: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(widget.card.name, style: const TextStyle(fontSize: 16)),
+                  if (images.length > 1) Text(images[_currentIndex]['label']!, style: const TextStyle(fontSize: 12, color: Colors.white70)),
+                ],
+              ),
               backgroundColor: Colors.black87,
               foregroundColor: Colors.white,
               elevation: 0,
@@ -58,32 +104,59 @@ class _FullscreenCoverImageScreenState extends State<FullscreenCoverImageScreen>
             )
           : null,
       extendBodyBehindAppBar: true,
-      body: GestureDetector(
-        onTap: _toggleAppBarVisibility,
-        child: Container(
-          width: double.infinity,
-          height: double.infinity,
-          color: Colors.black,
-          child: () {
-            // Priority: barcode image > cover image
-            final imagePath = widget.card.barcodeImagePath ?? widget.card.coverImagePath;
-            return imagePath != null
-                ? Center(
-                    child: InteractiveViewer(
-                      minScale: 0.5,
-                      maxScale: 4.0,
-                      child: Image.file(
-                        File(imagePath),
-                        fit: BoxFit.contain,
-                        errorBuilder: (context, error, stackTrace) {
-                          return _buildNoImageWidget();
-                        },
-                      ),
+      body: Stack(
+        children: [
+          PageView.builder(
+            controller: _pageController,
+            itemCount: images.length,
+            onPageChanged: (index) {
+              setState(() {
+                _currentIndex = index;
+              });
+            },
+            itemBuilder: (context, index) {
+              return GestureDetector(
+                onTap: _toggleAppBarVisibility,
+                child: InteractiveViewer(
+                  // When at scale 1.0, allow PageView to handle the swipe
+                  // When zoomed, pan takes priority
+                  minScale: 1.0,
+                  maxScale: 4.0,
+                  child: Center(
+                    child: Image.file(
+                      File(images[index]['path']!),
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) {
+                        return _buildNoImageWidget();
+                      },
                     ),
-                  )
-                : _buildNoImageWidget();
-          }(),
-        ),
+                  ),
+                ),
+              );
+            },
+          ),
+          if (images.length > 1)
+            Positioned(
+              bottom: 40,
+              left: 0,
+              right: 0,
+              child: AnimatedOpacity(
+                duration: const Duration(milliseconds: 300),
+                opacity: _showAppBar ? 1.0 : 0.3, // Fade dots but keep them visible
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(images.length, (index) {
+                    return Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 4),
+                      width: 8,
+                      height: 8,
+                      decoration: BoxDecoration(shape: BoxShape.circle, color: _currentIndex == index ? Colors.white : Colors.white38),
+                    );
+                  }),
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }

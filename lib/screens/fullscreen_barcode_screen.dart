@@ -7,6 +7,8 @@ import '../models/card_model.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/display_provider.dart';
 import '../widgets/cover_image_widget.dart';
+import 'fullscreen_cover_image_screen.dart';
+import 'dart:io';
 
 class FullscreenBarcodeScreen extends StatefulWidget {
   final CardModel card;
@@ -21,6 +23,8 @@ class _FullscreenBarcodeScreenState extends State<FullscreenBarcodeScreen> {
   double? _originalBrightness;
   bool _showAppBar = true;
   bool _showCoverImage = false;
+  int _imageIndex = 0;
+  List<Map<String, String>> _availableImages = [];
   bool _brightnessOverride = false; // Local override for torch icon
 
   @override
@@ -44,6 +48,12 @@ class _FullscreenBarcodeScreenState extends State<FullscreenBarcodeScreen> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _availableImages = _getAvailableImages();
+  }
+
+  @override
   void dispose() {
     _restoreOriginalBrightness();
     super.dispose();
@@ -59,6 +69,24 @@ class _FullscreenBarcodeScreenState extends State<FullscreenBarcodeScreen> {
     } catch (e) {
       debugPrint('Error setting brightness: $e');
     }
+  }
+
+  List<Map<String, String>> _getAvailableImages() {
+    final l10n = AppLocalizations.of(context);
+    final isIdentity = widget.card.category == CardCategory.identity;
+    final available = <Map<String, String>>[];
+
+    if (widget.card.coverImagePath != null && File(widget.card.coverImagePath!).existsSync()) {
+      available.add({'path': widget.card.coverImagePath!, 'label': isIdentity ? (l10n?.frontImageLabel ?? 'Front Image') : (l10n?.coverImageLabel ?? 'Cover Image')});
+    }
+    if (widget.card.backImagePath != null && File(widget.card.backImagePath!).existsSync()) {
+      available.add({'path': widget.card.backImagePath!, 'label': l10n?.backImageLabel ?? 'Back Image'});
+    }
+    if (widget.card.barcodeImagePath != null && File(widget.card.barcodeImagePath!).existsSync()) {
+      available.add({'path': widget.card.barcodeImagePath!, 'label': l10n?.barcodeImageLabel ?? 'Barcode'});
+    }
+
+    return available;
   }
 
   Future<void> _restoreOriginalBrightness() async {
@@ -138,7 +166,7 @@ class _FullscreenBarcodeScreenState extends State<FullscreenBarcodeScreen> {
 
                         // Barcode/QR Code, Text, or Cover Image
                         Flexible(
-                          child: _showCoverImage && widget.card.coverImagePath != null
+                          child: _showCoverImage && _availableImages.isNotEmpty
                               ? _buildCoverImageView()
                               : widget.card.barcodeType == 'TEXT'
                               ? _buildTextOnlyView()
@@ -192,7 +220,7 @@ class _FullscreenBarcodeScreenState extends State<FullscreenBarcodeScreen> {
               : _buildNoDataWidget(),
         ),
       ),
-      floatingActionButton: widget.card.coverImagePath != null ? _buildToggleButton(l10n) : null,
+      floatingActionButton: _availableImages.isNotEmpty ? _buildToggleButton(l10n) : null,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
@@ -322,9 +350,46 @@ class _FullscreenBarcodeScreenState extends State<FullscreenBarcodeScreen> {
   }
 
   Widget _buildCoverImageView() {
-    return Container(
-      constraints: const BoxConstraints(maxWidth: 500, maxHeight: 500),
-      child: CoverImageWidget(imagePath: widget.card.coverImagePath!, fit: BoxFit.contain),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Flexible(
+          child: GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => FullscreenCoverImageScreen(card: widget.card)),
+              );
+            },
+            child: Container(
+              constraints: const BoxConstraints(maxWidth: 500, maxHeight: 500),
+              child: PageView.builder(
+                itemCount: _availableImages.length,
+                onPageChanged: (index) => setState(() => _imageIndex = index),
+                itemBuilder: (context, index) {
+                  return CoverImageWidget(imagePath: _availableImages[index]['path']!, fit: BoxFit.contain);
+                },
+              ),
+            ),
+          ),
+        ),
+        if (_availableImages.length > 1) ...[
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(_availableImages.length, (index) {
+              return Container(
+                margin: const EdgeInsets.symmetric(horizontal: 4),
+                width: 6,
+                height: 6,
+                decoration: BoxDecoration(shape: BoxShape.circle, color: _imageIndex == index ? Colors.black : Colors.grey[300]),
+              );
+            }),
+          ),
+          const SizedBox(height: 4),
+          Text(_availableImages[_imageIndex]['label']!, style: TextStyle(fontSize: 10, color: Colors.grey[600], fontWeight: FontWeight.w500)),
+        ],
+      ],
     );
   }
 
