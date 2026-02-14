@@ -21,7 +21,7 @@ class DatabaseService {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, 'pockard.db');
 
-    return await openDatabase(path, version: 4, onCreate: _onCreate, onUpgrade: _onUpgrade);
+    return await openDatabase(path, version: 5, onCreate: _onCreate, onUpgrade: _onUpgrade);
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
@@ -37,6 +37,11 @@ class DatabaseService {
       // Add barcodeImagePath column to existing cards table
       await db.execute('ALTER TABLE cards ADD COLUMN barcodeImagePath TEXT');
     }
+    if (oldVersion < 5) {
+      // Add category and backImagePath columns to existing cards table
+      await db.execute('ALTER TABLE cards ADD COLUMN category INTEGER DEFAULT 0');
+      await db.execute('ALTER TABLE cards ADD COLUMN backImagePath TEXT');
+    }
   }
 
   Future<void> _onCreate(Database db, int version) async {
@@ -47,6 +52,7 @@ class DatabaseService {
         name TEXT NOT NULL,
         tags TEXT,
         coverImagePath TEXT,
+        backImagePath TEXT,
         creationDate INTEGER NOT NULL,
         updateDate INTEGER NOT NULL,
         usageCount INTEGER DEFAULT 0,
@@ -54,7 +60,8 @@ class DatabaseService {
         barcodeType TEXT,
         barcodeImagePath TEXT,
         isDeleted INTEGER DEFAULT 0,
-        isPinned INTEGER DEFAULT 0
+        isPinned INTEGER DEFAULT 0,
+        category INTEGER DEFAULT 0
       )
     ''');
 
@@ -161,11 +168,17 @@ class DatabaseService {
   }
 
   // Tag management
-  Future<List<String>> getAllTags() async {
+  Future<List<String>> getAllTags({CardCategory? category}) async {
     final db = await database;
-    final List<Map<String, dynamic>> maps = await db.rawQuery('''
-      SELECT DISTINCT tags FROM cards WHERE tags IS NOT NULL AND tags != ""
-    ''');
+    String query = 'SELECT DISTINCT tags FROM cards WHERE tags IS NOT NULL AND tags != "" AND isDeleted = 0';
+    List<dynamic> args = [];
+    
+    if (category != null) {
+      query += ' AND category = ?';
+      args.add(category.index);
+    }
+    
+    final List<Map<String, dynamic>> maps = await db.rawQuery(query, args);
 
     Set<String> allTags = {};
     for (var map in maps) {

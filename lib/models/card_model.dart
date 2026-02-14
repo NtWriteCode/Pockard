@@ -1,10 +1,13 @@
 import 'package:uuid/uuid.dart';
 
+enum CardCategory { loyalty, identity }
+
 class CardModel {
   final String uuid;
   final String name;
   final List<String> tags;
   final String? coverImagePath;
+  final String? backImagePath;
   final DateTime creationDate;
   final DateTime updateDate;
   final int usageCount;
@@ -13,12 +16,14 @@ class CardModel {
   final String? barcodeImagePath;
   final bool isDeleted;
   final bool isPinned;
+  final CardCategory category;
 
   CardModel({
     String? uuid,
     required this.name,
     this.tags = const [],
     this.coverImagePath,
+    this.backImagePath,
     DateTime? creationDate,
     DateTime? updateDate,
     this.usageCount = 0,
@@ -27,6 +32,7 @@ class CardModel {
     this.barcodeImagePath,
     this.isDeleted = false,
     this.isPinned = false,
+    this.category = CardCategory.loyalty,
   }) : uuid = uuid ?? const Uuid().v4(),
        creationDate = creationDate ?? DateTime.now(),
        updateDate = updateDate ?? DateTime.now();
@@ -35,6 +41,7 @@ class CardModel {
     String? name,
     List<String>? tags,
     Object? coverImagePath = const _Undefined(),
+    Object? backImagePath = const _Undefined(),
     DateTime? updateDate,
     int? usageCount,
     Object? barcodeData = const _Undefined(),
@@ -42,12 +49,14 @@ class CardModel {
     Object? barcodeImagePath = const _Undefined(),
     bool? isDeleted,
     bool? isPinned,
+    CardCategory? category,
   }) {
     return CardModel(
       uuid: uuid,
       name: name ?? this.name,
       tags: tags ?? this.tags,
       coverImagePath: coverImagePath is _Undefined ? this.coverImagePath : coverImagePath as String?,
+      backImagePath: backImagePath is _Undefined ? this.backImagePath : backImagePath as String?,
       creationDate: creationDate,
       updateDate: updateDate ?? DateTime.now(),
       usageCount: usageCount ?? this.usageCount,
@@ -56,6 +65,7 @@ class CardModel {
       barcodeImagePath: barcodeImagePath is _Undefined ? this.barcodeImagePath : barcodeImagePath as String?,
       isDeleted: isDeleted ?? this.isDeleted,
       isPinned: isPinned ?? this.isPinned,
+      category: category ?? this.category,
     );
   }
 
@@ -65,6 +75,7 @@ class CardModel {
       'name': name,
       'tags': tags.join(','),
       'coverImagePath': coverImagePath,
+      'backImagePath': backImagePath,
       'creationDate': creationDate.millisecondsSinceEpoch,
       'updateDate': updateDate.millisecondsSinceEpoch,
       'usageCount': usageCount,
@@ -73,6 +84,7 @@ class CardModel {
       'barcodeImagePath': barcodeImagePath,
       'isDeleted': isDeleted ? 1 : 0, // Convert boolean to int for SQLite
       'isPinned': isPinned ? 1 : 0, // Convert boolean to int for SQLite
+      'category': category.index,
     };
   }
 
@@ -82,6 +94,7 @@ class CardModel {
       name: map['name'] ?? '',
       tags: map['tags'] != null ? (map['tags'] as String).split(',').where((tag) => tag.isNotEmpty).toList() : [],
       coverImagePath: map['coverImagePath'],
+      backImagePath: map['backImagePath'],
       creationDate: DateTime.fromMillisecondsSinceEpoch(map['creationDate'] ?? 0),
       updateDate: DateTime.fromMillisecondsSinceEpoch(map['updateDate'] ?? 0),
       usageCount: map['usageCount'] ?? 0,
@@ -90,6 +103,7 @@ class CardModel {
       barcodeImagePath: map['barcodeImagePath'],
       isDeleted: (map['isDeleted'] ?? 0) == 1, // Convert int to boolean for SQLite
       isPinned: (map['isPinned'] ?? 0) == 1, // Convert int to boolean for SQLite
+      category: CardCategory.values[map['category'] ?? 0],
     );
   }
 
@@ -99,7 +113,7 @@ class CardModel {
 
   @override
   String toString() {
-    return 'CardModel{uuid: $uuid, name: $name, tags: $tags, coverImagePath: $coverImagePath, creationDate: $creationDate, updateDate: $updateDate, usageCount: $usageCount, barcodeData: $barcodeData, barcodeType: $barcodeType, barcodeImagePath: $barcodeImagePath, isDeleted: $isDeleted, isPinned: $isPinned}';
+    return 'CardModel{uuid: $uuid, name: $name, tags: $tags, coverImagePath: $coverImagePath, backImagePath: $backImagePath, creationDate: $creationDate, updateDate: $updateDate, usageCount: $usageCount, barcodeData: $barcodeData, barcodeType: $barcodeType, barcodeImagePath: $barcodeImagePath, isDeleted: $isDeleted, isPinned: $isPinned, category: $category}';
   }
 
   @override
