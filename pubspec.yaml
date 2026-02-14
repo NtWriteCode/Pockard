@@ -43,31 +43,31 @@ dependencies:
   path: ^1.9.1
   
   # Barcode and QR Code Scanning and Generation
-  mobile_scanner: ^7.1.2
+  mobile_scanner: ^7.1.4
   barcode_widget: ^2.0.4
   
   # Screen brightness control
   screen_brightness: ^2.1.7
   
   # Image handling
-  image_picker: ^1.2.0
-  image: ^4.5.4
+  image_picker: ^1.2.1
+  image: ^4.7.2
   flutter_image_compress: ^2.4.0
   image_cropper: ^11.0.0
   
   # File system and storage
   path_provider: ^2.1.5
-  shared_preferences: ^2.5.3
+  shared_preferences: ^2.5.4
   
   # Networking and WebDAV
   webdav_client: ^1.2.2
-  http: ^1.5.0
+  http: ^1.6.0
   
   # SVG support
-  flutter_svg: ^2.2.1
+  flutter_svg: ^2.2.3
   
   # UUID generation
-  uuid: ^4.5.1
+  uuid: ^4.5.2
   
   # Permissions
   permission_handler: ^12.0.1

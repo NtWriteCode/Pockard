@@ -6,7 +6,7 @@ import 'providers/card_provider.dart';
 import 'providers/tag_provider.dart';
 import 'providers/display_provider.dart';
 import 'providers/language_provider.dart';
-import 'screens/main_screen.dart';
+import 'screens/home_screen.dart';
 import 'services/connection_manager.dart';
 
 void main() async {
@@ -48,7 +48,7 @@ class PockardApp extends StatelessWidget {
               Locale('en'), // English
               Locale('hu'), // Hungarian
             ],
-            home: const MainScreen(),
+            home: const HomeScreen(),
             debugShowCheckedModeBanner: false,
           );
         },

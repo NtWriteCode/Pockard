@@ -1021,4 +1021,64 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hideAdvancedSettings => 'Hide Advanced Settings';
+
+  @override
+  String get loyaltyCards => 'Loyalty Cards';
+
+  @override
+  String get identityCards => 'Identity Cards';
+
+  @override
+  String get documents => 'Documents';
+
+  @override
+  String get showLoyaltyCardsSetting => 'Show Loyalty Cards';
+
+  @override
+  String get showIdentityCardsSetting => 'Show Identity Cards';
+
+  @override
+  String get showDocumentsSetting => 'Show Documents';
+
+  @override
+  String get emptyIdentityTitle => 'No Identity Cards';
+
+  @override
+  String get emptyIdentityMessage => 'Add your first ID, driving license or bank card.';
+
+  @override
+  String get addIdentityCard => 'Add Identity';
+
+  @override
+  String get navigationLabel => 'Navigation';
+
+  @override
+  String get navigationDescription => 'Change how you navigate between different card types.';
+
+  @override
+  String get showBottomNav => 'Advanced Navigation';
+
+  @override
+  String get showBottomNavDescription => 'Show bottom bar to switch between Loyalty, Identity and Documents.';
+
+  @override
+  String get documentsPlaceholderTitle => 'Documents Storage';
+
+  @override
+  String get documentsPlaceholderMessage => 'Coming soon...';
+
+  @override
+  String get frontImageLabel => 'Front Image (Optional)';
+
+  @override
+  String get backImageLabel => 'Back Image (Optional)';
+
+  @override
+  String get tapToAddFrontImage => 'Tap to add front image';
+
+  @override
+  String get tapToAddBackImage => 'Tap to add back image';
+
+  @override
+  String get barcodeImageLabel => 'Barcode Image';
 }

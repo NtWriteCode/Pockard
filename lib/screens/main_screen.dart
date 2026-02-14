@@ -18,23 +18,31 @@ import '../widgets/card_grid_tile.dart';
 import '../widgets/card_minimal_tile.dart';
 
 class MainScreen extends StatefulWidget {
-  const MainScreen({super.key});
+  final CardCategory category;
+  
+  const MainScreen({
+    super.key, 
+    this.category = CardCategory.loyalty,
+  });
 
   @override
   State<MainScreen> createState() => _MainScreenState();
 }
 
-class _MainScreenState extends State<MainScreen> {
+class _MainScreenState extends State<MainScreen> with AutomaticKeepAliveClientMixin {
   final TextEditingController _searchController = TextEditingController();
   final ConnectionManager _connectionManager = ConnectionManager();
   bool _isSearchVisible = false;
+  String _localSearchQuery = '';
+  String _localSelectedTag = '';
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<CardProvider>(context, listen: false).loadCards();
-      Provider.of<TagProvider>(context, listen: false).loadTags();
+      final cardProvider = Provider.of<CardProvider>(context, listen: false);
+      cardProvider.loadCards();
+      Provider.of<TagProvider>(context, listen: false).loadTags(category: widget.category);
       // Trigger a rebuild when connection status changes
       _connectionManager.syncStatus.listen((_) {
         if (mounted) {
@@ -222,7 +230,11 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   @override
+  bool get wantKeepAlive => true;
+
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
@@ -239,7 +251,9 @@ class _MainScreenState extends State<MainScreen> {
                 ),
                 style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
                 onChanged: (query) {
-                  Provider.of<CardProvider>(context, listen: false).setSearchQuery(query);
+                  setState(() {
+                    _localSearchQuery = query;
+                  });
                 },
               )
             : Text(l10n.appName),
@@ -250,7 +264,7 @@ class _MainScreenState extends State<MainScreen> {
               setState(() {
                 if (_isSearchVisible) {
                   _searchController.clear();
-                  Provider.of<CardProvider>(context, listen: false).setSearchQuery('');
+                  _localSearchQuery = '';
                 }
                 _isSearchVisible = !_isSearchVisible;
               });
@@ -325,15 +339,21 @@ class _MainScreenState extends State<MainScreen> {
           ),
           IconButton(
             icon: const Icon(Icons.public),
-            onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const GlobalScreen()));
+            onPressed: () async {
+              await Navigator.push(context, MaterialPageRoute(builder: (context) => const GlobalScreen()));
+              if (mounted) {
+                Provider.of<TagProvider>(context, listen: false).loadTags(category: widget.category);
+              }
             },
             tooltip: l10n.globalPool,
           ),
           IconButton(
             icon: const Icon(Icons.settings),
-            onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const SettingsScreen()));
+            onPressed: () async {
+              await Navigator.push(context, MaterialPageRoute(builder: (context) => const SettingsScreen()));
+              if (mounted) {
+                Provider.of<TagProvider>(context, listen: false).loadTags(category: widget.category);
+              }
             },
             tooltip: l10n.settings,
           ),
@@ -341,8 +361,33 @@ class _MainScreenState extends State<MainScreen> {
       ),
       body: Consumer3<CardProvider, TagProvider, DisplayProvider>(
         builder: (context, cardProvider, tagProvider, displayProvider, child) {
-          // Use ordered tags from TagProvider, fallback to CardProvider tags
-          final displayTags = tagProvider.orderedTags.isNotEmpty ? tagProvider.orderedTags : cardProvider.allTags;
+          // 1. Get all cards for this category
+          final cardsForCategory = cardProvider.allCards.where((c) => !c.isDeleted && c.category == widget.category).toList();
+
+          // 2. Extract tags for this category from the cards
+          final categoryTags = <String>{};
+          for (final card in cardsForCategory) {
+            categoryTags.addAll(card.tags);
+          }
+
+          // 3. Match with ordered tags from TagProvider
+          final displayTags = tagProvider.orderedTags.where((t) => categoryTags.contains(t)).toList();
+
+          // 4. Apply local filters to cards
+          List<CardModel> filteredCards = List.from(cardsForCategory);
+
+          // Apply tag filter
+          if (_localSelectedTag.isNotEmpty) {
+            filteredCards = filteredCards.where((card) => card.tags.contains(_localSelectedTag)).toList();
+          }
+
+          // Apply search filter
+          if (_localSearchQuery.isNotEmpty) {
+            filteredCards = filteredCards.where((card) => card.name.toLowerCase().contains(_localSearchQuery.toLowerCase())).toList();
+          }
+
+          // Apply sorting (mimic Provider logic)
+          _applySorting(filteredCards, cardProvider.sortBy);
 
           return Column(
             children: [
@@ -359,21 +404,29 @@ class _MainScreenState extends State<MainScreen> {
                       if (index == 0) {
                         return Padding(
                           padding: const EdgeInsets.only(right: 8.0),
-                          child: TagChip(tag: l10n.filterAll, isSelected: cardProvider.selectedTag.isEmpty, onTap: () => cardProvider.clearTagFilter()),
+                          child: TagChip(
+                            tag: l10n.filterAll,
+                            isSelected: _localSelectedTag.isEmpty,
+                            onTap: () => setState(() => _localSelectedTag = ''),
+                          ),
                         );
                       }
 
                       final tag = displayTags[index - 1];
                       return Padding(
                         padding: const EdgeInsets.only(right: 8.0),
-                        child: TagChip(tag: tag, isSelected: cardProvider.selectedTag == tag, onTap: () => cardProvider.setSelectedTag(tag)),
+                        child: TagChip(
+                          tag: tag,
+                          isSelected: _localSelectedTag == tag,
+                          onTap: () => setState(() => _localSelectedTag = tag),
+                        ),
                       );
                     },
                   ),
                 ),
 
               // Cards list/grid
-              Expanded(child: cardProvider.cards.isEmpty ? _buildEmptyState(context) : _buildCardsLayout(context, cardProvider, displayProvider)),
+              Expanded(child: filteredCards.isEmpty ? _buildEmptyState(context) : _buildCardsLayout(context, filteredCards, displayProvider)),
             ],
           );
         },
@@ -382,8 +435,7 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  Widget _buildCardsLayout(BuildContext context, CardProvider cardProvider, DisplayProvider displayProvider) {
-    final filteredCards = cardProvider.cards;
+  Widget _buildCardsLayout(BuildContext context, List<CardModel> filteredCards, DisplayProvider displayProvider) {
 
     switch (displayProvider.layoutMode) {
       case LayoutMode.rows:
@@ -439,20 +491,28 @@ class _MainScreenState extends State<MainScreen> {
   Widget _buildEmptyState(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
+    final isLoyalty = widget.category == CardCategory.loyalty;
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.credit_card, size: 80, color: Colors.grey[400]),
+          Icon(isLoyalty ? Icons.credit_card : Icons.badge_outlined, size: 80, color: Colors.grey[400]),
           const SizedBox(height: 16),
-          Text(l10n.emptyCardsTitle, style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: Colors.grey[600])),
+          Text(
+            isLoyalty ? l10n.emptyCardsTitle : l10n.emptyIdentityTitle,
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: Colors.grey[600]),
+          ),
           const SizedBox(height: 8),
-          Text(l10n.emptyCardsMessage, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey[500])),
+          Text(
+            isLoyalty ? l10n.emptyCardsMessage : l10n.emptyIdentityMessage,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey[500]),
+          ),
           const SizedBox(height: 24),
           ElevatedButton.icon(
             onPressed: () => _navigateToAddCard(context),
             icon: const Icon(Icons.add),
-            label: Text(l10n.addCard),
+            label: Text(isLoyalty ? l10n.addCard : l10n.addIdentityCard),
             style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12)),
           ),
         ],
@@ -476,13 +536,39 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   void _navigateToCardDetail(BuildContext context, CardModel card) async {
-    await Navigator.push(context, MaterialPageRoute(builder: (context) => CardFormScreen(card: card)));
+    await Navigator.push(context, MaterialPageRoute(builder: (context) => CardFormScreen(card: card, category: widget.category)));
 
+    if (mounted) {
+      Provider.of<TagProvider>(context, listen: false).loadTags(category: widget.category);
+    }
     // Don't increment usage count when editing - only when viewing/using the card
   }
 
-  void _navigateToAddCard(BuildContext context) {
+  void _navigateToAddCard(BuildContext context) async {
     final displayProvider = Provider.of<DisplayProvider>(context, listen: false);
-    Navigator.push(context, MaterialPageRoute(builder: (context) => CardFormScreen(autoStartCamera: displayProvider.autoOpenCamera)));
+    await Navigator.push(context, MaterialPageRoute(builder: (context) => CardFormScreen(autoStartCamera: displayProvider.autoOpenCamera, category: widget.category)));
+
+    if (mounted) {
+      Provider.of<TagProvider>(context, listen: false).loadTags(category: widget.category);
+    }
+  }
+
+  void _applySorting(List<CardModel> cards, String sortBy) {
+    switch (sortBy) {
+      case 'usage':
+        cards.sort((a, b) => b.usageCount.compareTo(a.usageCount));
+        break;
+      case 'recent':
+        cards.sort((a, b) => b.updateDate.compareTo(a.updateDate));
+        break;
+      case 'name':
+        cards.sort((a, b) => a.name.compareTo(b.name));
+        break;
+      case 'date_added':
+        cards.sort((a, b) => b.creationDate.compareTo(a.creationDate));
+        break;
+      default:
+        cards.sort((a, b) => b.updateDate.compareTo(a.updateDate));
+    }
   }
 }

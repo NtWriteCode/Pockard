@@ -24,6 +24,8 @@ class DisplaySettingsTab extends StatelessWidget {
           const SizedBox(height: 24),
           _buildLayoutSection(context),
           const SizedBox(height: 24),
+          _buildNavigationSection(context),
+          const SizedBox(height: 24),
           _buildCameraSection(context),
           const SizedBox(height: 24),
           _buildStatisticsSection(context),
@@ -92,7 +94,7 @@ class DisplaySettingsTab extends StatelessWidget {
               style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface),
             ),
             const SizedBox(height: 8),
-            Text(l10n.themeFlavorDescription, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7))),
+            Text(l10n.themeFlavorDescription, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7))),
             const SizedBox(height: 16),
             Card(
               clipBehavior: Clip.antiAlias,
@@ -117,7 +119,7 @@ class DisplaySettingsTab extends StatelessWidget {
                               color: color,
                               shape: BoxShape.circle,
                               border: Border.all(color: isSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).dividerColor, width: isSelected ? 3 : 1),
-                              boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 4, offset: const Offset(0, 2))],
+                              boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 4, offset: const Offset(0, 2))],
                             ),
                             child: isSelected ? const Icon(Icons.check, color: Colors.white) : null,
                           ),
@@ -396,6 +398,53 @@ class DisplaySettingsTab extends StatelessWidget {
       case LayoutMode.minimal:
         return l10n.layoutMinimalDesc;
     }
+  }
+
+  Widget _buildNavigationSection(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
+    return Consumer<DisplayProvider>(
+      builder: (context, displayProvider, child) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              l10n.navigationLabel,
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface),
+            ),
+            const SizedBox(height: 8),
+            Text(l10n.navigationDescription, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7))),
+            const SizedBox(height: 16),
+            Card(
+              child: Column(
+                children: [
+                  SwitchListTile(
+                    secondary: Icon(Icons.credit_card, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7)),
+                    title: Text(l10n.showLoyaltyCardsSetting, style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Theme.of(context).colorScheme.onSurface)),
+                    value: displayProvider.showLoyalty,
+                    onChanged: (value) => displayProvider.setShowLoyalty(value),
+                  ),
+                  Divider(height: 1, color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2)),
+                  SwitchListTile(
+                    secondary: Icon(Icons.badge_outlined, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7)),
+                    title: Text(l10n.showIdentityCardsSetting, style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Theme.of(context).colorScheme.onSurface)),
+                    value: displayProvider.showIdentity,
+                    onChanged: (value) => displayProvider.setShowIdentity(value),
+                  ),
+                  Divider(height: 1, color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2)),
+                  SwitchListTile(
+                    secondary: Icon(Icons.description_outlined, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7)),
+                    title: Text(l10n.showDocumentsSetting, style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Theme.of(context).colorScheme.onSurface)),
+                    value: displayProvider.showDocuments,
+                    onChanged: (value) => displayProvider.setShowDocuments(value),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Widget _buildCameraSection(BuildContext context) {

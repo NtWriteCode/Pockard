@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import '../services/database_service.dart';
+import '../models/card_model.dart';
 
 class TagProvider with ChangeNotifier {
   final DatabaseService _databaseService = DatabaseService();
@@ -12,13 +13,13 @@ class TagProvider with ChangeNotifier {
   List<String> get allTags => _allTags;
   bool get isLoading => _isLoading;
 
-  Future<void> loadTags() async {
+  Future<void> loadTags({CardCategory? category}) async {
     _isLoading = true;
     notifyListeners();
 
     try {
-      // Get all tags from cards
-      _allTags = await _databaseService.getAllTags();
+      // Get all tags from cards, filtered by category if provided
+      _allTags = await _databaseService.getAllTags(category: category);
 
       // Get saved tag order
       final savedOrder = await _databaseService.getTagOrder();

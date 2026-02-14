@@ -1021,4 +1021,64 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get hideAdvancedSettings => 'Speciális beállítások elrejtése';
+
+  @override
+  String get loyaltyCards => 'Hűségkártyák';
+
+  @override
+  String get identityCards => 'Okmányok';
+
+  @override
+  String get documents => 'Dokumentumok';
+
+  @override
+  String get showLoyaltyCardsSetting => 'Hűségkártyák megjelenítése';
+
+  @override
+  String get showIdentityCardsSetting => 'Személyes okmányok megjelenítése';
+
+  @override
+  String get showDocumentsSetting => 'Dokumentumok megjelenítése';
+
+  @override
+  String get emptyIdentityTitle => 'Még nincsenek iratok';
+
+  @override
+  String get emptyIdentityMessage => 'Add meg az első bankkártyád, személyid, vagy jogosítványod.';
+
+  @override
+  String get addIdentityCard => 'Irat Hozzáadása';
+
+  @override
+  String get navigationLabel => 'Navigáció';
+
+  @override
+  String get navigationDescription => 'Válaszd ki hogyan váltasz a kártyatípusok között.';
+
+  @override
+  String get showBottomNav => 'Speciális Navigáció';
+
+  @override
+  String get showBottomNavDescription => 'Alsó sáv megjelenítése a Hűségkártyák, Iratok és Dokumentumok közötti váltáshoz.';
+
+  @override
+  String get documentsPlaceholderTitle => 'Dokumentum tároló';
+
+  @override
+  String get documentsPlaceholderMessage => 'Hamarosan...';
+
+  @override
+  String get frontImageLabel => 'Előlapi kép (Választható)';
+
+  @override
+  String get backImageLabel => 'Hátlapi kép (Választható)';
+
+  @override
+  String get tapToAddFrontImage => 'Koppints az előlapi kép hozzáadásához';
+
+  @override
+  String get tapToAddBackImage => 'Koppints a hátlapi kép hozzáadásához';
+
+  @override
+  String get barcodeImageLabel => 'Vonalkód kép';
 }

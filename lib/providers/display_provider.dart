@@ -17,6 +17,10 @@ class DisplayProvider extends ChangeNotifier {
   static const String _showGridNamesKey = 'show_grid_names';
   static const String _maxBrightnessKey = 'max_brightness_enabled';
   static const String _flavorKey = 'app_flavor';
+  static const String _showLoyaltyKey = 'show_loyalty';
+  static const String _showIdentityKey = 'show_identity';
+  static const String _showDocumentsKey = 'show_documents';
+  static const String _bottomNavKey = 'show_bottom_nav'; // Keep for migration
 
   AppTheme _currentTheme = AppTheme.light;
   LayoutMode _layoutMode = LayoutMode.rows;
@@ -24,6 +28,9 @@ class DisplayProvider extends ChangeNotifier {
   bool _autoOpenCamera = true; // Auto-open camera when + button is pressed
   bool _showGridNames = true; // Show card names in grid view
   bool _maxBrightnessEnabled = true; // Enable max brightness on barcode view
+  bool _showLoyalty = true;
+  bool _showIdentity = false;
+  bool _showDocuments = false;
   ThemeData? _cachedMaterialYouTheme; // Cached Material You theme with system colors
   AppFlavor _currentFlavor = AppFlavor.pockard;
 
@@ -33,6 +40,10 @@ class DisplayProvider extends ChangeNotifier {
   bool get autoOpenCamera => _autoOpenCamera;
   bool get showGridNames => _showGridNames;
   bool get maxBrightnessEnabled => _maxBrightnessEnabled;
+  bool get showLoyalty => _showLoyalty;
+  bool get showIdentity => _showIdentity;
+  bool get showDocuments => _showDocuments;
+  bool get showBottomNavigation => (_showLoyalty ? 1 : 0) + (_showIdentity ? 1 : 0) + (_showDocuments ? 1 : 0) > 1;
   AppFlavor get currentFlavor => _currentFlavor;
 
   /// Get the current theme data
@@ -235,6 +246,12 @@ class DisplayProvider extends ChangeNotifier {
     final flavorIndex = prefs.getInt(_flavorKey) ?? 0;
     _currentFlavor = AppFlavor.values[flavorIndex];
 
+    // Load fine-grained navigation settings
+    final legacyBottomNav = prefs.getBool(_bottomNavKey) ?? false;
+    _showLoyalty = prefs.getBool(_showLoyaltyKey) ?? true;
+    _showIdentity = prefs.getBool(_showIdentityKey) ?? legacyBottomNav;
+    _showDocuments = prefs.getBool(_showDocumentsKey) ?? legacyBottomNav;
+
     // Pre-build Material You theme if it's the selected theme
     if (_currentTheme == AppTheme.materialYou) {
       _cachedMaterialYouTheme = await _buildMaterialYouTheme();
@@ -305,6 +322,45 @@ class DisplayProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Set individual navigation toggles
+  Future<void> setShowLoyalty(bool show) async {
+    if (!show && !showIdentity && !showDocuments) return; // Must have at least one enabled
+    _showLoyalty = show;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_showLoyaltyKey, show);
+    notifyListeners();
+  }
+
+  Future<void> setShowIdentity(bool show) async {
+    if (!show && !showLoyalty && !showDocuments) return; // Must have at least one enabled
+    _showIdentity = show;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_showIdentityKey, show);
+    notifyListeners();
+  }
+
+  Future<void> setShowDocuments(bool show) async {
+    if (!show && !showLoyalty && !showIdentity) return; // Must have at least one enabled
+    _showDocuments = show;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_showDocumentsKey, show);
+    notifyListeners();
+  }
+
+  /// Legacy setter for backwards compatibility if needed, 
+  /// but we should transition to individual ones.
+  Future<void> setShowBottomNavigation(bool show) async {
+    _showLoyalty = true; // Always show loyalty in legacy mode
+    _showIdentity = show;
+    _showDocuments = show;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_showLoyaltyKey, true);
+    await prefs.setBool(_showIdentityKey, show);
+    await prefs.setBool(_showDocumentsKey, show);
+    await prefs.setBool(_bottomNavKey, show);
+    notifyListeners();
+  }
+
   /// Get theme name key for localization lookup
   /// Returns the key to use with AppLocalizations
   String getThemeNameKey(AppTheme theme) {
@@ -361,6 +417,9 @@ class DisplayProvider extends ChangeNotifier {
       'show_grid_names': _showGridNames,
       'max_brightness_enabled': _maxBrightnessEnabled,
       'flavor': _currentFlavor.index,
+      'show_loyalty': _showLoyalty,
+      'show_identity': _showIdentity,
+      'show_documents': _showDocuments,
     };
   }
 
@@ -389,6 +448,13 @@ class DisplayProvider extends ChangeNotifier {
       await prefs.setBool(_showGridNamesKey, _showGridNames);
       await prefs.setBool(_maxBrightnessKey, _maxBrightnessEnabled);
       await prefs.setInt(_flavorKey, _currentFlavor.index); // Save flavor setting
+
+      _showLoyalty = settings['show_loyalty'] ?? true;
+      _showIdentity = settings['show_identity'] ?? false;
+      _showDocuments = settings['show_documents'] ?? false;
+      await prefs.setBool(_showLoyaltyKey, _showLoyalty);
+      await prefs.setBool(_showIdentityKey, _showIdentity);
+      await prefs.setBool(_showDocumentsKey, _showDocuments);
 
       notifyListeners();
     } catch (e) {

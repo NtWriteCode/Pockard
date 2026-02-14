@@ -1993,6 +1993,126 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Hide Advanced Settings'**
   String get hideAdvancedSettings;
+
+  /// No description provided for @loyaltyCards.
+  ///
+  /// In en, this message translates to:
+  /// **'Loyalty Cards'**
+  String get loyaltyCards;
+
+  /// No description provided for @identityCards.
+  ///
+  /// In en, this message translates to:
+  /// **'Identity Cards'**
+  String get identityCards;
+
+  /// No description provided for @documents.
+  ///
+  /// In en, this message translates to:
+  /// **'Documents'**
+  String get documents;
+
+  /// No description provided for @showLoyaltyCardsSetting.
+  ///
+  /// In en, this message translates to:
+  /// **'Show Loyalty Cards'**
+  String get showLoyaltyCardsSetting;
+
+  /// No description provided for @showIdentityCardsSetting.
+  ///
+  /// In en, this message translates to:
+  /// **'Show Identity Cards'**
+  String get showIdentityCardsSetting;
+
+  /// No description provided for @showDocumentsSetting.
+  ///
+  /// In en, this message translates to:
+  /// **'Show Documents'**
+  String get showDocumentsSetting;
+
+  /// No description provided for @emptyIdentityTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No Identity Cards'**
+  String get emptyIdentityTitle;
+
+  /// No description provided for @emptyIdentityMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your first ID, driving license or bank card.'**
+  String get emptyIdentityMessage;
+
+  /// No description provided for @addIdentityCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Identity'**
+  String get addIdentityCard;
+
+  /// No description provided for @navigationLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Navigation'**
+  String get navigationLabel;
+
+  /// No description provided for @navigationDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Change how you navigate between different card types.'**
+  String get navigationDescription;
+
+  /// No description provided for @showBottomNav.
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced Navigation'**
+  String get showBottomNav;
+
+  /// No description provided for @showBottomNavDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Show bottom bar to switch between Loyalty, Identity and Documents.'**
+  String get showBottomNavDescription;
+
+  /// No description provided for @documentsPlaceholderTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Documents Storage'**
+  String get documentsPlaceholderTitle;
+
+  /// No description provided for @documentsPlaceholderMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Coming soon...'**
+  String get documentsPlaceholderMessage;
+
+  /// No description provided for @frontImageLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Front Image (Optional)'**
+  String get frontImageLabel;
+
+  /// No description provided for @backImageLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Back Image (Optional)'**
+  String get backImageLabel;
+
+  /// No description provided for @tapToAddFrontImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to add front image'**
+  String get tapToAddFrontImage;
+
+  /// No description provided for @tapToAddBackImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to add back image'**
+  String get tapToAddBackImage;
+
+  /// No description provided for @barcodeImageLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Barcode Image'**
+  String get barcodeImageLabel;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
