@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/display_provider.dart';
 import '../providers/card_provider.dart';
+import '../providers/document_provider.dart';
 import '../providers/tag_provider.dart';
 import '../models/card_model.dart';
 import 'main_screen.dart';
@@ -97,6 +98,9 @@ class _HomeScreenState extends State<HomeScreen> {
           if (category != null) {
             cardProvider.setFilterCategory(category);
             Provider.of<TagProvider>(context, listen: false).loadTags(category: category);
+          } else if (displayProvider.showDocuments && categories[index] == null) {
+            // Reload documents when swiping to the documents tab
+            Provider.of<DocumentProvider>(context, listen: false).loadDocuments();
           }
         },
         children: tabs,

@@ -341,5 +341,10 @@
   "syncConflictMessage": "{count} kártya létezik helyben, de hiányzik a szerverről. Mit szeretnél tenni?",
   "keepAndUpload": "Megtartás és Feltöltés",
   "deleteLocal": "Törlés az eszközről",
-  "deleted": "törölve"
+  "deleted": "törölve",
+  "duplicateFileError": "Ez a dokumentum már létezik.",
+  "recent": "Legutóbbi",
+  "name": "Név",
+  "all": "Összes",
+  "noCardsFound": "Nem található dokumentum"
 }

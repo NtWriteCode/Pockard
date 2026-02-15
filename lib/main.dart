@@ -3,6 +3,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'l10n/app_localizations.dart';
 import 'providers/card_provider.dart';
+import 'providers/document_provider.dart';
 import 'providers/tag_provider.dart';
 import 'providers/display_provider.dart';
 import 'providers/language_provider.dart';
@@ -28,6 +29,7 @@ class PockardApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => CardProvider()),
+        ChangeNotifierProvider(create: (_) => DocumentProvider()..loadDocuments()),
         ChangeNotifierProvider(create: (_) => TagProvider()),
         ChangeNotifierProvider(create: (_) => DisplayProvider()..loadSettings()),
         ChangeNotifierProvider(create: (_) => LanguageProvider()..loadLanguage()),

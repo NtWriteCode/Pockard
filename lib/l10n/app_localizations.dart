@@ -2143,6 +2143,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'deleted'**
   String get deleted;
+
+  /// No description provided for @duplicateFileError.
+  ///
+  /// In en, this message translates to:
+  /// **'This document already exists.'**
+  String get duplicateFileError;
+
+  /// No description provided for @recent.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent'**
+  String get recent;
+
+  /// No description provided for @name.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get name;
+
+  /// No description provided for @all.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get all;
+
+  /// No description provided for @noCardsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No documents found'**
+  String get noCardsFound;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

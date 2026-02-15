@@ -341,5 +341,10 @@
   "syncConflictMessage": "{count} cards exist locally but are missing from the server. What would you like to do?",
   "keepAndUpload": "Keep & Upload",
   "deleteLocal": "Delete from Device",
-  "deleted": "deleted"
+  "deleted": "deleted",
+  "duplicateFileError": "This document already exists.",
+  "recent": "Recent",
+  "name": "Name",
+  "all": "All",
+  "noCardsFound": "No documents found"
 }

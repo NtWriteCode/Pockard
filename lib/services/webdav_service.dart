@@ -119,6 +119,7 @@ class WebDavService {
       await createDirectory(pockardPath);
       await createDirectory('$pockardPath/cards');
       await createDirectory('$pockardPath/images');
+      await createDirectory('$pockardPath/documents');
       debugPrint('Created app directories');
     } catch (e) {
       debugPrint('Error creating app directories: $e');

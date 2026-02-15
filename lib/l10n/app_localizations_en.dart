@@ -1098,4 +1098,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get deleted => 'deleted';
+
+  @override
+  String get duplicateFileError => 'This document already exists.';
+
+  @override
+  String get recent => 'Recent';
+
+  @override
+  String get name => 'Name';
+
+  @override
+  String get all => 'All';
+
+  @override
+  String get noCardsFound => 'No documents found';
 }

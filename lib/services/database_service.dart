@@ -4,6 +4,7 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 import '../models/card_model.dart';
+import '../models/document_model.dart';
 
 class DatabaseService {
   static final DatabaseService _instance = DatabaseService._internal();
@@ -21,7 +22,7 @@ class DatabaseService {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, 'pockard.db');
 
-    return await openDatabase(path, version: 5, onCreate: _onCreate, onUpgrade: _onUpgrade);
+    return await openDatabase(path, version: 6, onCreate: _onCreate, onUpgrade: _onUpgrade);
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
@@ -41,6 +42,24 @@ class DatabaseService {
       // Add category and backImagePath columns to existing cards table
       await db.execute('ALTER TABLE cards ADD COLUMN category INTEGER DEFAULT 0');
       await db.execute('ALTER TABLE cards ADD COLUMN backImagePath TEXT');
+    }
+    if (oldVersion < 6) {
+      // Create documents table
+      await db.execute('''
+        CREATE TABLE documents(
+          uuid TEXT PRIMARY KEY,
+          name TEXT NOT NULL,
+          tags TEXT,
+          previewBase64 TEXT,
+          localFilePath TEXT,
+          fileHash TEXT NOT NULL,
+          fileSizeBytes INTEGER NOT NULL,
+          creationDate INTEGER NOT NULL,
+          updateDate INTEGER NOT NULL,
+          isDeleted INTEGER DEFAULT 0,
+          isPinned INTEGER DEFAULT 0
+        )
+      ''');
     }
   }
 
@@ -62,6 +81,23 @@ class DatabaseService {
         isDeleted INTEGER DEFAULT 0,
         isPinned INTEGER DEFAULT 0,
         category INTEGER DEFAULT 0
+      )
+    ''');
+
+    // Documents table
+    await db.execute('''
+      CREATE TABLE documents(
+        uuid TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        tags TEXT,
+        previewBase64 TEXT,
+        localFilePath TEXT,
+        fileHash TEXT NOT NULL,
+        fileSizeBytes INTEGER NOT NULL,
+        creationDate INTEGER NOT NULL,
+        updateDate INTEGER NOT NULL,
+        isDeleted INTEGER DEFAULT 0,
+        isPinned INTEGER DEFAULT 0
       )
     ''');
 
@@ -129,6 +165,72 @@ class DatabaseService {
     return await db.rawUpdate('UPDATE cards SET isPinned = ?, updateDate = ? WHERE uuid = ?', [isPinned ? 1 : 0, DateTime.now().millisecondsSinceEpoch, uuid]);
   }
 
+  // Document CRUD operations
+  Future<int> insertDocument(DocumentModel document) async {
+    final db = await database;
+    return await db.insert('documents', document.toMap());
+  }
+
+  Future<List<DocumentModel>> getAllDocuments() async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.query('documents');
+    return List.generate(maps.length, (i) => DocumentModel.fromMap(maps[i]));
+  }
+
+  Future<DocumentModel?> getDocument(String uuid) async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.query('documents', where: 'uuid = ?', whereArgs: [uuid]);
+    if (maps.isNotEmpty) {
+      return DocumentModel.fromMap(maps.first);
+    }
+    return null;
+  }
+
+  Future<int> updateDocument(DocumentModel document) async {
+    final db = await database;
+    return await db.update('documents', document.toMap(), where: 'uuid = ?', whereArgs: [document.uuid]);
+  }
+
+  Future<int> deleteDocument(String uuid) async {
+    final db = await database;
+    return await db.delete('documents', where: 'uuid = ?', whereArgs: [uuid]);
+  }
+
+  Future<int> toggleDocumentPin(String uuid, bool isPinned) async {
+    final db = await database;
+    return await db.rawUpdate('UPDATE documents SET isPinned = ?, updateDate = ? WHERE uuid = ?', [isPinned ? 1 : 0, DateTime.now().millisecondsSinceEpoch, uuid]);
+  }
+
+  Future<List<DocumentModel>> searchDocuments(String query) async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.query('documents', where: 'name LIKE ?', whereArgs: ['%$query%']);
+    return List.generate(maps.length, (i) => DocumentModel.fromMap(maps[i]));
+  }
+
+  Future<List<DocumentModel>> getDocumentsSorted(String sortBy) async {
+    final db = await database;
+    String orderBy;
+
+    switch (sortBy) {
+      case 'name':
+        orderBy = 'name ASC';
+        break;
+      case 'recent':
+      case 'date_added':
+      default:
+        orderBy = 'creationDate DESC';
+    }
+
+    final List<Map<String, dynamic>> maps = await db.query('documents', orderBy: orderBy);
+    return List.generate(maps.length, (i) => DocumentModel.fromMap(maps[i]));
+  }
+
+  Future<List<DocumentModel>> getDocumentsByTag(String tag) async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.query('documents', where: 'tags LIKE ?', whereArgs: ['%$tag%']);
+    return List.generate(maps.length, (i) => DocumentModel.fromMap(maps[i]));
+  }
+
   // Search and filter operations
   Future<List<CardModel>> searchCards(String query) async {
     final db = await database;
@@ -168,12 +270,13 @@ class DatabaseService {
   }
 
   // Tag management
-  Future<List<String>> getAllTags({CardCategory? category}) async {
+  Future<List<String>> getAllTags({CardCategory? category, bool forDocuments = false}) async {
     final db = await database;
-    String query = 'SELECT DISTINCT tags FROM cards WHERE tags IS NOT NULL AND tags != "" AND isDeleted = 0';
+    String table = forDocuments ? 'documents' : 'cards';
+    String query = 'SELECT DISTINCT tags FROM $table WHERE tags IS NOT NULL AND tags != "" AND isDeleted = 0';
     List<dynamic> args = [];
     
-    if (category != null) {
+    if (!forDocuments && category != null) {
       query += ' AND category = ?';
       args.add(category.index);
     }

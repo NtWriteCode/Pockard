@@ -1098,4 +1098,19 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get deleted => 'törölve';
+
+  @override
+  String get duplicateFileError => 'Ez a dokumentum már létezik.';
+
+  @override
+  String get recent => 'Legutóbbi';
+
+  @override
+  String get name => 'Név';
+
+  @override
+  String get all => 'Összes';
+
+  @override
+  String get noCardsFound => 'Nem található dokumentum';
 }
