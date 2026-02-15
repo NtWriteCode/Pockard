@@ -1081,4 +1081,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get barcodeImageLabel => 'Barcode Image';
+
+  @override
+  String get syncConflictTitle => 'Sync Conflict';
+
+  @override
+  String syncConflictMessage(Object count) {
+    return '$count cards exist locally but are missing from the server. What would you like to do?';
+  }
+
+  @override
+  String get keepAndUpload => 'Keep & Upload';
+
+  @override
+  String get deleteLocal => 'Delete from Device';
+
+  @override
+  String get deleted => 'deleted';
 }

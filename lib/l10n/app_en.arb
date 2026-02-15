@@ -336,5 +336,10 @@
   "backImageLabel": "Back Image (Optional)",
   "tapToAddFrontImage": "Tap to add front image",
   "tapToAddBackImage": "Tap to add back image",
-  "barcodeImageLabel": "Barcode Image"
+  "barcodeImageLabel": "Barcode Image",
+  "syncConflictTitle": "Sync Conflict",
+  "syncConflictMessage": "{count} cards exist locally but are missing from the server. What would you like to do?",
+  "keepAndUpload": "Keep & Upload",
+  "deleteLocal": "Delete from Device",
+  "deleted": "deleted"
 }

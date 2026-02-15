@@ -341,9 +341,8 @@ class _MainScreenState extends State<MainScreen> with AutomaticKeepAliveClientMi
             icon: const Icon(Icons.public),
             onPressed: () async {
               await Navigator.push(context, MaterialPageRoute(builder: (context) => const GlobalScreen()));
-              if (mounted) {
-                Provider.of<TagProvider>(context, listen: false).loadTags(category: widget.category);
-              }
+              if (!context.mounted) return;
+              Provider.of<TagProvider>(context, listen: false).loadTags(category: widget.category);
             },
             tooltip: l10n.globalPool,
           ),
@@ -351,9 +350,8 @@ class _MainScreenState extends State<MainScreen> with AutomaticKeepAliveClientMi
             icon: const Icon(Icons.settings),
             onPressed: () async {
               await Navigator.push(context, MaterialPageRoute(builder: (context) => const SettingsScreen()));
-              if (mounted) {
-                Provider.of<TagProvider>(context, listen: false).loadTags(category: widget.category);
-              }
+              if (!context.mounted) return;
+              Provider.of<TagProvider>(context, listen: false).loadTags(category: widget.category);
             },
             tooltip: l10n.settings,
           ),
@@ -538,9 +536,8 @@ class _MainScreenState extends State<MainScreen> with AutomaticKeepAliveClientMi
   void _navigateToCardDetail(BuildContext context, CardModel card) async {
     await Navigator.push(context, MaterialPageRoute(builder: (context) => CardFormScreen(card: card, category: widget.category)));
 
-    if (mounted) {
-      Provider.of<TagProvider>(context, listen: false).loadTags(category: widget.category);
-    }
+    if (!context.mounted) return;
+    Provider.of<TagProvider>(context, listen: false).loadTags(category: widget.category);
     // Don't increment usage count when editing - only when viewing/using the card
   }
 
@@ -548,9 +545,8 @@ class _MainScreenState extends State<MainScreen> with AutomaticKeepAliveClientMi
     final displayProvider = Provider.of<DisplayProvider>(context, listen: false);
     await Navigator.push(context, MaterialPageRoute(builder: (context) => CardFormScreen(autoStartCamera: displayProvider.autoOpenCamera, category: widget.category)));
 
-    if (mounted) {
-      Provider.of<TagProvider>(context, listen: false).loadTags(category: widget.category);
-    }
+    if (!context.mounted) return;
+    Provider.of<TagProvider>(context, listen: false).loadTags(category: widget.category);
   }
 
   void _applySorting(List<CardModel> cards, String sortBy) {

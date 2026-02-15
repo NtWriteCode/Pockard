@@ -19,6 +19,7 @@ There are many great loyalty card apps out there - seriously, some are amazing! 
 
 **The Solution - Pockard**:
 - ✅ **Self-Hosted Sync**: Use ANY WebDAV server you control (NAS, VPS, Raspberry Pi, etc.)
+  - Why WebDAV? Because it's a standard protocol that works with any server, don't trust my randomly made up authentication/protocol.
 - ✅ **Choice to sync or not**: Can be easily used with or without the self-hosted sync server
 - ✅ **Open Source Client**: Fully transparent code you can inspect and trust
 - ✅ **Easy Family Sharing**: Share cards with family members using the same server

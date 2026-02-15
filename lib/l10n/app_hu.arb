@@ -336,5 +336,10 @@
   "backImageLabel": "Hátlapi kép (Választható)",
   "tapToAddFrontImage": "Koppints az előlapi kép hozzáadásához",
   "tapToAddBackImage": "Koppints a hátlapi kép hozzáadásához",
-  "barcodeImageLabel": "Vonalkód kép"
+  "barcodeImageLabel": "Vonalkód kép",
+  "syncConflictTitle": "Szinkronizálási Ütközés",
+  "syncConflictMessage": "{count} kártya létezik helyben, de hiányzik a szerverről. Mit szeretnél tenni?",
+  "keepAndUpload": "Megtartás és Feltöltés",
+  "deleteLocal": "Törlés az eszközről",
+  "deleted": "törölve"
 }

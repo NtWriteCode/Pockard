@@ -1081,4 +1081,21 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get barcodeImageLabel => 'Vonalkód kép';
+
+  @override
+  String get syncConflictTitle => 'Szinkronizálási Ütközés';
+
+  @override
+  String syncConflictMessage(Object count) {
+    return '$count kártya létezik helyben, de hiányzik a szerverről. Mit szeretnél tenni?';
+  }
+
+  @override
+  String get keepAndUpload => 'Megtartás és Feltöltés';
+
+  @override
+  String get deleteLocal => 'Törlés az eszközről';
+
+  @override
+  String get deleted => 'törölve';
 }

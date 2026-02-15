@@ -108,9 +108,7 @@ class _LogoSearchScreenState extends State<LogoSearchScreen> {
       }
 
       // Step 3: Show cropper with the high-res padded image
-      if (!mounted) {
-        throw Exception(AppLocalizations.of(context)!.exceptionContextNotAvailable);
-      }
+      if (!mounted) return;
 
       final croppedFile = await ImageCropper().cropImage(
         sourcePath: paddedPngPath,
@@ -139,6 +137,7 @@ class _LogoSearchScreenState extends State<LogoSearchScreen> {
         if (await tempFile.exists()) {
           await tempFile.delete();
         }
+        if (!mounted) return;
         throw Exception(AppLocalizations.of(context)!.exceptionLogoSelectionCancelled);
       }
 

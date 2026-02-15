@@ -2113,6 +2113,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Barcode Image'**
   String get barcodeImageLabel;
+
+  /// No description provided for @syncConflictTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync Conflict'**
+  String get syncConflictTitle;
+
+  /// No description provided for @syncConflictMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} cards exist locally but are missing from the server. What would you like to do?'**
+  String syncConflictMessage(Object count);
+
+  /// No description provided for @keepAndUpload.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep & Upload'**
+  String get keepAndUpload;
+
+  /// No description provided for @deleteLocal.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete from Device'**
+  String get deleteLocal;
+
+  /// No description provided for @deleted.
+  ///
+  /// In en, this message translates to:
+  /// **'deleted'**
+  String get deleted;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
