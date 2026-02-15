@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../models/sync_settings_model.dart';
 import '../../services/sync_settings_service.dart';
@@ -7,6 +8,7 @@ import '../../services/connection_manager.dart';
 import '../../providers/card_provider.dart';
 import '../../providers/display_provider.dart';
 import '../../providers/tag_provider.dart';
+import 'database_management_screen.dart';
 import '../../l10n/app_localizations.dart';
 
 class SyncSettingsTab extends StatefulWidget {
@@ -132,6 +134,8 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
       // Update connection manager with new settings and status
       if (success && updatedSettings != null) {
         await _connectionManager.updateSettings(updatedSettings);
+        // Trigger password manager to save the credentials
+        TextInput.finishAutofillContext();
       }
 
       if (mounted) {
@@ -367,24 +371,44 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
             final l10n = AppLocalizations.of(context)!;
             return Column(
               children: [
-                TextField(
-                  controller: _serverController,
-                  decoration: InputDecoration(labelText: l10n.serverAddress, helperText: l10n.serverAddressHint, border: const OutlineInputBorder()),
+                AutofillGroup(
+                  child: Column(
+                    children: [
+                      TextField(
+                        controller: _serverController,
+                        decoration: InputDecoration(
+                          labelText: l10n.serverAddress,
+                          helperText: l10n.serverAddressHint,
+                          border: const OutlineInputBorder(),
+                        ),
+                        keyboardType: TextInputType.url,
+                        autofillHints: const [AutofillHints.url],
+                      ),
+                      const SizedBox(height: 16),
+                      TextField(
+                        controller: _usernameController,
+                        decoration: InputDecoration(
+                          labelText: l10n.username,
+                          border: const OutlineInputBorder(),
+                        ),
+                        keyboardType: TextInputType.emailAddress,
+                        autofillHints: const [AutofillHints.username, AutofillHints.email],
+                      ),
+                      const SizedBox(height: 16),
+                      TextField(
+                        controller: _passwordController,
+                        decoration: InputDecoration(
+                          labelText: l10n.password,
+                          border: const OutlineInputBorder(),
+                        ),
+                        obscureText: true,
+                        keyboardType: TextInputType.visiblePassword,
+                        autofillHints: const [AutofillHints.password],
+                        onSubmitted: (_) => _testConnection(),
+                      ),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 16),
-
-                TextField(
-                  controller: _usernameController,
-                  decoration: InputDecoration(labelText: l10n.username, border: const OutlineInputBorder()),
-                ),
-                const SizedBox(height: 16),
-
-                TextField(
-                  controller: _passwordController,
-                  decoration: InputDecoration(labelText: l10n.password, border: const OutlineInputBorder()),
-                  obscureText: true,
-                ),
-                const SizedBox(height: 16),
               ],
             );
           },
@@ -464,6 +488,21 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
               ),
             ),
           ],
+        ),
+
+        const SizedBox(height: 12),
+
+        // Database Management Button
+        SizedBox(
+          width: double.infinity,
+          child: OutlinedButton.icon(
+            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const DatabaseManagementScreen())),
+            icon: const Icon(Icons.build_circle_outlined),
+            label: const Text('Manage Database & Repairs'),
+            style: OutlinedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+            ),
+          ),
         ),
 
         const SizedBox(height: 16),
@@ -631,9 +670,11 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
       // Initialize WebDAV client if needed
       await _syncService.initializeFromSettings();
 
-      final importedCards = await _syncService.importCardsWithManifest();
+      final syncResult = await _syncService.importCardsWithManifest();
+      final importedCards = syncResult.importedCards;
+      final deletionCandidates = syncResult.deletionCandidates;
 
-      if (importedCards.isEmpty) {
+      if (importedCards.isEmpty && deletionCandidates.isEmpty) {
         if (mounted) {
           final l10n = AppLocalizations.of(context)!;
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.noCardsToImport), backgroundColor: Theme.of(context).colorScheme.surface));
@@ -650,7 +691,9 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
 
       int imported = 0;
       int updated = 0;
+      int deleted = 0;
 
+      // 1. Process Imports
       for (final card in importedCards) {
         final existingCard = cardProvider.allCards.where((c) => c.uuid == card.uuid).firstOrNull;
         debugPrint('Checking card ${card.uuid}: existing=${existingCard != null}');
@@ -662,6 +705,41 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
           debugPrint('Adding new card: ${card.name}');
           await cardProvider.addCard(card);
           imported++;
+        }
+      }
+
+      // 2. Process Deletion Candidates (Ask User)
+      if (deletionCandidates.isNotEmpty) {
+        if (mounted) {
+           final l10n = AppLocalizations.of(context)!;
+           final shouldDelete = await showDialog<bool>(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: Text(l10n.syncConflictTitle),
+              content: Text(l10n.syncConflictMessage(deletionCandidates.length)),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false), // Keep & Upload
+                  child: Text(l10n.keepAndUpload),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(true), // Delete Local
+                  child: Text(l10n.deleteLocal, style: TextStyle(color: Theme.of(context).colorScheme.error)),
+                ),
+              ],
+            ),
+          );
+
+          if (shouldDelete == true) {
+             for (final card in deletionCandidates) {
+               // We use permanentlyDeleteCard because the user explicitly chose to delete them
+               // to match the server state (where they don't exist).
+               await cardProvider.permanentlyDeleteCard(card.uuid);
+               deleted++;
+             }
+          }
+           // If shouldDelete is false (Keep), we do nothing. 
+           // They will be picked up by the next export cycle or auto-sync and uploaded.
         }
       }
 
@@ -690,8 +768,12 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
 
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
+        String message = '${l10n.importComplete}: $imported ${l10n.newCards}, $updated ${l10n.updated}';
+        if (deleted > 0) {
+          message += ', $deleted ${l10n.deleted}';
+        }
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${l10n.importComplete}: $imported ${l10n.newCards}, $updated ${l10n.updated}'), backgroundColor: Theme.of(context).colorScheme.primary),
+          SnackBar(content: Text(message), backgroundColor: Theme.of(context).colorScheme.primary),
         );
       }
     } catch (e) {
