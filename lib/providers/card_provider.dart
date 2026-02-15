@@ -410,23 +410,38 @@ class CardProvider with ChangeNotifier {
         return;
       }
 
-      // Get active and deleted cards
-      final activeCards = cards;
-      final deleted = deletedCards;
+      // Get all cards (active and deleted) for sync
+      final allCardsToSync = List<CardModel>.from(_cards);
 
-      // Handle deleted cards first
-      if (deleted.isNotEmpty) {
-        await _syncService.handleDeletedCards(deleted);
-
-        // Permanently delete cards locally after successful server deletion
-        for (final card in deleted) {
-          await permanentlyDeleteCard(card.uuid);
-        }
-      }
+      // Handle deleted cards: We no longer hard delete them. 
+      // Instead, they are included in 'allCardsToSync' and uploaded as Tombstones (isDeleted: true).
+      // The Database Manager allows permanent deletion if desired.
 
       // Export active cards using manifest-based approach
-      if (activeCards.isNotEmpty) {
-        await _syncService.exportCards(activeCards);
+      // Also perform import first as part of "two-way" sync logic
+      final syncResult = await _syncService.importCardsWithManifest();
+      
+      // Auto-sync strategy:
+      // 1. Import all updates from server
+      for (final card in syncResult.importedCards) {
+        final existingCard = _cards.indexWhere((c) => c.uuid == card.uuid);
+        if (existingCard != -1) {
+          await _databaseService.updateCard(card);
+          _cards[existingCard] = card;
+        } else {
+          await _databaseService.insertCard(card);
+          _cards.add(card);
+        }
+      }
+      
+      // 2. Ignore deletionCandidates (Keep local copies). They will be uploaded in the export step below.
+      // This ensures auto-sync never deletes data silently.
+      
+      await _loadTags(); // Refresh tags after potential imports
+      notifyListeners();
+
+      if (allCardsToSync.isNotEmpty) {
+        await _syncService.exportCards(allCardsToSync);
       }
 
       // Record successful sync

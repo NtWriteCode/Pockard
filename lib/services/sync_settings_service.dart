@@ -9,6 +9,13 @@ import '../models/sync_manifest_model.dart';
 import 'webdav_service.dart';
 import 'database_service.dart';
 
+class SyncResult {
+  final List<CardModel> importedCards;
+  final List<CardModel> deletionCandidates;
+
+  SyncResult({required this.importedCards, required this.deletionCandidates});
+}
+
 /// Service responsible for sync settings and card synchronization via WebDAV
 class SyncSettingsService {
   static final SyncSettingsService _instance = SyncSettingsService._internal();
@@ -373,7 +380,7 @@ class SyncSettingsService {
   }
 
   /// Export cards to WebDAV server using a manifest file
-  Future<void> exportCardsWithManifest(List<CardModel> cards, DateTime preferencesTimestamp) async {
+  Future<void> exportCardsWithManifest(List<CardModel> cards, DateTime preferencesTimestamp, {bool forceAll = false}) async {
     if (!_webdavService.isInitialized) {
       throw Exception('WebDAV client not initialized');
     }
@@ -387,17 +394,21 @@ class SyncSettingsService {
 
       // 1. Try to get existing remote manifest to compare
       SyncManifest? remoteManifest;
-      try {
-        final manifestBytes = await _webdavService.downloadFile('$pockardPath/manifest.json');
-        final manifestJson = json.decode(utf8.decode(manifestBytes));
-        remoteManifest = SyncManifest.fromJson(manifestJson);
-      } catch (e) {
-        debugPrint('No existing manifest found, will upload all cards: $e');
+      if (!forceAll) {
+        try {
+          final manifestBytes = await _webdavService.downloadFile('$pockardPath/manifest.json');
+          final manifestJson = json.decode(utf8.decode(manifestBytes));
+          remoteManifest = SyncManifest.fromJson(manifestJson);
+        } catch (e) {
+          debugPrint('No existing manifest found, will upload all cards: $e');
+        }
       }
 
       // 2. Determine which cards need to be uploaded
       final cardsToUpload = <CardModel>[];
-      if (remoteManifest != null) {
+      if (forceAll || remoteManifest == null) {
+        cardsToUpload.addAll(cards);
+      } else {
         // Compare with remote manifest to find changed cards
         for (final card in cards) {
           final remoteTimestamp = remoteManifest.cardTimestamps[card.uuid];
@@ -405,9 +416,6 @@ class SyncSettingsService {
             cardsToUpload.add(card);
           }
         }
-      } else {
-        // No remote manifest, upload all cards
-        cardsToUpload.addAll(cards);
       }
 
       // 3. Upload only the changed cards
@@ -493,7 +501,7 @@ class SyncSettingsService {
   }
 
   /// Import cards from WebDAV server using a manifest file
-  Future<List<CardModel>> importCardsWithManifest() async {
+  Future<SyncResult> importCardsWithManifest() async {
     if (!_webdavService.isInitialized) {
       throw Exception('WebDAV client not initialized');
     }
@@ -512,6 +520,7 @@ class SyncSettingsService {
       final localCardMap = {for (var card in localCards) card.uuid: card};
 
       final cardsToImport = <CardModel>[];
+      final deletionCandidates = <CardModel>[];
 
       // 3. Compare remote manifest with local data
       for (final remoteEntry in remoteManifest.cardTimestamps.entries) {
@@ -523,23 +532,35 @@ class SyncSettingsService {
         if (localCard == null || remoteTimestamp.isAfter(localCard.updateDate)) {
           final card = await _downloadCard(remoteUuid, pockardPath);
           if (card != null) {
-            cardsToImport.add(card);
+            // Check for Tombstone (server says it's deleted)
+            if (card.isDeleted) {
+               // If we have it locally and it's not already deleted, we should update it to match server
+               // But if we don't have it, we don't need to import a deleted card
+               if (localCard != null && !localCard.isDeleted) {
+                 cardsToImport.add(card);
+               }
+            } else {
+               cardsToImport.add(card);
+            }
           }
         }
       }
 
-      // 4. Handle deletions: cards present locally but not in remote manifest
+      // 4. Identify Deletion Candidates: cards present locally but not in remote manifest
+      // We do NOT auto-delete them anymore. We return them for user decision.
       for (final localCard in localCards) {
-        if (!remoteManifest.cardTimestamps.containsKey(localCard.uuid)) {
-          await DatabaseService().deleteCard(localCard.uuid);
+        // Only consider active cards as candidates for deletion
+        if (!localCard.isDeleted && !remoteManifest.cardTimestamps.containsKey(localCard.uuid)) {
+          deletionCandidates.add(localCard);
         }
       }
 
-      return cardsToImport;
+      return SyncResult(importedCards: cardsToImport, deletionCandidates: deletionCandidates);
     } catch (e) {
-      // If manifest doesn't exist or is corrupted, fall back to legacy import
+      // If manifest doesn't exist or is corrupted, fall back to legacy import (safest is to assumes no deletions)
       debugPrint('Manifest-based import failed, falling back to legacy import: $e');
-      return await _importCardsLegacy();
+      final legacyCards = await _importCardsLegacy();
+      return SyncResult(importedCards: legacyCards, deletionCandidates: []);
     }
   }
 
@@ -600,8 +621,9 @@ class SyncSettingsService {
     _webdavService.disconnect();
   }
 
+
   /// Import cards from WebDAV server (public method - uses manifest-based approach)
-  Future<List<CardModel>> importCards() async {
+  Future<SyncResult> importCards() async {
     return await importCardsWithManifest();
   }
 
