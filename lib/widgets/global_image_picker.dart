@@ -179,8 +179,11 @@ class _GlobalImagePickerState extends State<GlobalImagePicker> {
                               flex: 2,
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                child: FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  alignment: Alignment.centerLeft,
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
                                       image.name,
@@ -200,6 +203,7 @@ class _GlobalImagePickerState extends State<GlobalImagePicker> {
                                 ),
                               ),
                             ),
+                          ),
                           ],
                         ),
                       ),

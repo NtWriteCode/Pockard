@@ -1,6 +1,6 @@
 import 'package:uuid/uuid.dart';
 
-enum CardCategory { loyalty, identity }
+enum CardCategory { loyalty, identity, document }
 
 class CardModel {
   final String uuid;

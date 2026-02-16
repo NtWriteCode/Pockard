@@ -1,10 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:ui' as ui;
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
-import 'package:pdfrx/pdfrx.dart';
+import 'package:pdfx/pdfx.dart';
 import 'package:crypto/crypto.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/document_model.dart';
@@ -98,23 +97,22 @@ class DocumentProvider with ChangeNotifier {
         return 'duplicate';
       }
 
-      // 2. Generate thumbnail (Base64) using pdfrx
+      // 2. Generate thumbnail (Base64) using pdfx
       String? previewBase64;
       try {
         final document = await PdfDocument.openFile(pdfFile.path);
-        final page = document.pages[0]; // Page 1
-        final image = await page.render(
+        final page = await document.getPage(1); // Page 1
+        final pageImage = await page.render(
           width: 480, // Target width as per plan
+          height: (480 / (page.width / page.height)).toDouble(),
+          format: PdfPageImageFormat.jpeg,
+          quality: 70,
         );
-        if (image != null) {
-          final uiImage = await image.createImage();
-          final byteData = await uiImage.toByteData(format: ui.ImageByteFormat.png);
-          if (byteData != null) {
-            previewBase64 = base64Encode(byteData.buffer.asUint8List());
-          }
-          image.dispose();
+        if (pageImage != null) {
+          previewBase64 = base64Encode(pageImage.bytes);
         }
-        await document.dispose();
+        await page.close();
+        await document.close();
       } catch (e) {
         debugPrint('Error generating thumbnail: $e');
       }
@@ -153,12 +151,61 @@ class DocumentProvider with ChangeNotifier {
     }
   }
 
-  Future<bool> updateDocument(DocumentModel document) async {
+  Future<bool> updateDocument(DocumentModel document, {File? newFile}) async {
     try {
-      await _databaseService.updateDocument(document);
-      final index = _documents.indexWhere((doc) => doc.uuid == document.uuid);
+      DocumentModel updatedDoc = document;
+
+      if (newFile != null) {
+        // 1. Generate hash
+        final bytes = await newFile.readAsBytes();
+        final hash = sha256.convert(bytes).toString();
+
+        // 2. Generate thumbnail
+        String? previewBase64;
+        try {
+          final pdfDoc = await PdfDocument.openFile(newFile.path);
+          final page = await pdfDoc.getPage(1);
+          final pageImage = await page.render(
+            width: 480,
+            height: (480 / (page.width / page.height)).toDouble(),
+            format: PdfPageImageFormat.jpeg,
+            quality: 70,
+          );
+          if (pageImage != null) {
+            previewBase64 = base64Encode(pageImage.bytes);
+          }
+          await page.close();
+          await pdfDoc.close();
+        } catch (e) {
+          debugPrint('Error generating thumbnail: $e');
+        }
+
+        // 3. Copy file
+        final appDocsDir = await getApplicationDocumentsDirectory();
+        final docsFolder = Directory(p.join(appDocsDir.path, 'documents'));
+        if (!await docsFolder.exists()) {
+          await docsFolder.create(recursive: true);
+        }
+
+        final fileName = p.basename(newFile.path);
+        final localPath = p.join(docsFolder.path, fileName);
+        await newFile.copy(localPath);
+
+        updatedDoc = updatedDoc.copyWith(
+          previewBase64: previewBase64,
+          localFilePath: localPath,
+          fileHash: hash,
+          fileSizeBytes: bytes.length,
+          updateDate: DateTime.now(),
+        );
+      } else {
+        updatedDoc = updatedDoc.copyWith(updateDate: DateTime.now());
+      }
+
+      await _databaseService.updateDocument(updatedDoc);
+      final index = _documents.indexWhere((doc) => doc.uuid == updatedDoc.uuid);
       if (index != -1) {
-        _documents[index] = document;
+        _documents[index] = updatedDoc;
       }
       await _loadTags();
       notifyListeners();
