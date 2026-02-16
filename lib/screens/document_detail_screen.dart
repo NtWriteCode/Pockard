@@ -3,12 +3,13 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
-import 'package:pdfrx/pdfrx.dart';
+import 'package:pdfx/pdfx.dart';
+import 'package:open_filex/open_filex.dart';
 import '../models/document_model.dart';
 import '../providers/document_provider.dart';
 import '../services/document_sync_service.dart';
 import '../l10n/app_localizations.dart';
-import 'document_form_screen.dart';
+import 'card_form_screen.dart';
 
 class DocumentDetailScreen extends StatefulWidget {
   final DocumentModel document;
@@ -62,6 +63,38 @@ class _DocumentDetailScreenState extends State<DocumentDetailScreen> {
     }
   }
 
+  Future<void> _openPdfExternally(BuildContext context) async {
+    final provider = Provider.of<DocumentProvider>(context, listen: false);
+    
+    File? pdfFile;
+    if (widget.document.localFilePath != null) {
+      pdfFile = File(widget.document.localFilePath!);
+    }
+
+    if (pdfFile == null || !await pdfFile.exists()) {
+      setState(() => _isDownloading = true);
+      try {
+        final syncService = DocumentSyncService();
+        pdfFile = await syncService.downloadPdf(widget.document);
+        if (pdfFile != null) {
+          await provider.updateDocument(widget.document.copyWith(localFilePath: pdfFile.path));
+        }
+      } finally {
+        if (mounted) setState(() => _isDownloading = false);
+      }
+    }
+
+    if (pdfFile != null && await pdfFile.exists()) {
+      await OpenFilex.open(pdfFile.path);
+    } else {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not open PDF')),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // We use a watch here to catch updates (like name changes) if we return from edit screen
@@ -84,7 +117,7 @@ class _DocumentDetailScreenState extends State<DocumentDetailScreen> {
             icon: const Icon(Icons.edit),
             onPressed: () => Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => DocumentFormScreen(document: doc)),
+              MaterialPageRoute(builder: (context) => CardFormScreen(document: doc)),
             ),
           ),
           IconButton(
@@ -99,19 +132,22 @@ class _DocumentDetailScreenState extends State<DocumentDetailScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // Large Preview
-            AspectRatio(
-              aspectRatio: 1.0,
-              child: Card(
-                elevation: 4,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(16),
-                  child: doc.previewBase64 != null
-                      ? Image.memory(base64Decode(doc.previewBase64!), fit: BoxFit.cover)
-                      : Container(
-                          color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                          child: const Icon(Icons.description_outlined, size: 80),
-                        ),
+            GestureDetector(
+              onTap: _isDownloading ? null : () => _openPdf(context),
+              child: AspectRatio(
+                aspectRatio: 1.0,
+                child: Card(
+                  elevation: 4,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: doc.previewBase64 != null
+                        ? Image.memory(base64Decode(doc.previewBase64!), fit: BoxFit.cover)
+                        : Container(
+                            color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                            child: const Icon(Icons.description_outlined, size: 80),
+                          ),
+                  ),
                 ),
               ),
             ),
@@ -123,13 +159,27 @@ class _DocumentDetailScreenState extends State<DocumentDetailScreen> {
               icon: _isDownloading
                   ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
                   : const Icon(Icons.picture_as_pdf),
-              label: Text(_isDownloading ? 'Downloading...' : 'Open PDF'),
+              label: Text(_isDownloading ? 'Downloading...' : 'View in Pockard'),
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 8),
+            Center(
+              child: TextButton.icon(
+                onPressed: _isDownloading ? null : () => _openPdfExternally(context),
+                icon: const Icon(Icons.open_in_new, size: 18),
+                label: const Text(
+                  'Open in external app',
+                  style: TextStyle(fontSize: 14),
+                ),
+                style: TextButton.styleFrom(
+                  foregroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.7),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
 
             // Metadata
             _buildInfoRow(context, Icons.tag, l10n.tags, doc.tags.isEmpty ? 'None' : doc.tags.join(', ')),
@@ -179,17 +229,42 @@ class _DocumentDetailScreenState extends State<DocumentDetailScreen> {
   }
 }
 
-class PdfViewerScreen extends StatelessWidget {
+class PdfViewerScreen extends StatefulWidget {
   final File file;
   final String title;
 
   const PdfViewerScreen({super.key, required this.file, required this.title});
 
   @override
+  State<PdfViewerScreen> createState() => _PdfViewerScreenState();
+}
+
+class _PdfViewerScreenState extends State<PdfViewerScreen> {
+  late PdfControllerPinch _pdfController;
+
+  @override
+  void initState() {
+    super.initState();
+    _pdfController = PdfControllerPinch(
+      document: PdfDocument.openFile(widget.file.path),
+    );
+  }
+
+  @override
+  void dispose() {
+    _pdfController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(title)),
-      body: PdfViewer.file(file.path),
+      appBar: AppBar(
+        title: Text(widget.title),
+      ),
+      body: PdfViewPinch(
+        controller: _pdfController,
+      ),
     );
   }
 }
