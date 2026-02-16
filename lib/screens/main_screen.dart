@@ -337,15 +337,16 @@ class _MainScreenState extends State<MainScreen> with AutomaticKeepAliveClientMi
               );
             },
           ),
-          IconButton(
-            icon: const Icon(Icons.public),
-            onPressed: () async {
-              await Navigator.push(context, MaterialPageRoute(builder: (context) => const GlobalScreen()));
-              if (!context.mounted) return;
-              Provider.of<TagProvider>(context, listen: false).loadTags(category: widget.category);
-            },
-            tooltip: l10n.globalPool,
-          ),
+          if (widget.category != CardCategory.identity)
+            IconButton(
+              icon: const Icon(Icons.public),
+              onPressed: () async {
+                await Navigator.push(context, MaterialPageRoute(builder: (context) => const GlobalScreen()));
+                if (!context.mounted) return;
+                Provider.of<TagProvider>(context, listen: false).loadTags(category: widget.category);
+              },
+              tooltip: l10n.globalPool,
+            ),
           IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () async {
@@ -429,7 +430,11 @@ class _MainScreenState extends State<MainScreen> with AutomaticKeepAliveClientMi
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(onPressed: () => _navigateToAddCard(context), child: const Icon(Icons.add)),
+      floatingActionButton: FloatingActionButton(
+        heroTag: 'main_fab_${widget.category.name}',
+        onPressed: () => _navigateToAddCard(context),
+        child: const Icon(Icons.add),
+      ),
     );
   }
 

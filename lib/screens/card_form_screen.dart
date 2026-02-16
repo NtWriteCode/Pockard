@@ -1,9 +1,15 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:pdfx/pdfx.dart';
+import 'package:path/path.dart' as p;
 import '../models/card_model.dart';
+import '../models/document_model.dart';
 import '../providers/card_provider.dart';
+import '../providers/document_provider.dart';
 import '../providers/tag_provider.dart';
 import '../services/barcode_service.dart';
 import '../services/database_service.dart';
@@ -23,17 +29,19 @@ import '../l10n/app_localizations.dart';
 /// Unified screen for adding and editing loyalty cards
 class CardFormScreen extends StatefulWidget {
   final CardModel? card; // null for adding, non-null for editing
+  final DocumentModel? document; // non-null for editing documents
   final bool autoStartCamera;
   final CardCategory category;
 
   const CardFormScreen({
     super.key, 
     this.card, 
+    this.document,
     this.autoStartCamera = false, 
     this.category = CardCategory.loyalty,
   });
 
-  bool get isEditing => card != null;
+  bool get isEditing => card != null || document != null;
 
   @override
   State<CardFormScreen> createState() => _CardFormScreenState();
@@ -58,6 +66,9 @@ class _CardFormScreenState extends State<CardFormScreen> {
   bool _isPinned = false;
   late CardCategory _category;
 
+  File? _pendingPDFFile;
+  String? _pendingPreviewBase64;
+
   @override
   void initState() {
     super.initState();
@@ -73,7 +84,15 @@ class _CardFormScreenState extends State<CardFormScreen> {
   }
 
   void _initializeControllers() {
-    if (widget.isEditing) {
+    if (widget.document != null) {
+      // Initialize with existing document data
+      _nameController = TextEditingController(text: widget.document!.name);
+      _barcodeDataController = TextEditingController();
+      _tags = List.from(widget.document!.tags);
+      _isPinned = widget.document!.isPinned;
+      _category = CardCategory.document;
+      _barcodeType = 'QR';
+    } else if (widget.card != null) {
       // Initialize with existing card data
       _nameController = TextEditingController(text: widget.card!.name);
       _barcodeDataController = TextEditingController(text: widget.card!.barcodeData ?? '');
@@ -95,7 +114,10 @@ class _CardFormScreenState extends State<CardFormScreen> {
   }
 
   Future<void> _loadAvailableTags() async {
-    final tags = await _databaseService.getAllTags(category: _category);
+    final tags = await _databaseService.getAllTags(
+      category: _category == CardCategory.document ? null : _category,
+      forDocuments: _category == CardCategory.document,
+    );
     setState(() {
       _availableTags = tags;
     });
@@ -148,13 +170,34 @@ class _CardFormScreenState extends State<CardFormScreen> {
                     // Category selector (only if adding or if users want to change)
                     SegmentedButton<CardCategory>(
                       segments: [
-                        ButtonSegment(value: CardCategory.loyalty, icon: const Icon(Icons.credit_card), label: Text(l10n.loyaltyCards)),
-                        ButtonSegment(value: CardCategory.identity, icon: const Icon(Icons.badge_outlined), label: Text(l10n.identityCards)),
+                        ButtonSegment(
+                          value: CardCategory.loyalty,
+                          icon: const Icon(Icons.credit_card),
+                          label: Text(l10n.loyaltyCards),
+                          enabled: widget.document == null,
+                        ),
+                        ButtonSegment(
+                          value: CardCategory.identity,
+                          icon: const Icon(Icons.badge_outlined),
+                          label: Text(l10n.identityCards),
+                          enabled: widget.document == null,
+                        ),
+                        ButtonSegment(
+                          value: CardCategory.document,
+                          icon: const Icon(Icons.description_outlined),
+                          label: Text(l10n.documents),
+                          enabled: widget.card == null,
+                        ),
                       ],
                       selected: {_category},
                       onSelectionChanged: (Set<CardCategory> newSelection) {
                         setState(() {
                           _category = newSelection.first;
+                          // Reset pending document if switching away
+                          if (_category != CardCategory.document) {
+                            _pendingPDFFile = null;
+                            _pendingPreviewBase64 = null;
+                          }
                           // If switching to identity, maybe default barcode to TEXT if adding
                           if (!widget.isEditing) {
                             _barcodeType = _category == CardCategory.identity ? 'TEXT' : 'QR';
@@ -166,7 +209,9 @@ class _CardFormScreenState extends State<CardFormScreen> {
                     const SizedBox(height: 24),
 
                     // Image section(s)
-                    if (_category == CardCategory.identity)
+                    if (_category == CardCategory.document)
+                      _buildDocumentPreviewSection(l10n)
+                    else if (_category == CardCategory.identity)
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -221,51 +266,53 @@ class _CardFormScreenState extends State<CardFormScreen> {
                     ),
                     const SizedBox(height: 24),
 
-                    // Barcode section
-                    Text(l10n.barcodeLabel, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
-                    const SizedBox(height: 8),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton.icon(
-                        onPressed: (_barcodeType == 'IMAGE_ONLY' || _barcodeType == 'TEXT') ? null : _scanBarcode,
-                        icon: const Icon(Icons.qr_code_scanner),
-                        label: Text(l10n.scanBarcode),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Barcode preview or image upload for IMAGE_ONLY mode
-                    if (_barcodeType == 'IMAGE_ONLY')
-                      _buildBarcodeImageUploadWidget(l10n)
-                    else
-                      BarcodePreviewWidget(barcodeData: _barcodeDataController.text, barcodeType: _barcodeType),
-                    const SizedBox(height: 16),
-
-                    // Only show barcode data field if not in IMAGE_ONLY mode
-                    if (_barcodeType != 'IMAGE_ONLY') ...[
-                      TextFormField(
-                        controller: _barcodeDataController,
-                        decoration: InputDecoration(hintText: l10n.barcodeDataHint, border: const OutlineInputBorder(), suffixText: _barcodeType),
-                        maxLines: 2,
-                        onChanged: (_) => setState(() {}), // Refresh preview
+                    // Barcode section (hide for documents)
+                    if (_category != CardCategory.document) ...[
+                      Text(l10n.barcodeLabel, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
+                      const SizedBox(height: 8),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton.icon(
+                          onPressed: (_barcodeType == 'IMAGE_ONLY' || _barcodeType == 'TEXT') ? null : _scanBarcode,
+                          icon: const Icon(Icons.qr_code_scanner),
+                          label: Text(l10n.scanBarcode),
+                        ),
                       ),
                       const SizedBox(height: 16),
-                    ],
 
-                    // Barcode type selector
-                    BarcodeTypeSelector(
-                      selectedType: _barcodeType,
-                      onTypeChanged: (type) {
-                        setState(() {
-                          _barcodeType = type;
-                          // Auto-clear barcode data when "Image Only" is selected
-                          if (type == 'IMAGE_ONLY') {
-                            _barcodeDataController.text = '';
-                          }
-                        });
-                      },
-                    ),
-                    const SizedBox(height: 24),
+                      // Barcode preview or image upload for IMAGE_ONLY mode
+                      if (_barcodeType == 'IMAGE_ONLY')
+                        _buildBarcodeImageUploadWidget(l10n)
+                      else
+                        BarcodePreviewWidget(barcodeData: _barcodeDataController.text, barcodeType: _barcodeType),
+                      const SizedBox(height: 16),
+
+                      // Only show barcode data field if not in IMAGE_ONLY mode
+                      if (_barcodeType != 'IMAGE_ONLY') ...[
+                        TextFormField(
+                          controller: _barcodeDataController,
+                          decoration: InputDecoration(hintText: l10n.barcodeDataHint, border: const OutlineInputBorder(), suffixText: _barcodeType),
+                          maxLines: 2,
+                          onChanged: (_) => setState(() {}), // Refresh preview
+                        ),
+                        const SizedBox(height: 16),
+                      ],
+
+                      // Barcode type selector
+                      BarcodeTypeSelector(
+                        selectedType: _barcodeType,
+                        onTypeChanged: (type) {
+                          setState(() {
+                            _barcodeType = type;
+                            // Auto-clear barcode data when "Image Only" is selected
+                            if (type == 'IMAGE_ONLY') {
+                              _barcodeDataController.text = '';
+                            }
+                          });
+                        },
+                      ),
+                      const SizedBox(height: 24),
+                    ],
 
                     // Tags section
                     Text(l10n.tagsLabel, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
@@ -297,8 +344,13 @@ class _CardFormScreenState extends State<CardFormScreen> {
     if (!widget.isEditing) return;
 
     try {
-      final cardProvider = Provider.of<CardProvider>(context, listen: false);
-      await cardProvider.toggleCardPin(widget.card!.uuid);
+      if (_category == CardCategory.document) {
+        final docProvider = Provider.of<DocumentProvider>(context, listen: false);
+        await docProvider.togglePin(widget.document!.uuid);
+      } else {
+        final cardProvider = Provider.of<CardProvider>(context, listen: false);
+        await cardProvider.toggleCardPin(widget.card!.uuid);
+      }
 
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
@@ -552,46 +604,169 @@ class _CardFormScreenState extends State<CardFormScreen> {
     );
   }
 
+  Widget _buildDocumentPreviewSection(AppLocalizations l10n) {
+    final previewBase64 = _pendingPreviewBase64 ?? widget.document?.previewBase64;
+    final lPath = _pendingPDFFile?.path ?? widget.document?.localFilePath;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (previewBase64 != null)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: AspectRatio(
+                aspectRatio: 1.414, // Standard A4 ratio
+                child: Image.memory(
+                  base64Decode(previewBase64),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+          )
+        else
+          GestureDetector(
+            onTap: _pickPDFForDocument,
+            child: Container(
+              width: double.infinity,
+              height: 200,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3)),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.picture_as_pdf, size: 48, color: Theme.of(context).colorScheme.primary),
+                  const SizedBox(height: 8),
+                  const Text('Tap to pick PDF document'),
+                ],
+              ),
+            ),
+          ),
+        if (lPath != null) ...[
+          const SizedBox(height: 8),
+          Text(
+            'File: ${p.basename(lPath)}',
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+          TextButton.icon(
+            onPressed: _pickPDFForDocument,
+            icon: const Icon(Icons.refresh, size: 16),
+            label: const Text('Change Document'),
+          ),
+        ],
+        const SizedBox(height: 24),
+      ],
+    );
+  }
+
+  Future<void> _pickPDFForDocument() async {
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['pdf'],
+    );
+    if (result != null && result.files.single.path != null) {
+      final file = File(result.files.single.path!);
+      setState(() {
+        _pendingPDFFile = file;
+        _isLoading = true;
+      });
+
+      // Generate preview
+      try {
+        final document = await PdfDocument.openFile(file.path);
+        final page = await document.getPage(1);
+        final pageImage = await page.render(
+          width: 480,
+          height: (480 / (page.width / page.height)).toDouble(),
+          format: PdfPageImageFormat.jpeg,
+          quality: 70,
+        );
+        if (pageImage != null) {
+          setState(() {
+            _pendingPreviewBase64 = base64Encode(pageImage.bytes);
+          });
+        }
+        await page.close();
+        await document.close();
+
+        // Auto-fill name if empty
+        if (_nameController.text.isEmpty) {
+          _nameController.text = p.basenameWithoutExtension(file.path);
+        }
+      } catch (e) {
+        debugPrint('Error generating preview: $e');
+      } finally {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
   Future<void> _saveCard() async {
     if (!_formKey.currentState!.validate()) return;
+
+    if (_category == CardCategory.document && widget.document == null && _pendingPDFFile == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select a PDF document'), backgroundColor: Colors.orange),
+      );
+      return;
+    }
 
     setState(() => _isLoading = true);
 
     try {
-      final cardProvider = Provider.of<CardProvider>(context, listen: false);
       final tagProvider = Provider.of<TagProvider>(context, listen: false);
 
-      if (widget.isEditing) {
-        // Update existing card
-        final updatedCard = widget.card!.copyWith(
-          name: _nameController.text.trim(),
-          barcodeData: _barcodeDataController.text.trim(),
-          barcodeType: _barcodeType,
-          barcodeImagePath: _barcodeImagePath,
-          tags: _tags,
-          coverImagePath: _coverImagePath,
-          backImagePath: _backImagePath,
-          category: _category,
-          updateDate: DateTime.now(),
-        );
-        await cardProvider.updateCard(updatedCard);
+      if (_category == CardCategory.document) {
+        final docProvider = Provider.of<DocumentProvider>(context, listen: false);
+        if (widget.document != null) {
+          // Update existing document
+          final updatedDoc = widget.document!.copyWith(
+            name: _nameController.text.trim(),
+            tags: _tags,
+          );
+          await docProvider.updateDocument(updatedDoc, newFile: _pendingPDFFile);
+        } else {
+          // Create new document
+          await docProvider.addDocument(_pendingPDFFile!, name: _nameController.text.trim(), tags: _tags);
+        }
       } else {
-        // Create new card
-        final newCard = CardModel(
-          uuid: DateTime.now().millisecondsSinceEpoch.toString(),
-          name: _nameController.text.trim(),
-          barcodeData: _barcodeDataController.text.trim(),
-          barcodeType: _barcodeType,
-          barcodeImagePath: _barcodeImagePath,
-          tags: _tags,
-          coverImagePath: _coverImagePath,
-          backImagePath: _backImagePath,
-          category: _category,
-          creationDate: DateTime.now(),
-          updateDate: DateTime.now(),
-          usageCount: 0,
-        );
-        await cardProvider.addCard(newCard);
+        final cardProvider = Provider.of<CardProvider>(context, listen: false);
+        if (widget.card != null) {
+          // Update existing card
+          final updatedCard = widget.card!.copyWith(
+            name: _nameController.text.trim(),
+            barcodeData: _barcodeDataController.text.trim(),
+            barcodeType: _barcodeType,
+            barcodeImagePath: _barcodeImagePath,
+            tags: _tags,
+            coverImagePath: _coverImagePath,
+            backImagePath: _backImagePath,
+            category: _category,
+            updateDate: DateTime.now(),
+          );
+          await cardProvider.updateCard(updatedCard);
+        } else {
+          // Create new card
+          final newCard = CardModel(
+            uuid: DateTime.now().millisecondsSinceEpoch.toString(),
+            name: _nameController.text.trim(),
+            barcodeData: _barcodeDataController.text.trim(),
+            barcodeType: _barcodeType,
+            barcodeImagePath: _barcodeImagePath,
+            tags: _tags,
+            coverImagePath: _coverImagePath,
+            backImagePath: _backImagePath,
+            category: _category,
+            creationDate: DateTime.now(),
+            updateDate: DateTime.now(),
+            usageCount: 0,
+          );
+          await cardProvider.addCard(newCard);
+        }
       }
 
       // Refresh tag provider so main screen filter updates
@@ -639,14 +814,16 @@ class _CardFormScreenState extends State<CardFormScreen> {
   Future<void> _deleteCard() async {
     if (!widget.isEditing) return;
 
+    final name = _category == CardCategory.document ? widget.document!.name : widget.card!.name;
+
     // Show confirmation dialog
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) {
         final dialogL10n = AppLocalizations.of(context)!;
         return AlertDialog(
-          title: Text(dialogL10n.deleteCard),
-          content: Text(dialogL10n.deleteCardMessage(widget.card!.name)),
+          title: Text(_category == CardCategory.document ? 'Delete Document' : dialogL10n.deleteCard),
+          content: Text(dialogL10n.deleteCardMessage(name)),
           actions: [
             TextButton(onPressed: () => Navigator.pop(context, false), child: Text(dialogL10n.cancel)),
             TextButton(onPressed: () => Navigator.pop(context, true), child: Text(dialogL10n.delete)),
@@ -659,12 +836,17 @@ class _CardFormScreenState extends State<CardFormScreen> {
     if (!mounted) return;
 
     try {
-      final cardProvider = Provider.of<CardProvider>(context, listen: false);
-      await cardProvider.deleteCard(widget.card!.uuid);
+      if (_category == CardCategory.document) {
+        final docProvider = Provider.of<DocumentProvider>(context, listen: false);
+        await docProvider.deleteDocument(widget.document!.uuid);
+      } else {
+        final cardProvider = Provider.of<CardProvider>(context, listen: false);
+        await cardProvider.deleteCard(widget.card!.uuid);
+      }
 
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
-        Navigator.pop(context); // Go back to main screen
+        Navigator.pop(context); // Go back
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.cardDeletedSuccess), backgroundColor: Theme.of(context).colorScheme.primary));
       }
     } catch (e) {
@@ -676,7 +858,7 @@ class _CardFormScreenState extends State<CardFormScreen> {
   }
 
   Future<void> _shareCardGlobally() async {
-    if (!widget.isEditing || _category == CardCategory.identity) return;
+    if (!widget.isEditing || _category != CardCategory.loyalty) return;
 
     try {
       final globalService = GlobalDataService();
