@@ -78,9 +78,9 @@ dependencies:
 
   # Documents Feature
   pdfx: ^2.9.2
-  crypto: ^3.0.6
+  crypto: ^3.0.7
   file_picker: ^10.3.10
-  open_filex: ^4.6.3
+  open_filex: ^4.7.0
 
 dev_dependencies:
   flutter_test:
