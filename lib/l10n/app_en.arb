@@ -346,5 +346,10 @@
   "recent": "Recent",
   "name": "Name",
   "all": "All",
-  "noCardsFound": "No documents found"
+  "noCardsFound": "No documents found",
+  "loyaltyTags": "Loyalty Tags",
+  "identityTags": "Identity Tags",
+  "documentTags": "Document Tags",
+  "dragToReorderCategoryTags": "Drag to Reorder {category} Tags",
+  "categoryTagsDescription": "The order here affects how {category} tags appear on the main screen"
 }

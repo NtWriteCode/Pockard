@@ -346,5 +346,10 @@
   "recent": "Legutóbbi",
   "name": "Név",
   "all": "Összes",
-  "noCardsFound": "Nem található dokumentum"
+  "noCardsFound": "Nem található dokumentum",
+  "loyaltyTags": "Hűségkártya Címkék",
+  "identityTags": "Személyazonosító Címkék",
+  "documentTags": "Dokumentum Címkék",
+  "dragToReorderCategoryTags": "Húzd a {category} Címkéket az Átrendezéshez",
+  "categoryTagsDescription": "Az itt meghatározott sorrend befolyásolja a {category} címkék megjelenését a főképernyőn"
 }

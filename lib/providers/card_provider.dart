@@ -329,7 +329,7 @@ class CardProvider with ChangeNotifier {
 
   /// Sync user preferences (display settings and tag order) to server
   /// This should be called by the UI when preferences change
-  Future<void> syncPreferences({required Map<String, dynamic> displaySettings, required List<String> tagOrder}) async {
+  Future<void> syncPreferences({required Map<String, dynamic> displaySettings, required dynamic tagOrder}) async {
     debugPrint('CardProvider: Starting preferences sync...');
     final attemptTime = DateTime.now();
 

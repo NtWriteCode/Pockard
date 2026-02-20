@@ -759,10 +759,22 @@ class _SyncSettingsTabState extends State<SyncSettingsTab> {
           await displayProvider.importSettings(displaySettings);
         }
 
-        // Import tag order
-        final tagOrder = (preferences['tag_order'] as List?)?.cast<String>();
+        // Import tag order (supports both new Map format and legacy List format)
+        final tagOrder = preferences['tag_order'];
         if (tagOrder != null) {
-          await tagProvider.importTagOrder(tagOrder);
+          if (tagOrder is Map) {
+            // New format: category-specific tag orders
+            await tagProvider.importTagOrder(tagOrder as Map<String, dynamic>);
+          } else if (tagOrder is List) {
+            // Legacy format: single list for all categories
+            // Convert to new format by applying to all categories
+            final tagOrderMap = {
+              'loyalty': tagOrder.cast<String>(),
+              'identity': tagOrder.cast<String>(),
+              'document': tagOrder.cast<String>(),
+            };
+            await tagProvider.importTagOrder(tagOrderMap);
+          }
         }
       }
 

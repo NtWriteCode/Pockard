@@ -1113,4 +1113,23 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noCardsFound => 'No documents found';
+
+  @override
+  String get loyaltyTags => 'Loyalty Tags';
+
+  @override
+  String get identityTags => 'Identity Tags';
+
+  @override
+  String get documentTags => 'Document Tags';
+
+  @override
+  String dragToReorderCategoryTags(Object category) {
+    return 'Drag to Reorder $category Tags';
+  }
+
+  @override
+  String categoryTagsDescription(Object category) {
+    return 'The order here affects how $category tags appear on the main screen';
+  }
 }

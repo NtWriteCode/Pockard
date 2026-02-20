@@ -15,7 +15,7 @@ class PreferencesSyncService {
   final SyncSettingsService _syncSettingsService = SyncSettingsService();
 
   /// Upload user preferences to WebDAV server
-  Future<void> uploadPreferences({required Map<String, dynamic> displaySettings, required List<String> tagOrder}) async {
+  Future<void> uploadPreferences({required Map<String, dynamic> displaySettings, required dynamic tagOrder}) async {
     debugPrint('PreferencesSyncService: Starting preferences upload...');
 
     if (!_webdavService.isInitialized) {

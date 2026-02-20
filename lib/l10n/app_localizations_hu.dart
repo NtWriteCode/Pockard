@@ -1113,4 +1113,23 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get noCardsFound => 'Nem található dokumentum';
+
+  @override
+  String get loyaltyTags => 'Hűségkártya Címkék';
+
+  @override
+  String get identityTags => 'Személyazonosító Címkék';
+
+  @override
+  String get documentTags => 'Dokumentum Címkék';
+
+  @override
+  String dragToReorderCategoryTags(Object category) {
+    return 'Húzd a $category Címkéket az Átrendezéshez';
+  }
+
+  @override
+  String categoryTagsDescription(Object category) {
+    return 'Az itt meghatározott sorrend befolyásolja a $category címkék megjelenését a főképernyőn';
+  }
 }

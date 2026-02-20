@@ -22,7 +22,7 @@ class DatabaseService {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, 'pockard.db');
 
-    return await openDatabase(path, version: 6, onCreate: _onCreate, onUpgrade: _onUpgrade);
+    return await openDatabase(path, version: 7, onCreate: _onCreate, onUpgrade: _onUpgrade);
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
@@ -60,6 +60,35 @@ class DatabaseService {
           isPinned INTEGER DEFAULT 0
         )
       ''');
+    }
+    if (oldVersion < 7) {
+      // Migrate tag_order table to support category-specific ordering
+      // Save existing tag order
+      final existingTags = await db.query('tag_order', orderBy: 'order_index ASC');
+      
+      // Drop and recreate table with new schema
+      await db.execute('DROP TABLE IF EXISTS tag_order');
+      await db.execute('''
+        CREATE TABLE tag_order(
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          tag TEXT NOT NULL,
+          category INTEGER NOT NULL,
+          order_index INTEGER NOT NULL,
+          UNIQUE(tag, category)
+        )
+      ''');
+      
+      // Restore tags for all categories
+      for (int i = 0; i < existingTags.length; i++) {
+        final tag = existingTags[i]['tag'] as String;
+        for (var category in [0, 1, 2]) { // loyalty, identity, document
+          await db.insert('tag_order', {
+            'tag': tag,
+            'category': category,
+            'order_index': i
+          });
+        }
+      }
     }
   }
 
@@ -101,12 +130,14 @@ class DatabaseService {
       )
     ''');
 
-    // Tags order table for settings
+    // Tags order table for settings (category-specific)
     await db.execute('''
       CREATE TABLE tag_order(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        tag TEXT NOT NULL UNIQUE,
-        order_index INTEGER NOT NULL
+        tag TEXT NOT NULL,
+        category INTEGER NOT NULL,
+        order_index INTEGER NOT NULL,
+        UNIQUE(tag, category)
       )
     ''');
 
@@ -293,22 +324,40 @@ class DatabaseService {
     return allTags.toList()..sort();
   }
 
-  Future<void> saveTagOrder(List<String> tags) async {
+  Future<void> saveTagOrder(List<String> tags, {CardCategory? category}) async {
     final db = await database;
 
-    // Clear existing order
-    await db.delete('tag_order');
+    if (category == null) {
+      // Legacy: save for all categories (backward compatibility)
+      await db.delete('tag_order');
+      for (int i = 0; i < tags.length; i++) {
+        for (var cat in CardCategory.values) {
+          await db.insert('tag_order', {'tag': tags[i], 'category': cat.index, 'order_index': i}, conflictAlgorithm: ConflictAlgorithm.replace);
+        }
+      }
+    } else {
+      // Clear existing order for this category
+      await db.delete('tag_order', where: 'category = ?', whereArgs: [category.index]);
 
-    // Insert new order
-    for (int i = 0; i < tags.length; i++) {
-      await db.insert('tag_order', {'tag': tags[i], 'order_index': i});
+      // Insert new order for this category
+      for (int i = 0; i < tags.length; i++) {
+        await db.insert('tag_order', {'tag': tags[i], 'category': category.index, 'order_index': i}, conflictAlgorithm: ConflictAlgorithm.replace);
+      }
     }
   }
 
-  Future<List<String>> getTagOrder() async {
+  Future<List<String>> getTagOrder({CardCategory? category}) async {
     final db = await database;
-    final List<Map<String, dynamic>> maps = await db.query('tag_order', orderBy: 'order_index ASC');
-    return maps.map((map) => map['tag'] as String).toList();
+    
+    if (category == null) {
+      // Legacy: get all tags regardless of category
+      final List<Map<String, dynamic>> maps = await db.query('tag_order', orderBy: 'order_index ASC', distinct: true, columns: ['tag']);
+      return maps.map((map) => map['tag'] as String).toList();
+    } else {
+      // Get tags for specific category
+      final List<Map<String, dynamic>> maps = await db.query('tag_order', where: 'category = ?', whereArgs: [category.index], orderBy: 'order_index ASC');
+      return maps.map((map) => map['tag'] as String).toList();
+    }
   }
 
   // Settings management

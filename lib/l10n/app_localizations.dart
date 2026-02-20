@@ -2173,6 +2173,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No documents found'**
   String get noCardsFound;
+
+  /// No description provided for @loyaltyTags.
+  ///
+  /// In en, this message translates to:
+  /// **'Loyalty Tags'**
+  String get loyaltyTags;
+
+  /// No description provided for @identityTags.
+  ///
+  /// In en, this message translates to:
+  /// **'Identity Tags'**
+  String get identityTags;
+
+  /// No description provided for @documentTags.
+  ///
+  /// In en, this message translates to:
+  /// **'Document Tags'**
+  String get documentTags;
+
+  /// No description provided for @dragToReorderCategoryTags.
+  ///
+  /// In en, this message translates to:
+  /// **'Drag to Reorder {category} Tags'**
+  String dragToReorderCategoryTags(Object category);
+
+  /// No description provided for @categoryTagsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'The order here affects how {category} tags appear on the main screen'**
+  String categoryTagsDescription(Object category);
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

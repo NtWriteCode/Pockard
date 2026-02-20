@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/tag_provider.dart';
+import '../../models/card_model.dart';
 import '../../l10n/app_localizations.dart';
 
 class TagsSettingsTab extends StatefulWidget {
@@ -29,7 +30,12 @@ class _TagsSettingsTabState extends State<TagsSettingsTab> {
           return const Center(child: CircularProgressIndicator());
         }
 
-        if (tagProvider.orderedTags.isEmpty) {
+        // Check if there are any tags at all
+        final hasAnyTags = tagProvider.getOrderedTags(CardCategory.loyalty).isNotEmpty ||
+                          tagProvider.getOrderedTags(CardCategory.identity).isNotEmpty ||
+                          tagProvider.getOrderedTags(CardCategory.document).isNotEmpty;
+
+        if (!hasAnyTags) {
           return Center(
             child: Padding(
               padding: const EdgeInsets.all(32.0),
@@ -49,56 +55,150 @@ class _TagsSettingsTabState extends State<TagsSettingsTab> {
           );
         }
 
-        return Column(
+        return ListView(
+          padding: const EdgeInsets.all(16.0),
           children: [
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(l10n.dragToReorderTags, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 8),
-                  Text(
-                    l10n.dragToReorderTagsDescription,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6)),
-                  ),
-                ],
-              ),
+            // Loyalty Tags Section
+            _buildCategorySection(
+              context,
+              l10n,
+              tagProvider,
+              CardCategory.loyalty,
+              l10n.loyaltyTags,
+              Icons.card_giftcard,
             ),
-            Expanded(
-              child: ReorderableListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                itemCount: tagProvider.orderedTags.length,
-                onReorder: (oldIndex, newIndex) {
-                  tagProvider.reorderTags(oldIndex, newIndex);
-                },
-                itemBuilder: (context, index) {
-                  final tag = tagProvider.orderedTags[index];
-                  return Card(
-                    key: ValueKey(tag),
-                    margin: const EdgeInsets.only(bottom: 8.0),
-                    child: ListTile(
-                      leading: Container(
-                        width: 32,
-                        height: 32,
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.4)),
-                        ),
-                        child: Icon(Icons.label, size: 16, color: Theme.of(context).colorScheme.primary),
-                      ),
-                      title: Text(tag, style: const TextStyle(fontWeight: FontWeight.w500)),
-                      subtitle: Text('${l10n.position} ${index + 1}', style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6))),
-                      trailing: Icon(Icons.drag_handle, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5)),
-                    ),
-                  );
-                },
-              ),
+            const SizedBox(height: 24),
+            
+            // Identity Tags Section
+            _buildCategorySection(
+              context,
+              l10n,
+              tagProvider,
+              CardCategory.identity,
+              l10n.identityTags,
+              Icons.badge,
+            ),
+            const SizedBox(height: 24),
+            
+            // Document Tags Section
+            _buildCategorySection(
+              context,
+              l10n,
+              tagProvider,
+              CardCategory.document,
+              l10n.documentTags,
+              Icons.description,
             ),
           ],
         );
       },
+    );
+  }
+
+  Widget _buildCategorySection(
+    BuildContext context,
+    AppLocalizations l10n,
+    TagProvider tagProvider,
+    CardCategory category,
+    String categoryName,
+    IconData categoryIcon,
+  ) {
+    final tags = tagProvider.getOrderedTags(category);
+    
+    if (tags.isEmpty) {
+      return Card(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(categoryIcon, size: 20, color: Theme.of(context).colorScheme.primary),
+                  const SizedBox(width: 8),
+                  Text(
+                    categoryName,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Text(
+                l10n.noTagsYet,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(categoryIcon, size: 20, color: Theme.of(context).colorScheme.primary),
+                const SizedBox(width: 8),
+                Text(
+                  categoryName,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              l10n.categoryTagsDescription(categoryName.toLowerCase()),
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+              ),
+            ),
+            const SizedBox(height: 16),
+            ReorderableListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: tags.length,
+              onReorder: (oldIndex, newIndex) {
+                tagProvider.reorderTags(oldIndex, newIndex, category: category);
+              },
+              itemBuilder: (context, index) {
+                final tag = tags[index];
+                return Card(
+                  key: ValueKey('${category.name}_$tag'),
+                  margin: const EdgeInsets.only(bottom: 8.0),
+                  elevation: 1,
+                  child: ListTile(
+                    leading: Container(
+                      width: 32,
+                      height: 32,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.4)),
+                      ),
+                      child: Icon(Icons.label, size: 16, color: Theme.of(context).colorScheme.primary),
+                    ),
+                    title: Text(tag, style: const TextStyle(fontWeight: FontWeight.w500)),
+                    subtitle: Text(
+                      '${l10n.position} ${index + 1}',
+                      style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6)),
+                    ),
+                    trailing: Icon(
+                      Icons.drag_handle,
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
